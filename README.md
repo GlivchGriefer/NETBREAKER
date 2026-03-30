@@ -6,7 +6,7 @@
 ██║ ╚████║███████╗   ██║   ██████╔╝██║  ██║███████╗██║  ██║██║  ██╗███████╗██║  ██║
 ╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 ```
-![Release](https://img.shields.io/github/v/release/glivchgriefer/netbreaker?style=flat-square&color=00ff41)
+![Version](https://img.shields.io/github/v/tag/glivchgriefer/netbreaker?label=version&style=flat-square&color=00ff41)
 > **Penetration Testing Simulation v4.1 — All targets, companies, IPs and exploits are entirely fictional.**
 > Educational simulation based on CompTIA Security+ / PenTest+ methodology.
 
