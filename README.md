@@ -27,7 +27,9 @@
 
 NETBREAKER is a single-file, browser-based cybersecurity simulation game. Players work through a fictional darknet as a penetration tester, discovering targets, running recon, exploiting vulnerabilities, escalating privileges, and exfiltrating data — all using commands modelled on real-world tools and CompTIA Security+ / PenTest+ methodology.
 
-No installation. No server. No dependencies beyond a modern browser. Open the HTML file and play.
+No installation. No server. No dependencies beyond a modern browser. 
+No outside connections other than Google Fonts. 
+Open the HTML file and play.
 ![NETBREAKER Gameplay](IMG/NETBREAKER.gif)
 ---
 
