@@ -293,6 +293,18 @@ OTHER
 ---
 ## Patch Log
 
+### v5.4 — Map Overhaul and Cross-Platform Save Fix
+- **Save system** — IndexedDB now wrapped in `try/catch` with `localStorage` fallback;
+  fixes silent crash on Chromium/Debian Chromium when the file path contains `[` or `]`
+- **Zoom removed** — node-focus zoom was centering correctly only on the attacker node;
+  replaced with a well-scaled static view
+- **Node sizes +28%** — attacker 36→46, undiscovered 19→24, easy 33→42, med 38→49,
+  hard 42→54, elite 46→59; icons and miner bonus scaled proportionally
+- **Force simulation tuned** — repulsion and iteration count increased to prevent
+  overlap at the new node sizes
+- **Legend restored** — was missing from v5.3 renders; now rendered outside the node
+  group as a fixed bottom-left overlay; scaled up to match larger nodes
+
 ### v5.3 — Theme, Map, and Walkthrough Overhaul
 - Light theme now correctly swaps background (#f0f4f0) and text (#1a2a1a) — all base CSS
   elements use `var(--bg)` and `var(--textd)` so the toggle affects every pane
