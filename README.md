@@ -252,7 +252,7 @@ OTHER
 - New authentic Linux commands: `grep [-r -i -n]`, `find [-name]`, `id`, `uname [-a]`, `ps`, `history`, `echo`, `ifconfig`, `ip a / ip route`, `env`, `sudo`, `su`, `chmod`, `touch`, `mkdir`, `which`
 - Tab autocomplete covers all new commands
 
-## v5.1 — Economy Hardening
+### v5.1 — Economy Hardening
 
 - All recon bonuses (scan, nmap, gobuster, sniffer) are now strictly one-time per target and persist across saves — credits can no longer be farmed by repeating recon commands
 - Re-running a rewarded recon action prints `[*] Already rewarded — no bonus.` so the player understands why no credits were awarded
