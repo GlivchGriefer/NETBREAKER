@@ -132,8 +132,8 @@ html,body{height:100%;overflow:hidden;background:#000;color:#00ff41;font-family:
 .fsi.keyf{color:var(--yellow);}
 .fsi.lck{color:var(--textd);cursor:not-allowed;}
 #fs-prev{background:#020a02;border-top:1px solid var(--border2);padding:7px;font-size:10px;color:#88bb88;white-space:pre-wrap;line-height:1.6;max-height:110px;overflow-y:auto;flex-shrink:0;display:none;font-family:'Share Tech Mono',monospace;}
-#net-body{flex:1;overflow:hidden;position:relative;}
-#net-svg{position:absolute;inset:0;width:100%;height:100%;}
+#net-body{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;-webkit-overflow-scrolling:touch;}
+#net-svg{display:block;width:100%;min-height:400px;}
 #net-tooltip{position:absolute;background:#010801;border:1px solid var(--border2);padding:6px 10px;font-size:9px;color:var(--g);pointer-events:none;display:none;max-width:200px;line-height:1.6;z-index:10;}
 #cve-search-bar{display:flex;gap:5px;padding:5px 7px;border-bottom:1px solid var(--border);background:#000;flex-shrink:0;}
 #cve-search{flex:1;background:#020a02;border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 7px;outline:none;}
@@ -790,12 +790,21 @@ function cmdWhoami(){
     }
   }
 }
+var _pingLog={};
 function cmdPing(args){
   var ip=args[0];if(!ip){tPrint('err','Usage: ping <ip>');return;}
   var co=COMPANIES.find(function(c){return c.ip===ip;});
+  var s=G.session,src=s.connected?(s.targetId||'local'):'local';
+  var pairKey=src+'->'+ip;
+  var latency=s.connected?(Math.random()*3+0.1).toFixed(1):(Math.random()*30+8).toFixed(1);
   after(400,function(){
-    if(co&&G.discovered.indexOf(co.id)>=0) tPrint('ok','PING '+ip+': 64 bytes icmp_seq=1 ttl=64 time=12.3ms');
-    else tPrint('err','PING '+ip+': Request timeout.');
+    if(co&&G.discovered.indexOf(co.id)>=0){
+      tPrint('ok','PING '+ip+': 64 bytes icmp_seq=1 ttl=64 time='+latency+'ms');
+      if(!_pingLog[pairKey]){
+        _pingLog[pairKey]=true;
+        G.credits+=5;tPrint('ok','[+] +\u20BF5 (new host reachability confirmed)');renderTopbar();
+      }
+    } else tPrint('err','PING '+ip+': Request timeout.');
   });
 }
 
@@ -964,7 +973,11 @@ function cmdSsh(args){
     G.pwned[co.id].hasShell=true;
     if(user==='root'||user==='Administrator')G.pwned[co.id].hasRoot=true;
     G.session={connected:true,targetId:co.id,user:user,cwd:'/',isRoot:(user==='root'||user==='Administrator')};
-    G.credits+=50;tPrint('ok','[+] Access bonus: +\u20BF50');renderTopbar();
+    if(!G.pwned[co.id]||!G.pwned[co.id].sshRewarded){
+      if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+      G.pwned[co.id].sshRewarded=true;
+      G.credits+=50;tPrint('ok','[+] Access bonus: +\u20BF50 (first login)');renderTopbar();
+    }
     updatePrompt();renderFS();saveGame();
     if(co.sec.ids){triggerIDS(co);riseWanted(1);}
     tPrint('dim','Tip: ls  cd  cat  whoami  privesc linpeas');
@@ -1427,10 +1440,15 @@ function checkContracts(target,path){
       G.contracts[ct.id]='complete';
       G.credits+=ct.reward.c;G.rep+=ct.reward.r;
       tPrint('ok','');
-      tPrint('ok','\u2554\u2550\u2550 CONTRACT COMPLETE \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557');
-      tPrint('ok','  '+ct.title);
-      tPrint('ok','  \u20BF'+ct.reward.c+' credits + '+ct.reward.r+' REP earned');
-      tPrint('ok','\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255D');
+      var _w=40;
+      var _bar=Array(_w-1).join('\u2550');
+      var _title=ct.title,_reward='\u20BF'+ct.reward.c+' credits + '+ct.reward.r+' REP';
+      var _pad=function(s){var sp=Math.max(0,_w-2-s.length);var l=Math.floor(sp/2),r=sp-l;return '\u2551'+' '.repeat(l)+s+' '.repeat(r)+'\u2551';};
+      tPrint('ok','\u2554'+_bar+'\u2557');
+      tPrint('ok',_pad('CONTRACT COMPLETE'));
+      tPrint('ok',_pad(_title.substring(0,_w-4)));
+      tPrint('ok',_pad(_reward));
+      tPrint('ok','\u255A'+_bar+'\u255D');
       renderTopbar();checkUnlock();saveGame();toast('\u2713 '+ct.title);
     }
   });
@@ -1535,7 +1553,11 @@ function renderNetmap(){
   var tooltip=document.getElementById('net-tooltip');
   if(!svg)return;
 
-  var W=svg.clientWidth||320, H=svg.clientHeight||400;
+  var W=svg.clientWidth||window.innerWidth||600;
+  var nodeCount=COMPANIES.length+1;
+  // Scale height: base 480px, +40px per company beyond 4, min 400
+  var H=Math.max(400,Math.min(window.innerHeight-120,480+Math.max(0,nodeCount-5)*40));
+  svg.style.height=H+'px';
   if(W<10){setTimeout(renderNetmap,200);return;}
 
   document.getElementById('net-meta').textContent=G.discovered.length+' / '+COMPANIES.length+' targets';
@@ -1551,8 +1573,8 @@ function renderNetmap(){
       hasMiner:!!(G.miners&&G.miners[co.id]),
       diff:co.diff,label:disc?co.name:'??? UNKNOWN',
       sublabel:disc?co.ip:'REP '+co.repReq+' required',
-      x:W/2+Math.cos(i*Math.PI*2/COMPANIES.length)*(W*0.35),
-      y:H/2+Math.sin(i*Math.PI*2/COMPANIES.length)*(H*0.35)
+      x:W/2+Math.cos(i*Math.PI*2/COMPANIES.length)*(Math.min(W,H)*0.38),
+      y:H/2+Math.sin(i*Math.PI*2/COMPANIES.length)*(Math.min(W,H)*0.38)
     });
   });
 
@@ -1600,7 +1622,7 @@ function renderNetmap(){
   }
 
   // Simple force simulation (no D3 needed)
-  var ITER=200, REPEL=2200, SPRING=0.08, CENTER=0.02, DAMP=0.85;
+  var ITER=220, REPEL=2800+nodeCount*200, SPRING=0.07, CENTER=0.015, DAMP=0.82;
   var vx=nodes.map(function(){return 0;}), vy=nodes.map(function(){return 0;});
 
   function simulate(){
@@ -1623,7 +1645,7 @@ function renderNetmap(){
         if(si<0||ti<0)return;
         var dx=nodes[ti].x-nodes[si].x, dy=nodes[ti].y-nodes[si].y;
         var dist=Math.sqrt(dx*dx+dy*dy)+0.01;
-        var targetLen=120;
+        var targetLen=100+nodeCount*8;
         var force=SPRING*(dist-targetLen);
         var fx=force*dx/dist, fy=force*dy/dist;
         if(!nodes[si].fixed){vx[si]+=fx;vy[si]+=fy;}
@@ -1890,7 +1912,11 @@ function webLogin(coId,user,pass,resultId,redirect){
     if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
     G.pwned[co.id].hasShell=true;
     G.session={connected:true,targetId:co.id,user:user,cwd:'/',isRoot:user==='root'||user==='Administrator'};
-    G.credits+=40;tPrint('ok','[Browser] Auth bonus: +\u20BF40');renderTopbar();
+    if(!G.pwned[co.id]||!G.pwned[co.id].webRewarded){
+      if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+      G.pwned[co.id].webRewarded=true;
+      G.credits+=40;tPrint('ok','[Browser] Auth bonus: +\u20BF40 (first login)');renderTopbar();
+    }
     updatePrompt();renderFS();saveGame();
     setTimeout(function(){browserLoad(coId,redirect||'portal');},700);
     tPrint('ok','[Browser] Authenticated as '+user+'@'+co.domain);
