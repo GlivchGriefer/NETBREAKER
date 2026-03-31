@@ -31,6 +31,18 @@ No installation. No server. No dependencies beyond a modern browser. Open the HT
 
 ---
 
+## Educational Context
+
+NETBREAKER is designed as an interactive reference for the CompTIA Security+ and PenTest+ certification tracks. Every command, technique, and CVE in the game maps to a real concept:
+
+- **Recon phase** — passive (sniffer) vs. active (nmap, gobuster) information gathering, OSINT
+- **Exploitation** — CVE research, service fingerprinting, authenticated vs. unauthenticated attack paths
+- **Web application testing** — OWASP Top 10 categories: SQLi, XSS, IDOR, LFI, CSRF, auth bypass
+- **Post-exploitation** — privilege escalation vectors (sudo, SUID, cron, token impersonation), persistence, lateral movement, data exfiltration
+- **OPSEC** — log clearing, IP rotation, covert channels (DNS exfil), detection evasion
+
+---
+
 ## Features
 
 ### Terminal Emulator
@@ -157,56 +169,97 @@ All companies, IP addresses, domain names, personnel, CVE identifiers, and explo
 
 ## Commands
 
+Commands support piping: `cd /var/www/html | ls` executes each segment in sequence.
+Tab-autocomplete and command history (↑/↓) available in the terminal at all times.
+
 ```
 RECON
-  scan <subnet>         Ping sweep. Discovers live hosts.
-  nmap [-sV -sC] <ip>  Service and CVE scan. Adds to CVE-DB.
-  gobuster <ip>         Web directory brute-force.
-  deploy sniffer <ip>   Passive credential capture — silent.
-  deploy crawler <ip>   Web content mapping.
-  agents                View deployed agent results.
-  ping <ip>             Test host reachability.
+  scan <subnet>                    Ping sweep. Discovers live hosts. (+10c/host, one-time)
+  nmap [flags] <ip>                Port, service, and CVE scan. Populates CVE-DB.
+    -sV (versions)  -sC (scripts)  -O (OS)  -p- (all ports)  -A (aggressive)
+  gobuster <ip>                    Web directory brute-force. (+20c, one-time per target)
+  deploy sniffer <ip>              Passive credential capture. Silent — no IDS trigger. (+30c)
+  deploy crawler <ip>              Web content and link mapping.
+  agents                           View results from all deployed sniffers and crawlers.
+  ping <ip>                        Test reachability. (+5c per unique source→destination pair)
 
 EXPLOITATION
-  exploit <vuln> <ip>   Run exploit module.
-  brute <svc> <ip>      Credential brute force (noisy).
-  nc <ip> <port>        Netcat connection.
-  curl <url>            Manual HTTP request.
+  exploit <vuln> <ip>              Run exploit module. Requires metasploit for CVE exploits.
+    exploit CVE-2017-7679 <ip>     Apache mod_mime RCE
+    exploit CVE-2020-1938 <ip>     Ghostcat AJP file read
+    exploit CVE-2022-1388 <ip>     F5 BIG-IP auth bypass
+    exploit vsftpd-backdoor <ip>   Instant root bind shell
+    exploit S7-auth-bypass <ip>    Siemens ICS (metasploit-pro)
+    exploit sqli / xss / lfi / csrf / idor <ip>   Web app exploits
+  brute <svc> <ip>                 Credential brute-force. Noisy — triggers IDS.
+    services: ssh  ftp  mysql  http-form
+  nc [-lvnp <port>] [<ip> <port>]  Netcat. Bind shells, reverse shells.
+  curl <url> [-X method] [-d body] [-H header]   Manual HTTP request.
 
 ACCESS
-  ssh [user@]<ip>       SSH login.
-  ftp <ip>              FTP connection / version fingerprint.
-  disconnect / exit / q Close current session.
+  ssh [user@]<ip>                  SSH login. (+50c first login per target)
+  ftp <ip>                         FTP connection and version fingerprint.
+  su [user]                        Switch user on connected target.
+  sudo <cmd>                       Run as root — reveals NOPASSWD privesc path if available.
+  disconnect / exit / q            Close current target session.
 
-FILESYSTEM  (on connected target)
-  ls [path]   cd <path>   cat <file>   pwd
+FILESYSTEM
+  ls [path]                        List directory. Works locally and on connected target.
+  cd <path>                        Change directory. Works locally and on connected target.
+  cat <file>                       Read file. Also reads local virtual files.
+  pwd                              Print working directory.
+  find [-name <pattern>]           Search filesystem on connected target.
+  grep [-r] [-i] [-n] <pat> [file] Search file contents on connected target.
+  chmod / touch / mkdir            Simulated filesystem operations on target.
+  run <name>                       Execute a saved editor script or target filesystem script.
+                                   Accepts name with or without .sh extension.
 
 POST-EXPLOITATION
-  privesc [method]      Escalate privileges.
-  persist <method>      Install persistence.
-  exfil <path> [how]    Exfiltrate file (http / https / dns).
-  pivot <src> <dst>     Pivot through compromised host.
+  privesc [method]                 Escalate privileges. (+100c escalation, +150c root shell)
+    linpeas    Auto-scan for sudo / SUID / cron vectors (recommended first)
+    sudo       NOPASSWD sudo to /bin/bash
+    suid       SUID binary exploitation
+    cron       Writable cron job injection
+    token      Windows SeImpersonatePrivilege → SYSTEM (metasploit-pro)
+    mimikatz   Windows LSASS credential dump (mimikatz tool)
+    hmi-admin  ICS HMI admin panel → root (CivicGrid)
+  persist <method>                 Install persistence. Requires root.
+    cron  backdoor  service
+  exfil <path> [method]            Exfiltrate file and complete matching contracts.
+    https (default, low noise)  dns (covert, needs exfil-kit)  http (noisy)
+  pivot <src> <dst>                Lateral movement through compromised host. (metasploit-pro)
 
 OPSEC
-  clearlogs [ip]        Wipe logs. Reduces wanted level.
-  rotateip              Rotate IP. Breaks active traces.
+  clearlogs [ip]                   Wipe logs. Local: −1 wanted. Remote: −2 wanted.
+  rotateip                         Rotate attacker IP via proxy chain. −2 wanted.
 
 MINING
-  deploy miner <ip>     Deploy miner on rooted host.
-  miners                List active rigs and income rate.
+  deploy miner <ip>                Deploy XMR miner on rooted host. Passive income every 30s.
+  miners                           List all active rigs and total income rate.
+
+SYSTEM / ENVIRONMENT
+  whoami / id                      Current user, UID, groups, session info, credits.
+  uname [-a]                       OS and kernel info. Context-aware: local or target.
+  ps                               Running processes on connected target.
+  hostname [name]                  Print or set attacker machine hostname. Persists in save.
+  ifconfig                         Network interface info. Works locally and on target.
+  ip a / ip route                  IP addresses and routing table.
+  env                              Environment variables for current session.
+  history                          Last 20 commands from session history.
+  echo <text>                      Print text to terminal.
+  which <cmd>                      Locate a command binary.
+
+INFORMATION
+  cve [term]                       Search CVE-DB. `cve discovered` = only nmap-found CVEs.
+  man <cmd>                        Detailed manual page for any command (29 entries).
+  help                             Full categorised command reference with attack chain.
 
 OTHER
-  contracts             List active and completed contracts.
-  shop                  Open darknet tool shop.
-  editor                Script editor with templates.
-  run <name>            Execute a saved or target script.
-  cve [term]            Search CVE database.
-  whoami                Current user and session info.
-  man <cmd>             Detailed help for any command.
-  help                  Full command reference.
-  clear                 Clear terminal output.
+  contracts                        List active and completed contracts with rewards.
+  shop                             Open darknet tool shop.
+  editor                           Script editor with 4 templates. Run with: run <name>
+  clear                            Clear terminal output.
 ```
-
 ---
 
 ## Shop — Tools
@@ -318,18 +371,6 @@ OTHER
 - ASCII network map
 - IndexedDB persistence
 - CompTIA Security+ / PenTest+ methodology throughout
-
----
-
-## Educational Context
-
-NETBREAKER is designed as an interactive reference for the CompTIA Security+ and PenTest+ certification tracks. Every command, technique, and CVE in the game maps to a real concept:
-
-- **Recon phase** — passive (sniffer) vs. active (nmap, gobuster) information gathering, OSINT
-- **Exploitation** — CVE research, service fingerprinting, authenticated vs. unauthenticated attack paths
-- **Web application testing** — OWASP Top 10 categories: SQLi, XSS, IDOR, LFI, CSRF, auth bypass
-- **Post-exploitation** — privilege escalation vectors (sudo, SUID, cron, token impersonation), persistence, lateral movement, data exfiltration
-- **OPSEC** — log clearing, IP rotation, covert channels (DNS exfil), detection evasion
 
 ---
 
